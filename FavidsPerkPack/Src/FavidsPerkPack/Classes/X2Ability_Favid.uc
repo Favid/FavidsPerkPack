@@ -144,6 +144,9 @@ var config int AMPLIFIEDSHOT_DAMAGE_BONUS_T3;
 var config bool AMPLIFIEDSHOT_AWC;
 var config int IGNITE_COOLDOWN;
 var config bool IGNITE_AWC;
+var config int NATURALTWENTY_CRIT_BONUS;
+var config int NATURALTWENTY_COOLDOWN;
+var config bool NATURALTWENTY_AWC;
 
 
 static function array<X2DataTemplate> CreateTemplates()
@@ -208,6 +211,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Recharge());
 	Templates.AddItem(AmplifiedShot());				// TODO fix LW2 compatibility
 	Templates.AddItem(Ignite());
+	Templates.AddItem(NaturalTwenty());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -2461,6 +2465,51 @@ static function X2AbilityTemplate Ignite()
 	return Template;
 }
 
+// Natural Twenty
+// (AbilityName="F_NaturalTwenty", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
+// Fire a shot that is guarenteed to critical if it hits. Cooldown.
+static function X2AbilityTemplate NaturalTwenty()
+{
+	local X2AbilityTemplate Template;
+
+	// Create the template using a helper function
+	Template = Attack('F_NaturalTwenty', "img:///UILibrary_PerkIcons.UIPerk_command", default.NATURALTWENTY_AWC, none, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_WeaponConsumeAll, 1);
+
+	// Add cooldown
+	AddCooldown(Template, default.NATURALTWENTY_COOLDOWN);
+
+	// Add a secondary ability to provide bonuses on the shot
+	AddSecondaryAbility(Template, NaturalTwentyBonuses());
+	
+	return Template;
+}
+
+static function X2AbilityTemplate NaturalTwentyBonuses()
+{
+	local X2AbilityTemplate Template;
+	local XMBEffect_ConditionalBonus Effect;
+	local XMBCondition_AbilityName Condition;
+
+	// Create a conditional bonus effect
+	Effect = new class'XMBEffect_ConditionalBonus';
+	Effect.EffectName = 'F_NaturalTwentyBonuses';
+
+	// The bonus adds +200 Crit chance by default. Should be enough to guarentee crits.
+	Effect.AddToHitModifier(default.NATURALTWENTY_CRIT_BONUS, eHit_Crit);
+
+	// The bonus only applies to the Natural Twenty ability
+	Condition = new class'XMBCondition_AbilityName';
+	Condition.IncludeAbilityNames.AddItem('F_NaturalTwenty');
+	Effect.AbilityTargetConditions.AddItem(Condition);
+
+	// Create the template using a helper function
+	Template = Passive('F_NaturalTwentyBonuses', "img:///UILibrary_PerkIcons.UIPerk_command", false, Effect);
+
+	// The Power Shot ability will show up as an active ability, so hide the icon for the passive damage effect
+	HidePerkIcon(Template);
+
+	return Template;
+}
 
 static function X2AbilityTemplate ShootAnyone()
 {
