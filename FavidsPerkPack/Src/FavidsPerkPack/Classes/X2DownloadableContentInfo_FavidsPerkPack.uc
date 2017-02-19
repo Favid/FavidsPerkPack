@@ -153,6 +153,18 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'CHIPAWAY_AMMO_COST':
 			OutString = string(class'X2Ability_Favid'.default.CHIPAWAY_AMMO_COST);
 			return true;
+		case 'SPOT_DURATION':
+			OutString = string(class'X2Ability_Favid'.default.SPOT_DURATION);
+			return true;
+		case 'SPOT_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.SPOT_COOLDOWN);
+			return true;
+		case 'SPOT_RANGE':
+			OutString = string(class'X2Ability_Favid'.default.SPOT_RANGE);
+			return true;
+		case 'SPOT_RADIUS':
+			OutString = string(class'X2Ability_Favid'.default.SPOT_RADIUS);
+			return true;
 		default: 
 			return false;
 	}

@@ -344,7 +344,7 @@ static function X2AbilityTemplate Concentration()
 
 // Spot
 // (AbilityName="F_Spot", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Visually scan a small area, highlighting any enemies in the radius for 2 turns, even if you lose line of sight. Also immediately reveals Faceless and Chryssalids in the area of effect.
+// Visually scan a small area, highlighting any enemies in the radius, even if you lose line of sight. Also immediately reveals Faceless and Chryssalids in the area of effect.
 static function X2AbilityTemplate Spot()
 {
 	local X2AbilityTemplate Template;
