@@ -129,6 +129,9 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 				OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_DURATION) @ "turn";
 			}
 			return true;
+		case 'FREEFIRE_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.FREEFIRE_COOLDOWN);
+			return true;
 		default: 
 			return false;
 	}

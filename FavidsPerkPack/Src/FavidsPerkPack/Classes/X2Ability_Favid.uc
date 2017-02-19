@@ -260,7 +260,7 @@ static function X2AbilityTemplate EyeStrain()
 
 // Free Fire
 // (AbilityName="F_FreeFire", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Fire your primary weapon as a free action. 5 turn cooldown.
+// Fire your primary weapon as a free action. Cooldown-based.
 static function X2AbilityTemplate FreeFire()
 {
 	local X2AbilityTemplate Template;
