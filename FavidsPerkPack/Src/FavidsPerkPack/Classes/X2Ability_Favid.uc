@@ -20,7 +20,6 @@ var config int SPOT_RADIUS;
 var config int SPOT_DURATION;
 var config int SPOT_COOLDOWN;
 var config bool SPOT_AWC;
-var config bool SPOT_IGNOREBLOCKINGCOVER;
 var config int OVERWATCHPROTOCOL_COOLDOWN;
 var config int OVERWATCHPROTOCOL_AIM_BONUS;
 var config bool OVERWATCHPROTOCOL_AWC;
@@ -328,7 +327,7 @@ static function X2AbilityTemplate ChipAwayBonuses()
 
 // Concentration
 // (AbilityName="F_Concentration", ApplyToWeaponSlot=eInvSlot_Unknown)
-// This unit's shots cannot be dodged. Applies to all abilities that use your primary or secondary weapons.
+// Your grazing shots are automatically upgraded to normal hits.
 static function X2AbilityTemplate Concentration()
 {
 	local X2AbilityTemplate Template;
@@ -368,7 +367,7 @@ static function X2AbilityTemplate Spot()
 	// Circular target radius
 	RadiusMultiTarget = new class'X2AbilityMultiTarget_Radius';
 	RadiusMultiTarget.fTargetRadius = default.SPOT_RADIUS;
-	RadiusMultiTarget.bIgnoreBlockingCover = default.SPOT_IGNOREBLOCKINGCOVER;
+	RadiusMultiTarget.bIgnoreBlockingCover = true;
 	Template.AbilityMultiTargetStyle = RadiusMultiTarget;
 
 	// Same as grenade targetting, but doesn't use grenade path
