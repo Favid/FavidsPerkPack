@@ -1,9 +1,9 @@
 class X2Ability_Favid extends XMBAbility config (Favid_Ability);
 
-var config int FOCUS_AIM_BONUS;
-var config int FOCUS_CHARGES;
-var config int FOCUS_DURATION;
-var config bool FOCUS_AWC;
+var config int EYESTRAIN_AIM_BONUS;
+var config int EYESTRAIN_CHARGES;
+var config int EYESTRAIN_DURATION;
+var config bool EYESTRAIN_AWC;
 var config int FREEFIRE_COOLDOWN;
 var config bool FREEFIRE_AWC;
 var config int CHIPAWAY_SHRED_T1;
@@ -148,12 +148,11 @@ var config int NATURALTWENTY_CRIT_BONUS;
 var config int NATURALTWENTY_COOLDOWN;
 var config bool NATURALTWENTY_AWC;
 
-
 static function array<X2DataTemplate> CreateTemplates()
 {
 	local array<X2DataTemplate> Templates;
 
-	Templates.AddItem(HyperFocus());
+	Templates.AddItem(EyeStrain());
 	Templates.AddItem(FreeFire());
 	Templates.AddItem(ChipAway());
 	Templates.AddItem(Concentration());
@@ -218,43 +217,43 @@ static function array<X2DataTemplate> CreateTemplates()
 	return Templates;
 }
 
-// Hyper Focus 
-// (AbilityName="F_HyperFocus", ApplyToWeaponSlot=eInvSlot_Unknown)
-// The soldier focuses intensely, gaining +10 aim for two turns. Does not cost an action point. Can only be used once per mission.
-static function X2AbilityTemplate HyperFocus()
+// Eye Strain
+// (AbilityName="F_EyeStrain", ApplyToWeaponSlot=eInvSlot_Unknown)
+// Activated ability that does not cost an action. Grants Squadsight and an aim bonus until the beginning of your next turn. Charge-based.
+static function X2AbilityTemplate EyeStrain()
 {
 	local X2AbilityTemplate Template;
-	local X2Effect_PersistentStatChange Effect;
+	local X2Effect_PersistentStatChange AimEffect;
 	local X2Effect_Squadsight SquadsightEffect;
 
 	// Create a persistent stat change effect that grants an aim bonus
-	Effect = new class'X2Effect_PersistentStatChange';
-	Effect.EffectName = 'F_HyperFocusAim';
-	Effect.AddPersistentStatChange(eStat_Offense, default.FOCUS_AIM_BONUS);
+	AimEffect = new class'X2Effect_PersistentStatChange';
+	AimEffect.EffectName = 'F_EyeStrainAim';
+	AimEffect.AddPersistentStatChange(eStat_Offense, default.EYESTRAIN_AIM_BONUS);
 	
 	// Prevent the effect from applying to a unit more than once
-	Effect.DuplicateResponse = eDupe_Refresh;
+	AimEffect.DuplicateResponse = eDupe_Refresh;
 
 	// The effect lasts for two turns
-	Effect.BuildPersistentEffect(default.FOCUS_DURATION, false, true, false, eGameRule_PlayerTurnBegin);
+	AimEffect.BuildPersistentEffect(default.EYESTRAIN_DURATION, false, true, false, eGameRule_PlayerTurnBegin);
 	
 	// Add a visualization that plays a flyover over the target unit
-	Effect.VisualizationFn = EffectFlyOver_Visualization;
+	AimEffect.VisualizationFn = EffectFlyOver_Visualization;
 	
 	// Activated ability that targets user
-	Template = SelfTargetActivated('F_HyperFocus', "img:///UILibrary_FavidsPerkPack.UIPerk_Focus", default.FOCUS_AWC, Effect, class'UIUtilities_Tactical'.const.CLASS_CORPORAL_PRIORITY, eCost_Free);
+	Template = SelfTargetActivated('F_EyeStrain', "img:///UILibrary_FavidsPerkPack.UIPerk_Focus", default.EYESTRAIN_AWC, AimEffect, class'UIUtilities_Tactical'.const.CLASS_CORPORAL_PRIORITY, eCost_Free);
+	
+	// Let's give them squadsight, too
+	SquadsightEffect = new class'X2Effect_Squadsight';
+	SquadsightEffect.BuildPersistentEffect(default.EYESTRAIN_DURATION, false, true, false, eGameRule_PlayerTurnBegin);
+	SquadsightEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+	Template.AddTargetEffect(SquadsightEffect);
 	
 	// Cannot be used while burning, etc.
 	Template.AddShooterEffectExclusions();
 
-	// Let's give them squadsight, too
-	SquadsightEffect = new class'X2Effect_Squadsight';
-	SquadsightEffect.BuildPersistentEffect(default.FOCUS_DURATION, false, true, false, eGameRule_PlayerTurnBegin);
-	SquadsightEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
-	Template.AddTargetEffect(SquadsightEffect);
-
 	// Charges
-	AddCharges(Template, default.FOCUS_CHARGES);
+	AddCharges(Template, default.EYESTRAIN_CHARGES);
 
 	return Template;
 }

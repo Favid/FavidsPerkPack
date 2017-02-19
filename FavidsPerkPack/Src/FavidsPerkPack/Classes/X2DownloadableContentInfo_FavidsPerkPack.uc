@@ -92,3 +92,44 @@ static function PatchAreaSuppressionMayhem()
 		Template.bAllowBonusWeaponEffects = true;
 	}
 }
+
+static function bool AbilityTagExpandHandler(string InString, out string OutString)
+{
+	local name Type;
+	local UITacticalHUD TacticalHUD;
+	local StateObjectReference UnitRef;
+	local XComGameState_Unit UnitState;
+	local int NumTiles;
+
+	Type = name(InString);
+	switch(Type)
+	{
+		case 'EYESTRAIN_AIM_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_AIM_BONUS);
+			return true;
+		case 'EYESTRAIN_CHARGES':
+			OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_CHARGES);
+			if(class'X2Ability_Favid'.default.EYESTRAIN_CHARGES > 1)
+			{
+				OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_CHARGES) @ "charges";
+			}
+			else
+			{
+				OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_CHARGES) @ "charge";
+			}
+			return true;
+		case 'EYESTRAIN_DURATION':
+			OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_DURATION);
+			if(class'X2Ability_Favid'.default.EYESTRAIN_DURATION > 1)
+			{
+				OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_DURATION) @ "turns";
+			}
+			else
+			{
+				OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_DURATION) @ "turn";
+			}
+			return true;
+		default: 
+			return false;
+	}
+}
