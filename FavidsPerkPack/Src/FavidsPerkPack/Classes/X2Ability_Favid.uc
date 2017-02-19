@@ -6,9 +6,11 @@ var config int EYESTRAIN_DURATION;
 var config bool EYESTRAIN_AWC;
 var config int FREEFIRE_COOLDOWN;
 var config bool FREEFIRE_AWC;
-var config int CHIPAWAY_SHRED_T1;
-var config int CHIPAWAY_SHRED_T2;
-var config int CHIPAWAY_SHRED_T3;
+var config int CHIPAWAY_SHRED_CV;
+var config int CHIPAWAY_SHRED_LS;
+var config int CHIPAWAY_SHRED_MG;
+var config int CHIPAWAY_SHRED_CL;
+var config int CHIPAWAY_SHRED_BM;
 var config int CHIPAWAY_COOLDOWN;
 var config int CHIPAWAY_AMMO_COST;
 var config bool CHIPAWAY_AWC;
@@ -304,10 +306,12 @@ static function X2AbilityTemplate ChipAwayBonuses()
 	Effect.EffectName = 'F_ChipAwayBonuses';
 
 	// The bonus adds shred damage dependent on tech level
-	Effect.AddShredModifier(default.CHIPAWAY_SHRED_T1, eHit_Success, 'conventional');
-	Effect.AddShredModifier(default.CHIPAWAY_SHRED_T2, eHit_Success, 'magnetic');
-	Effect.AddShredModifier(default.CHIPAWAY_SHRED_T3, eHit_Success, 'beam');
-
+	Effect.AddShredModifier(default.CHIPAWAY_SHRED_CV, eHit_Success, 'conventional');
+	Effect.AddShredModifier(default.CHIPAWAY_SHRED_LS, eHit_Success, 'laser_lw');
+	Effect.AddShredModifier(default.CHIPAWAY_SHRED_MG, eHit_Success, 'magnetic');
+	Effect.AddShredModifier(default.CHIPAWAY_SHRED_CL , eHit_Success, 'coilgun_lw');
+	Effect.AddShredModifier(default.CHIPAWAY_SHRED_BM, eHit_Success, 'beam');
+	
 	// The bonus only applies to the Chip Away ability
 	Condition = new class'XMBCondition_AbilityName';
 	Condition.IncludeAbilityNames.AddItem('F_ChipAway');

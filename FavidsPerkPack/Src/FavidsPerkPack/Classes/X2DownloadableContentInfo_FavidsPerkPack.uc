@@ -132,6 +132,27 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'FREEFIRE_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.FREEFIRE_COOLDOWN);
 			return true;
+		case 'CHIPAWAY_SHRED_CV':
+			OutString = string(class'X2Ability_Favid'.default.CHIPAWAY_SHRED_CV);
+			return true;
+		case 'CHIPAWAY_SHRED_LS':
+			OutString = string(class'X2Ability_Favid'.default.CHIPAWAY_SHRED_LS);
+			return true;
+		case 'CHIPAWAY_SHRED_MG':
+			OutString = string(class'X2Ability_Favid'.default.CHIPAWAY_SHRED_MG);
+			return true;
+		case 'CHIPAWAY_SHRED_CL':
+			OutString = string(class'X2Ability_Favid'.default.CHIPAWAY_SHRED_CL);
+			return true;
+		case 'CHIPAWAY_SHRED_BM':
+			OutString = string(class'X2Ability_Favid'.default.CHIPAWAY_SHRED_BM);
+			return true;
+		case 'CHIPAWAY_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.CHIPAWAY_COOLDOWN);
+			return true;
+		case 'CHIPAWAY_AMMO_COST':
+			OutString = string(class'X2Ability_Favid'.default.CHIPAWAY_AMMO_COST);
+			return true;
 		default: 
 			return false;
 	}
