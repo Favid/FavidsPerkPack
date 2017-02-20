@@ -41,10 +41,10 @@ var config int MAIM_AMMO_COST;
 var config int MAIM_COOLDOWN;
 var config int MAIM_DURATION;
 var config bool MAIM_AWC;
-var config int EXPOSEWEAKNESS_COOLDOWN;
-var config bool EXPOSEWEAKNESS_ENDTURN;
 var config int EXPOSEWEAKNESS_DAMAGEMODIFIER;
 var config int EXPOSEWEAKNESS_DURATION;
+var config int EXPOSEWEAKNESS_COOLDOWN;
+var config bool EXPOSEWEAKNESS_AWC;
 var config bool QUICKFEET_AWC;
 var config int DISABLINGSHOT_COOLDOWN;
 var config int DISABLINGSHOT_STUN_ACTIONS;
@@ -164,8 +164,8 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Unload2());
 	Templates.AddItem(BattleVision());
 	Templates.AddItem(Entrenched());
-	Templates.AddItem(Maim());
-	Templates.AddItem(Fireworks());
+	Templates.AddItem(Maim());						// TODO rework
+	Templates.AddItem(Fireworks());					// TODO rework
 	Templates.AddItem(ExposeWeakness());
 	Templates.AddItem(QuickFeet());
 	Templates.AddItem(DisablingShot());
@@ -392,7 +392,7 @@ static function X2AbilityTemplate Spot()
 	CivilianScanningEffect.TargetConditions.AddItem(CivilianProperty);
 	Template.AddMultiTargetEffect(CivilianScanningEffect);	
 
-	// One turn cooldown so it can only be used once per turn
+	// Cooldown
 	AddCooldown(Template, default.SPOT_COOLDOWN);
 	
 	return Template;
@@ -756,90 +756,31 @@ static function X2AbilityTemplate Fireworks()
 
 // Expose Weakness
 // (AbilityName="F_ExposeWeakness", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Increases damage taken by the targetted unit by 3.
+// Increases damage taken by the targetted unit for a few turns.
 static function X2AbilityTemplate ExposeWeakness()
 {
 	local X2AbilityTemplate				Template;
-	local X2AbilityCost_ActionPoints	ActionPointCost;
-	local X2Condition_UnitProperty		UnitPropertyCondition;
-	local X2Condition_Visibility		TargetVisibilityCondition;
-	local X2Condition_UnitEffects		UnitEffectsCondition;
-	local X2AbilityTarget_Single		SingleTarget;
-	local X2AbilityTrigger_PlayerInput	InputTrigger;
-	local X2AbilityCooldown				Cooldown;
-	local X2Effect_WeaknessExposed		PersistentEffect;
+	local X2Effect_WeaknessExposed		WeaknessExposedEffect;
+	
+	// Weakness Exposed Effect
+	WeaknessExposedEffect = new class 'X2Effect_WeaknessExposed';
+	WeaknessExposedEffect.DamageModifier = default.EXPOSEWEAKNESS_DAMAGEMODIFIER;
+	WeaknessExposedEffect.BuildPersistentEffect(default.EXPOSEWEAKNESS_DURATION, false, true, false, eGameRule_PlayerTurnEnd);
+	WeaknessExposedEffect.bRemoveWhenTargetDies = true;
+	Template.AddTargetEffect(WeaknessExposedEffect);
 
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_ExposeWeakness');
-
-	// Icon Properties
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_ExposeWeakness";
-	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.Hostility = eHostility_Offensive;
-	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_MAJOR_PRIORITY;
-
+	// Start with the targeted debuff template
+	Template = TargetedDebuff('F_ExposeWeakness', "img:///UILibrary_FavidsPerkPack.UIPerk_ExposeWeakness", default.EXPOSEWEAKNESS_AWC, WeaknessExposedEffect, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_Single);
+	
 	// Cooldown
-	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = default.EXPOSEWEAKNESS_COOLDOWN;
-	Template.AbilityCooldown = Cooldown;
+	AddCooldown(Template, default.EXPOSEWEAKNESS_COOLDOWN);
 
-	// Action Points
-	ActionPointCost = new class'X2AbilityCost_ActionPoints';
-	ActionPointCost.iNumPoints = 1;
-	ActionPointCost.bConsumeAllPoints = default.EXPOSEWEAKNESS_ENDTURN;
-	Template.AbilityCosts.AddItem(ActionPointCost);
+	// Cannot be used while burning, etc.
+	Template.AddShooterEffectExclusions();
 	
-	// The shooter cannot be mind controlled
-	UnitEffectsCondition = new class'X2Condition_UnitEffects';
-	UnitEffectsCondition.AddExcludeEffect(class'X2Effect_MindControl'.default.EffectName, 'AA_UnitIsMindControlled');
-	Template.AbilityShooterConditions.AddItem(UnitEffectsCondition);
-
-	// The shooter must be alive
-	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
-
-	// Target must be an enemy
-	UnitPropertyCondition = new class'X2Condition_UnitProperty';
-	UnitPropertyCondition.ExcludeDead = true;
-	UnitPropertyCondition.ExcludeFriendlyToSource = true;
-	UnitPropertyCondition.RequireWithinRange = false;
-	Template.AbilityTargetConditions.AddItem(UnitPropertyCondition);
-	
-	// Target must be visible
-	TargetVisibilityCondition = new class'X2Condition_Visibility';
-	TargetVisibilityCondition.bRequireGameplayVisible = true;
-	Template.AbilityTargetConditions.AddItem(TargetVisibilityCondition);
-
-	// 100% chance to hit
-	Template.AbilityToHitCalc = default.DeadEye;
-
-	// Single target
-	SingleTarget = new class'X2AbilityTarget_Single';
-	Template.AbilityTargetStyle = SingleTarget;
-
-	// Activated ability
-	InputTrigger = new class'X2AbilityTrigger_PlayerInput';
-	Template.AbilityTriggers.AddItem(InputTrigger);
-
 	// Always remain concealed
 	Template.ConcealmentRule = eConceal_Always;
 	Template.bSilentAbility = true;
-
-	// Weakness Exposed Effect
-	PersistentEffect = new class 'X2Effect_WeaknessExposed';
-	PersistentEffect.DamageModifier = default.EXPOSEWEAKNESS_DAMAGEMODIFIER;
-	PersistentEffect.BuildPersistentEffect(default.EXPOSEWEAKNESS_DURATION, false, true,,eGameRule_PlayerTurnEnd);
-	PersistentEffect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage);
-	PersistentEffect.bRemoveWhenTargetDies = true;
-	Template.AddTargetEffect(PersistentEffect);
-
-	// Animation
-	Template.CustomFireAnim = 'HL_SignalPoint';
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	Template.BuildInterruptGameStateFn = TypicalAbility_BuildInterruptGameState;
-	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-	//Template.BuildVisualizationFn = TargetGettingMarked_BuildVisualization;
-	Template.CinescriptCameraType = "Mark_Target";
-	//Template.DamagePreviewFn = ExposeWeaknessDamagePreview;	
 
 	return Template;
 }
