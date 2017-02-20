@@ -792,32 +792,15 @@ static function X2AbilityTemplate QuickFeet()
 {
 	local X2AbilityTemplate						Template;
 	local X2Effect_QuickFeet               QuickFeetEffect;
-
-	// Icon Properties
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_QuickFeet');
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_QuickFeet";
-
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
-	Template.Hostility = eHostility_Neutral;
-
-	// Setup Passive
-	Template.AbilityToHitCalc = default.DeadEye;
-	Template.AbilityTargetStyle = default.SelfTarget;
-	Template.bIsPassive = true;
-	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
-
-	// Effect
+	
+	// Quick Feet Effect
 	QuickFeetEffect = new class'X2Effect_QuickFeet';
 	QuickFeetEffect.EffectName = 'F_QuickFeet';
 	QuickFeetEffect.BuildPersistentEffect(1, true, false, false);
 	QuickFeetEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,,Template.AbilitySourceName);
-	Template.AddTargetEffect(QuickFeetEffect);
 
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	//  NOTE: No visualization on purpose!
-
-	Template.bCrossClassEligible = default.QUICKFEET_AWC;
+	// Create the template using a helper function
+	Template = Passive('F_QuickFeet', "img:///UILibrary_FavidsPerkPack.UIPerk_QuickFeet", default.QUICKFEET_AWC, QuickFeetEffect);
 
 	return Template;
 }
