@@ -956,7 +956,7 @@ static function X2AbilityTemplate BulletTime()
 
 // Predator
 // (AbilityName="F_Predator", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants +15 Hit Chance on enemies that are flanked or out of cover.
+// Grants an aim bonus on enemies that are flanked or out of cover. Passive.
 static function X2AbilityTemplate Predator()
 {
 	local XMBEffect_ConditionalBonus Effect;
@@ -981,7 +981,6 @@ static function X2AbilityTemplate ArmedToTheTeeth()
 {
 	// Create the template using a helper function - XcomGameData.ini sets this perk as unlocking the ammo pocket
 	return Passive('F_ArmedToTheTeeth', "img:///UILibrary_FavidsPerkPack.UIPerk_ArmedToTheTeeth", default.ARMEDTOTHETEETH_AWC, none);
-	
 }
 
 // Bullet Proof

@@ -205,6 +205,9 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'BULLETTIME_CHARGES':
 			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.BULLETTIME_CHARGES, "charge", "charges");
 			return true;
+		case 'PREDATOR_AIM_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.PREDATOR_AIM_BONUS);
+			return true;
 		default: 
 			return false;
 	}
