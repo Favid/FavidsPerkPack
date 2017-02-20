@@ -48,6 +48,7 @@ var config bool EXPOSEWEAKNESS_AWC;
 var config bool QUICKFEET_AWC;
 var config int DISABLINGSHOT_COOLDOWN;
 var config int DISABLINGSHOT_STUN_ACTIONS;
+var config int DISABLINGSHOT_AMMO_COST;
 var config bool DISABLINGSHOT_AWC;
 var config int RESUPPLY_CHARGES;
 var config bool RESUPPLY_ENDTURN;
@@ -806,19 +807,24 @@ static function X2AbilityTemplate QuickFeet()
 }
 
 // Disabling Shot
-// (AbilityName="F_DisablingShot", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Pistol shot that, if it hits, removes an Action Point from the enemy for next turn.
+// (AbilityName="F_DisablingShot", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
+// Primary weapon shot that, if it hits, stuns the target. Cannot critically hit.
 static function X2AbilityTemplate DisablingShot()
 {
 	local X2AbilityTemplate Template;
 	local X2Effect_Stunned					StunnedEffect;
 
 	// Create the template using a helper function
-	Template = Attack('F_DisablingShot', "img:///UILibrary_FavidsPerkPack.UIPerk_DisablingShot", default.DISABLINGSHOT_AWC, none, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_WeaponConsumeAll, 0);
+	Template = Attack('F_DisablingShot', "img:///UILibrary_FavidsPerkPack.UIPerk_DisablingShot", default.DISABLINGSHOT_AWC, none, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_WeaponConsumeAll, default.DISABLINGSHOT_AMMO_COST);
 	
+	// Create Stun effect
 	StunnedEffect = class'X2StatusEffects'.static.CreateStunnedStatusEffect(default.DISABLINGSHOT_STUN_ACTIONS, 100, false);
 	StunnedEffect.bRemoveWhenSourceDies = false;
 	Template.AddTargetEffect(StunnedEffect);
+	
+	// Remove ability to crit
+	X2AbilityToHitCalc_StandardAim(Template.AbilityToHitCalc).bAllowCrit = false;
+	X2AbilityToHitCalc_StandardAim(Template.AbilityToHitOwnerOnMissCalc).bAllowCrit = false;
 
 	// Cooldown
 	AddCooldown(Template, default.DISABLINGSHOT_COOLDOWN);

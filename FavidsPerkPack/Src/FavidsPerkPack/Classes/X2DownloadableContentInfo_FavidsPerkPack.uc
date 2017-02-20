@@ -181,6 +181,15 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'EXPOSEWEAKNESS_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.EXPOSEWEAKNESS_COOLDOWN);
 			return true;
+		case 'DISABLINGSHOT_STUN_ACTIONS':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.DISABLINGSHOT_STUN_ACTIONS, "action point", "action points");
+			return true;
+		case 'DISABLINGSHOT_AMMO_COST':
+			OutString = string(class'X2Ability_Favid'.default.DISABLINGSHOT_AMMO_COST);
+			return true;
+		case 'DISABLINGSHOT_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.DISABLINGSHOT_COOLDOWN);
+			return true;
 		default: 
 			return false;
 	}
