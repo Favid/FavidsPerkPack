@@ -664,7 +664,7 @@ static function X2AbilityTemplate BattleVision()
 
 // Entrenched
 // (AbilityName="F_Entrenched", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Full cover provides an additional +10 defense.
+// Full cover provides additional defense.
 static function X2AbilityTemplate Entrenched()
 {
 	local X2AbilityTemplate Template;

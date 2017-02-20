@@ -173,6 +173,9 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'BATTLEVISION_VALUE_MAX':
 			OutString = string(class'X2Ability_Favid'.default.BATTLEVISION_AIM_BONUS * class'X2Ability_Favid'.default.BATTLEVISION_SCALE_MAX);
 			return true;
+		case 'ENTRENCHED_DEFENSE_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.ENTRENCHED_DEFENSE_BONUS);
+			return true;
 		default: 
 			return false;
 	}
