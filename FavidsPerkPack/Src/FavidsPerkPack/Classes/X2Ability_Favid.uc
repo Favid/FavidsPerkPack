@@ -158,9 +158,9 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Concentration());
 	Templates.AddItem(Spot());
 	Templates.AddItem(ReactionProtocol());
-	Templates.AddItem(Imposition());
+	Templates.AddItem(Imposition());				// TODO finish
 	Templates.AddItem(SnipersEye());
-	Templates.AddItem(Unload());
+	Templates.AddItem(Unload());					// TODO finish
 	Templates.AddItem(Unload2());
 	Templates.AddItem(BattleVision());
 	Templates.AddItem(Entrenched());
@@ -654,7 +654,7 @@ static function X2AbilityTemplate BattleVision()
 	// The effect adds Aim per enemy unit
 	Effect.AddToHitModifier(default.BATTLEVISION_AIM_BONUS, eHit_Success);
 
-	// The effect scales with the number of visible enemy units, to a maximum of 5 (for +50 Dodge).
+	// The effect scales with the number of visible enemy units, to a maximum
 	Effect.ScaleValue = Value;
 	Effect.ScaleMax = default.BATTLEVISION_SCALE_MAX;
 
