@@ -190,6 +190,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'DISABLINGSHOT_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.DISABLINGSHOT_COOLDOWN);
 			return true;
+		case 'RESUPPLY_CHARGES':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.RESUPPLY_CHARGES, "charge", "charges");
+			return true;
+		case 'RESUPPLY_ENDTURN':
+			OutString = getEndTurnString(class'X2Ability_Favid'.default.RESUPPLY_ENDTURN);
+			return true;
 		default: 
 			return false;
 	}
@@ -203,4 +209,14 @@ private static function string getStringBasedOnValue(int value, string single, s
 	}
 
 	return string(value) @ single;
+}
+
+private static function string getEndTurnString(bool value)
+{
+	if(value)
+	{
+		return "Ends the user's turn when used.";
+	}
+
+	return "Does not end the user's turn when used as a first action.";
 }

@@ -1,7 +1,5 @@
 class X2Effect_Resupply extends X2Effect;
 
-//var localized string DisabledWeapon;
-
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
 	local XComGameState_Unit TargetUnit;

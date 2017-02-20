@@ -844,7 +844,7 @@ static function X2AbilityTemplate Resupply()
 	local X2AbilityMultiTarget_AllAllies	MultiTargetingStyle;
 	local X2Effect_Resupply					EffectResupply;
 	local X2Condition_UnitProperty			UnitPropertyCondition;
-	local X2Condition_WantsReload				ReloadCondition;
+	local X2Condition_WantsReload			ReloadCondition;
 
 	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_Resupply');
 
