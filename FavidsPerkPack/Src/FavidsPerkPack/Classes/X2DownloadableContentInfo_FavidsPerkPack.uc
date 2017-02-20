@@ -165,7 +165,20 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'SPOT_RADIUS':
 			OutString = string(class'X2Ability_Favid'.default.SPOT_RADIUS);
 			return true;
+		case 'REACTIONPROTOCOL_CHARGES':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.REACTIONPROTOCOL_CHARGES, "charge", "charges");
+			return true;
 		default: 
 			return false;
 	}
+}
+
+private static function string getStringBasedOnValue(int value, string single, string plural)
+{
+	if(value > 1)
+	{
+		return string(value) @ plural;
+	}
+
+	return string(value) @ single;
 }

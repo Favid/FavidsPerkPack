@@ -122,6 +122,9 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_QuickFeet.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_ReactionProtocol.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_ReadyForAnything.uc">
       <SubType>Content</SubType>
     </Content>

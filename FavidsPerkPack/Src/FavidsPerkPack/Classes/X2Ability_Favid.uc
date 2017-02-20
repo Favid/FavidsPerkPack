@@ -20,9 +20,8 @@ var config int SPOT_RADIUS;
 var config int SPOT_DURATION;
 var config int SPOT_COOLDOWN;
 var config bool SPOT_AWC;
-var config int OVERWATCHPROTOCOL_COOLDOWN;
-var config int OVERWATCHPROTOCOL_AIM_BONUS;
-var config bool OVERWATCHPROTOCOL_AWC;
+var config int REACTIONPROTOCOL_CHARGES;
+var config bool REACTIONPROTOCOL_AWC;
 var config int IMPOSITION_AIM_BONUS;
 var config int IMPOSITION_DURATION;
 var config bool IMPOSITION_AWC;
@@ -158,7 +157,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(ChipAway());
 	Templates.AddItem(Concentration());
 	Templates.AddItem(Spot());
-	Templates.AddItem(OverwatchProtocol());
+	Templates.AddItem(ReactionProtocol());
 	Templates.AddItem(Imposition());
 	Templates.AddItem(SnipersEye());
 	Templates.AddItem(Unload());
@@ -399,60 +398,32 @@ static function X2AbilityTemplate Spot()
 	return Template;
 }
 
-// Overwatch Protocol
-// (AbilityName="F_OverwatchProtocol", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Grant a Covering Fire overwatch shot to an ally while also giving them a +10 aim bonus for the turn.
-static function X2AbilityTemplate OverwatchProtocol()
+// Reaction Protocol
+// (AbilityName="F_ReactionProtocol", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
+// Grant a Covering Fire overwatch shot to an ally while also giving them the effects of Cool Under Pressure. Charge based.
+static function X2AbilityTemplate ReactionProtocol()
 {
 	local X2AbilityTemplate                     Template;
-	local X2Effect_PersistentStatChange			Effect;
-	local X2Effect_ThreatAssessment				GenericCoveringFireEffect;
-	local X2Effect_ThreatAssessment				PistolCoveringFireEffect;
 	local X2Condition_UnitProperty				UnitCondition;
+	local X2Effect_ReactionProtocol				ReactionProtocolEffect;
 
-	// Create a persistent stat change effect that grants Aim
-	Effect = new class'X2Effect_PersistentStatChange';
-	Effect.EffectName = 'F_Overwatch_Aim';
-	Effect.AddPersistentStatChange(eStat_Offense, default.OVERWATCHPROTOCOL_AIM_BONUS);
-	Effect.DuplicateResponse = eDupe_Ignore;
-	Effect.BuildPersistentEffect(1, false, false, false, eGameRule_PlayerTurnBegin);
-	Effect.VisualizationFn = EffectFlyOver_Visualization;
+	// Create effect that grants a covering fire reaction shot and cool under pressure bonuses
+	ReactionProtocolEffect = new class'X2Effect_ReactionProtocol';
+	ReactionProtocolEffect.EffectName = 'F_ReactionProtocol';
+	ReactionProtocolEffect.BuildPersistentEffect(1, false, false, false, eGameRule_PlayerTurnBegin);
 
+	// Typical ally requirements
+	UnitCondition = new class'X2Condition_UnitProperty';
+	UnitCondition.ExcludeHostileToSource = true;
+	UnitCondition.ExcludeFriendlyToSource = false;
+	UnitCondition.ExcludeDead = true;
+	ReactionProtocolEffect.TargetConditions.AddItem(UnitCondition);
+	
 	// Create a targeted buff that affects allies
-	Template = TargetedBuff('F_OverwatchProtocol', "img:///UILibrary_FavidsPerkPack.UIPerk_OverwatchProtocol", default.OVERWATCHPROTOCOL_AWC, Effect, class'UIUtilities_Tactical'.const.CLASS_CAPTAIN_PRIORITY, eCost_Single);
+	Template = TargetedBuff('F_ReactionProtocol', "img:///UILibrary_FavidsPerkPack.UIPerk_OverwatchProtocol", default.REACTIONPROTOCOL_AWC, ReactionProtocolEffect, class'UIUtilities_Tactical'.const.CLASS_CAPTAIN_PRIORITY, eCost_Single);
 
-	// Regular covering fire shot applies to all non-sharpshooters
-	GenericCoveringFireEffect = new class'X2Effect_ThreatAssessment';
-	GenericCoveringFireEffect.EffectName = 'ThreatAssessment_CF';
-	GenericCoveringFireEffect.BuildPersistentEffect(1, false, false, false, eGameRule_PlayerTurnBegin);
-	GenericCoveringFireEffect.AbilityToActivate = 'OverwatchShot';
-	GenericCoveringFireEffect.ImmediateActionPoint = class'X2CharacterTemplateManager'.default.OverwatchReserveActionPoint;
-	UnitCondition = new class'X2Condition_UnitProperty';
-	UnitCondition.ExcludeHostileToSource = true;
-	UnitCondition.ExcludeFriendlyToSource = false;
-	UnitCondition.ExcludeDead = true;
-	UnitCondition.ExcludeSoldierClasses.AddItem('Sharpshooter');
-	UnitCondition.ExcludeSoldierClasses.AddItem('F_Sharpshooter');
-	GenericCoveringFireEffect.TargetConditions.AddItem(UnitCondition);
-	Template.AddTargetEffect(GenericCoveringFireEffect);
-
-	// Pistol covering fire shot only applies to sharpshooters
-	PistolCoveringFireEffect = new class'X2Effect_ThreatAssessment';
-	PistolCoveringFireEffect.EffectName = 'PistolThreatAssessment';
-	PistolCoveringFireEffect.BuildPersistentEffect(1, false, false, false, eGameRule_PlayerTurnBegin);
-	PistolCoveringFireEffect.AbilityToActivate = 'PistolReturnFire';
-	PistolCoveringFireEffect.ImmediateActionPoint = class'X2CharacterTemplateManager'.default.PistolOverwatchReserveActionPoint;
-	UnitCondition = new class'X2Condition_UnitProperty';
-	UnitCondition.ExcludeHostileToSource = true;
-	UnitCondition.ExcludeFriendlyToSource = false;
-	UnitCondition.ExcludeDead = true;
-	UnitCondition.RequireSoldierClasses.AddItem('Sharpshooter');
-	UnitCondition.RequireSoldierClasses.AddItem('F_Sharpshooter');
-	PistolCoveringFireEffect.TargetConditions.AddItem(UnitCondition);
-	Template.AddTargetEffect(PistolCoveringFireEffect);
-
-	// Cooldown
-	AddCooldown(Template, default.OVERWATCHPROTOCOL_COOLDOWN);
+	// Charges
+	AddCharges(Template, default.REACTIONPROTOCOL_CHARGES);
 
 	// Add the Gremlin visualization
 	Template.PostActivationEvents.AddItem('ItemRecalled');
