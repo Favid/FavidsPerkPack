@@ -467,7 +467,7 @@ static function X2Effect_Imposition ImpositionEffect()
 
 // Sniper's Eye
 // (AbilityName="F_SnipersEye", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Increased aim against enemies in full cover.
+// You gain an aim bonus against enemies in full cover. Passive.
 static function X2AbilityTemplate SnipersEye()
 {
 	local X2AbilityTemplate Template;

@@ -45,7 +45,7 @@ static event OnPostTemplatesCreated()
 }
 
 // We'll piggy-back off the holotargeting effect - this way, any ability that applies holo-targeting will also apply Imposition
-static function UpdateForImpositionEffect(X2AbilityTemplate Template)
+private static function UpdateForImpositionEffect(X2AbilityTemplate Template)
 {
 	local X2Effect_HoloTarget HoloTargetEffect;
 	local int i;
@@ -56,9 +56,6 @@ static function UpdateForImpositionEffect(X2AbilityTemplate Template)
 		if (HoloTargetEffect != none)
 		{
 			Template.AddTargetEffect(class'X2Ability_Favid'.static.ImpositionEffect());
-
-			`LOG("Beags Escalation: Ability Template " @ Template.DataName @ " target effects updated to include Suppressing Fire effect.");
-
 			break;
 		}
 	}
@@ -69,8 +66,7 @@ static function UpdateForImpositionEffect(X2AbilityTemplate Template)
 		if (HoloTargetEffect != none)
 		{
 			Template.AddMultiTargetEffect(class'X2Ability_Favid'.static.ImpositionEffect());
-
-			`LOG("Beags Escalation: Ability Template " @ Template.DataName @ " multi target effects updated to include Suppressing Fire effect.");
+			break;
 		}
 	}
 }
@@ -167,6 +163,9 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 			return true;
 		case 'REACTIONPROTOCOL_CHARGES':
 			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.REACTIONPROTOCOL_CHARGES, "charge", "charges");
+			return true;
+		case 'SNIPERSEYE_AIM_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.SNIPERSEYE_AIM_BONUS);
 			return true;
 		default: 
 			return false;
