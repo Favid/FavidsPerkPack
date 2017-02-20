@@ -834,7 +834,7 @@ static function X2AbilityTemplate DisablingShot()
 
 // Resupply
 // (AbilityName="F_Resupply", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Refill the ammo of all allies. Once per mission.
+// Refill the ammo of all allies.
 static function X2AbilityTemplate Resupply()
 {
 	local X2AbilityTemplate                 Template;
@@ -922,7 +922,7 @@ static function X2AbilityTemplate Resupply()
 
 // Bullet Time
 // (AbilityName="F_BulletTime", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Activated ability that grants +100 Defense to the unit until the end of the enemy's next turn. Once per mission.
+// Activated ability that grants a huge defense bonus to the unit until the end of the enemy's next turn. Charge based.
 static function X2AbilityTemplate BulletTime()
 {
 	local X2Effect_PersistentStatChange Effect;

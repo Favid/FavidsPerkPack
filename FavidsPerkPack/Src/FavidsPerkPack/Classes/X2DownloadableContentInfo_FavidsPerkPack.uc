@@ -196,6 +196,15 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'RESUPPLY_ENDTURN':
 			OutString = getEndTurnString(class'X2Ability_Favid'.default.RESUPPLY_ENDTURN);
 			return true;
+		case 'BULLETTIME_DEFENSE_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.BULLETTIME_DEFENSE_BONUS);
+			return true;
+		case 'BULLETTIME_DURATION':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.BULLETTIME_DURATION, "turn", "turns");
+			return true;
+		case 'BULLETTIME_CHARGES':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.BULLETTIME_CHARGES, "charge", "charges");
+			return true;
 		default: 
 			return false;
 	}
