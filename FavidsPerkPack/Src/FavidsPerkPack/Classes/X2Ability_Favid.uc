@@ -176,8 +176,6 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CutsThroughSteel());
 	Templates.AddItem(SubsonicRound());				// TODO rework
 	Templates.AddItem(InTheZone());
-	Templates.AddItem(PoweredShot());
-	Templates.AddItem(PoweredShotBonuses());
 	Templates.AddItem(Flush());
 	Templates.AddItem(FlushDamage());
 	Templates.AddItem(LivingVirus());
@@ -1111,46 +1109,6 @@ static function X2AbilityTemplate InTheZone()
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 
 	Template.bCrossClassEligible = default.INTHEZONE_AWC;
-
-	return Template;
-}
-
-// Burst Shot
-// (AbilityName="F_PoweredShot", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Fire a pistol shot that is more damaging than a regular shot, but has less range.
-static function X2AbilityTemplate PoweredShot()
-{
-	local X2AbilityTemplate					Template;
-	local X2Effect_ApplyWeaponDamage		WeaponDamageEffect;
-
-	// Damage Effect
-	WeaponDamageEffect = new class'X2Effect_ApplyWeaponDamage';
-	
-	// Create the template using a helper function
-	Template = Attack('F_PoweredShot', "img:///UILibrary_FavidsPerkPack.UIPerk_PoweredShot", default.BURSTSHOT_AWC, WeaponDamageEffect, class'UIUtilities_Tactical'.const.STANDARD_PISTOL_SHOT_PRIORITY, eCost_WeaponConsumeAll, 0);
-	
-	AddSecondaryAbility(Template, PoweredShotBonuses());
-	
-	Template.OverrideAbilities.AddItem('PistolOverwatch');
-
-	return Template;
-}
-
-static function X2AbilityTemplate PoweredShotBonuses()
-{
-	local X2AbilityTemplate Template;
-	local X2Effect_BurstShot Effect;
-
-	// Create a bonus effect
-	Effect = new class'X2Effect_BurstShot';
-	Effect.EffectName = 'PoweredShotBonuses';
-	Effect.DamageMultiplier = default.BURSTSHOT_DAMAGE_MULTIPLIER;
-
-	// Create the template using a helper function
-	Template = Passive('F_PoweredShotBonuses', "img:///UILibrary_FavidsPerkPack.UIPerk_PoweredShot", false, Effect);
-
-	// The Power Shot ability will show up as an active ability, so hide the icon for the passive damage effect
-	HidePerkIcon(Template);
 
 	return Template;
 }
