@@ -31,9 +31,6 @@
     <Content Include="Config\XComFavid_Ability.ini">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Config\XComFavid_Weapons.ini">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Config\XComGameData.ini">
       <SubType>Content</SubType>
     </Content>
@@ -78,9 +75,6 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_BulletProof.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_BurstShot.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Concentration.uc">

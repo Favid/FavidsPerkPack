@@ -171,8 +171,6 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CutsThroughSteel());
 	Templates.AddItem(SubsonicRound());				// TODO rework
 	Templates.AddItem(InTheZone());
-	Templates.AddItem(Flush());
-	Templates.AddItem(FlushDamage());
 	Templates.AddItem(LivingVirus());
 	Templates.AddItem(SabotRound());
 	Templates.AddItem(SabotRoundDamage());
