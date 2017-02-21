@@ -1113,7 +1113,6 @@ static function X2AbilityTemplate InTheZone()
 	Template.AddTargetEffect(InTheZoneEffect);
 
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	//  NOTE: No visualization on purpose!
 
 	Template.bCrossClassEligible = default.INTHEZONE_AWC;
 

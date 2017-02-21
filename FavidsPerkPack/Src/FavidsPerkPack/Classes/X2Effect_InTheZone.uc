@@ -40,16 +40,13 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 
 	History = `XCOMHISTORY;
 
-	//  check for a direct kill shot
 	TargetUnit = XComGameState_Unit(NewGameState.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
 
 	if (TargetUnit != None)
 	{
-		PrevTargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(TargetUnit.ObjectID));      //  get the most recent version from the history rather than our modified (attacked) version
-			
-		//  check that the killed target was flanked by the unit
+		PrevTargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(TargetUnit.ObjectID));      
 		flanked = TargetUnit.isFlanked(AbilityContext.InputContext.SourceObject);
-			
+		
 		if (TargetUnit.IsDead() && PrevTargetUnit != None && flanked)
 		{
 			if (SourceUnit.ActionPoints.Length != PreCostActionPoints.Length)

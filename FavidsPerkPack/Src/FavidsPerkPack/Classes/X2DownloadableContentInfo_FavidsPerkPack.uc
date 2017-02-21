@@ -232,6 +232,9 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'CUTSTHROUGHSTEEL_CRIT_BONUS':
 			OutString = string(class'X2Ability_Favid'.default.CUTSTHROUGHSTEEL_CRIT_BONUS);
 			return true;
+		case 'INTHEZONE_MAX_REFUNDS_PER_TURN':
+			OutString = getInTheZoneRefundString(class'X2Ability_Favid'.default.INTHEZONE_MAX_REFUNDS_PER_TURN);
+			return true;
 		default: 
 			return false;
 	}
@@ -255,4 +258,19 @@ private static function string getEndTurnString(bool value)
 	}
 
 	return "Does not end the user's turn when used as a first action.";
+}
+
+private static function string getInTheZoneRefundString(int maxRefunds)
+{
+	if(maxRefunds == 0)
+	{
+		return "Can activate an unlimited number of times per turn.";
+	}
+	else if(maxRefunds == 1)
+	{
+		return "Can activate 1 time per turn.";
+	}
+	
+	return "Can activate" @ string(maxRefunds) @ "times per turn.";
+
 }
