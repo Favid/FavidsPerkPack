@@ -55,9 +55,6 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2AbilityCost_Ammo_All.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\X2AbilityMultiTargetStyle_SabotRound.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Ability_Favid.uc">
       <SubType>Content</SubType>
     </Content>
@@ -125,9 +122,6 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Resupply.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_SabotRoundDamage.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_SaltInTheWound.uc">
       <SubType>Content</SubType>
     </Content>
@@ -138,9 +132,6 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_WeaknessExposed.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\X2TargetingMethod_SabotRound.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XComGameState_Effect_FocusListener.uc">

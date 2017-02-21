@@ -171,9 +171,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CutsThroughSteel());
 	Templates.AddItem(SubsonicRound());				// TODO rework
 	Templates.AddItem(InTheZone());
-	Templates.AddItem(LivingVirus());
-	Templates.AddItem(SabotRound());
-	Templates.AddItem(SabotRoundDamage());
+	Templates.AddItem(LivingVirus());				// TODO rework
 	Templates.AddItem(Decoy());
 	Templates.AddItem(Mayhem());
 	Templates.AddItem(ReadyForAnything());
@@ -1148,117 +1146,6 @@ static function X2AbilityTemplate LivingVirus()
 	DefenseEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.LocHelpText, Template.IconImage, false,,Template.AbilitySourceName);
 	DefenseEffect.bHideWhenNotRelevant = true;
 	Template.AddTargetEffect(DefenseEffect);
-
-	return Template;
-}
-
-// Sabot Round
-// (AbilityName="F_SabotRound", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Fire a shot that penetrates obstacles and damages enemies in a line.
-static function X2AbilityTemplate SabotRound()
-{
-	local X2AbilityTemplate                 Template;
-	local X2AbilityCooldown                 Cooldown;
-	local X2AbilityTarget_Cursor            CursorTarget;
-	local X2AbilityToHitCalc_StandardAim    ToHitCalc;
-	local X2Condition_UnitProperty          UnitPropertyCondition;
-	local X2AbilityCost_Ammo                AmmoCost;
-	local X2AbilityCost_ActionPoints        ActionPointCost;
-	local X2Effect_ApplyWeaponDamage		ShredderDamageEffect;
-	
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_SabotRound');
-	
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_SabotRound";
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_HideSpecificErrors;
-	Template.HideErrors.AddItem('AA_CannotAfford_ActionPoints');
-	Template.Hostility = eHostility_Offensive;
-	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY;
-	Template.AbilityConfirmSound = "TacticalUI_ActivateAbility";
-
-	Template.TargetingMethod = class'X2TargetingMethod_SabotRound';
-	Template.bUsesFiringCamera = true;
-	Template.CinescriptCameraType = "StandardGunFiring";
-	
-	Template.AbilityMultiTargetStyle = new class'X2AbilityMultiTargetStyle_SabotRound';
-	
-	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = default.SABOTROUND_COOLDOWN;
-	Template.AbilityCooldown = Cooldown;
-
-	ToHitCalc = new class'X2AbilityToHitCalc_StandardAim';
-	ToHitCalc.bMultiTargetOnly = true;
-	Template.AbilityToHitCalc = ToHitCalc;
-
-	AmmoCost = new class'X2AbilityCost_Ammo';
-	AmmoCost.iAmmo = default.SABOTROUND_AMMO_COST;
-	Template.AbilityCosts.AddItem(AmmoCost);
-
-	ActionPointCost = new class'X2AbilityCost_ActionPoints';
-	ActionPointCost.iNumPoints = 2;
-	ActionPointCost.bConsumeAllPoints = true;
-	Template.AbilityCosts.AddItem(ActionPointCost);
-	
-	CursorTarget = new class'X2AbilityTarget_Cursor';
-	CursorTarget.bRestrictToWeaponRange = true;
-	Template.AbilityTargetStyle = CursorTarget;
-
-	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
-
-	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
-	Template.AddShooterEffectExclusions();
-	
-	UnitPropertyCondition = new class'X2Condition_UnitProperty';
-	UnitPropertyCondition.ExcludeFriendlyToSource = false;
-	UnitPropertyCondition.ExcludeDead = true;
-	Template.AbilityMultiTargetConditions.AddItem(UnitPropertyCondition);
-
-	//  Put holo target effect first because if the target dies from this shot, it will be too late to notify the effect.
-	Template.AddTargetEffect(class'X2Ability_GrenadierAbilitySet'.static.HoloTargetEffect());
-	Template.AddMultiTargetEffect(class'X2Ability_GrenadierAbilitySet'.static.HoloTargetEffect());
-	ShredderDamageEffect = class'X2Ability_GrenadierAbilitySet'.static.ShredderDamageEffect();
-	ShredderDamageEffect.EnvironmentalDamageAmount = default.SABOTROUND_ENV_DAMAGE;
-	Template.AddTargetEffect(ShredderDamageEffect);
-	Template.AddMultiTargetEffect(ShredderDamageEffect);
-
-	Template.bAllowAmmoEffects = true;
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-
-	Template.AdditionalAbilities.AddItem('SabotRoundDamage');
-
-	Template.bCrossClassEligible = default.SABOTROUND_AWC;
-	
-	return Template;
-}
-
-static function X2AbilityTemplate SabotRoundDamage()
-{
-	local X2AbilityTemplate							Template;
-	local X2Effect_SabotRoundDamage		DamageEffect;
-
-	// Icon Properties
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'SabotRoundDamage');
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_SabotRound";
-
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
-	Template.Hostility = eHostility_Neutral;
-
-	Template.AbilityToHitCalc = default.DeadEye;
-	Template.AbilityTargetStyle = default.SelfTarget;
-	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
-
-	DamageEffect = new class'X2Effect_SabotRoundDamage';
-	DamageEffect.EffectName = 'Lucu_Sniper_SabotRoundDamage';
-	DamageEffect.BuildPersistentEffect(1, true, false, false);
-	DamageEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, false,,Template.AbilitySourceName);
-	DamageEffect.DuplicateResponse = eDupe_Ignore;
-	Template.AddTargetEffect(DamageEffect);
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	//  NOTE: No visualization on purpose!
 
 	return Template;
 }
