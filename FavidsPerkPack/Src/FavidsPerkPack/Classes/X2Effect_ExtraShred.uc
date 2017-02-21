@@ -1,4 +1,4 @@
-class X2Effect_ExtraShred extends X2Effect_Persistent;
+class X2Effect_ExtraShred extends X2Effect_Persistent;	// Unused, but worth keeping
 
 var int BonusShred;
 

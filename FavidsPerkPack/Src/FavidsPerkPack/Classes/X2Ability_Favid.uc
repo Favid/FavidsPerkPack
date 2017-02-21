@@ -66,8 +66,6 @@ var config bool ARMEDTOTHETEETH_AWC;
 var config int STANDYOURGROUND_AIM_BONUS;
 var config int STANDYOURGROUND_REQUIRED_ACTION_POINTS_SPENT;
 var config bool STANDYOURGROUND_AWC;
-var config int EXTRASHRED_SHRED_BONUS;
-var config bool EXTRASHRED_AWC;
 var config int CUTSTHROUGHSTEEL_SHRED_T1;
 var config int CUTSTHROUGHSTEEL_SHRED_T2;
 var config int CUTSTHROUGHSTEEL_SHRED_T3;
@@ -177,7 +175,6 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(BulletProof());
 	Templates.AddItem(ArmedToTheTeeth());
 	Templates.AddItem(StandYourGround());			// Applies twice - verify
-	Templates.AddItem(ExtraShred());
 	Templates.AddItem(CutsThroughSteel());
 	Templates.AddItem(SubsonicRound());
 	Templates.AddItem(InTheZone());
@@ -1027,23 +1024,6 @@ static function X2AbilityTemplate StandYourGround()
 
 	// Show a flyover when activated
 	Template.bShowActivation = true;
-
-	return Template;
-}
-
-// Extra Shred
-// (AbilityName="F_ExtraShred", ApplyToWeaponSlot=eInvSlot_Unknown)
-// All offensive grenades now shred one additional point of armor.
-static function X2AbilityTemplate ExtraShred()
-{
-	local X2Effect_ExtraShred DamageEffect;
-	local X2AbilityTemplate Template;
-
-	DamageEffect = new class'X2Effect_ExtraShred';
-	DamageEffect.BonusShred = default.EXTRASHRED_SHRED_BONUS;
-
-	// Create the template using a helper function
-	Template = Passive('F_ExtraShred', "img:///UILibrary_FavidsPerkPack.UIPerk_ExtraShred", default.EXTRASHRED_AWC, DamageEffect);
 
 	return Template;
 }
