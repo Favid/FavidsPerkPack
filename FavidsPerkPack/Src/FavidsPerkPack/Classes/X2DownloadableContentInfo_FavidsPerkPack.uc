@@ -220,6 +220,18 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'BULLETPROOF_SHIELD':
 			OutString = string(class'X2Ability_Favid'.default.BULLETPROOF_SHIELD);
 			return true;
+		case 'CUTSTHROUGHSTEEL_SHRED_CV':
+			OutString = string(class'X2Ability_Favid'.default.CUTSTHROUGHSTEEL_SHRED_CV);
+			return true;
+		case 'CUTSTHROUGHSTEEL_SHRED_MG':
+			OutString = string(class'X2Ability_Favid'.default.CUTSTHROUGHSTEEL_SHRED_MG);
+			return true;
+		case 'CUTSTHROUGHSTEEL_SHRED_BM':
+			OutString = string(class'X2Ability_Favid'.default.CUTSTHROUGHSTEEL_SHRED_BM);
+			return true;
+		case 'CUTSTHROUGHSTEEL_CRIT_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.CUTSTHROUGHSTEEL_CRIT_BONUS);
+			return true;
 		default: 
 			return false;
 	}

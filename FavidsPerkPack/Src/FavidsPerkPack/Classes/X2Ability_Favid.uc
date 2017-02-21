@@ -66,9 +66,9 @@ var config bool ARMEDTOTHETEETH_AWC;
 var config int STANDYOURGROUND_AIM_BONUS;
 var config int STANDYOURGROUND_REQUIRED_ACTION_POINTS_SPENT;
 var config bool STANDYOURGROUND_AWC;
-var config int CUTSTHROUGHSTEEL_SHRED_T1;
-var config int CUTSTHROUGHSTEEL_SHRED_T2;
-var config int CUTSTHROUGHSTEEL_SHRED_T3;
+var config int CUTSTHROUGHSTEEL_SHRED_CV;
+var config int CUTSTHROUGHSTEEL_SHRED_MG;
+var config int CUTSTHROUGHSTEEL_SHRED_BM;
 var config int CUTSTHROUGHSTEEL_CRIT_BONUS;
 var config bool CUTSTHROUGHSTEEL_AWC;
 var config int SUBSONICROUND_CHARGES;
@@ -176,7 +176,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(ArmedToTheTeeth());
 	Templates.AddItem(StandYourGround());			// Applies twice - verify
 	Templates.AddItem(CutsThroughSteel());
-	Templates.AddItem(SubsonicRound());
+	Templates.AddItem(SubsonicRound());				// TODO rework
 	Templates.AddItem(InTheZone());
 	Templates.AddItem(Vanish());
 	Templates.AddItem(VanishTrigger());
@@ -1040,15 +1040,17 @@ static function X2AbilityTemplate CutsThroughSteel()
 
 	// Create a conditional bonus effect
 	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.AddShredModifier(default.CUTSTHROUGHSTEEL_SHRED_T1, eHit_Success, 'conventional');
-	Effect.AddShredModifier(default.CUTSTHROUGHSTEEL_SHRED_T2, eHit_Success, 'magnetic');
-	Effect.AddShredModifier(default.CUTSTHROUGHSTEEL_SHRED_T3, eHit_Success, 'beam');
+	Effect.AddShredModifier(default.CUTSTHROUGHSTEEL_SHRED_CV, eHit_Success, 'conventional');
+	Effect.AddShredModifier(default.CUTSTHROUGHSTEEL_SHRED_MG, eHit_Success, 'magnetic');
+	Effect.AddShredModifier(default.CUTSTHROUGHSTEEL_SHRED_BM, eHit_Success, 'beam');
 	Effect.AddToHitModifier(default.CUTSTHROUGHSTEEL_CRIT_BONUS, eHit_Crit);
 	
+	// Only melee attacks
 	MeleeCondition = new class'XMBCondition_AbilityProperty';
 	MeleeCondition.bRequireMelee = true;
 	Effect.AbilityTargetConditions.AddItem(MeleeCondition);
 	
+	// Only against robots
 	RoboticCondition = new class'X2Condition_UnitProperty';
 	RoboticCondition.ExcludeOrganic = true;
 	Effect.AbilityTargetConditions.AddItem(RoboticCondition);
