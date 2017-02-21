@@ -80,9 +80,6 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_ExtraShred.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Focus.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Imposition.uc">
       <SubType>Content</SubType>
     </Content>
@@ -116,9 +113,6 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_ReactionProtocol.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_ReadyForAnything.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Resupply.uc">
       <SubType>Content</SubType>
     </Content>
@@ -134,16 +128,10 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_WeaknessExposed.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\XComGameState_Effect_FocusListener.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XComGameState_Effect_LockNLoad.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XComGameState_Effect_Momentum.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\XComGameState_Effect_ReadyForAnything.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XComGameState_Effect_TrenchWarfare.uc">

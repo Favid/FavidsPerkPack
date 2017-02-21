@@ -173,8 +173,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(InTheZone());
 	Templates.AddItem(LivingVirus());				// TODO rework
 	Templates.AddItem(Decoy());
-	Templates.AddItem(Mayhem());
-	Templates.AddItem(ReadyForAnything());
+	Templates.AddItem(Mayhem());					// TODO rework
 	Templates.AddItem(Sprinter());
 	Templates.AddItem(Foresight());
 	Templates.AddItem(InGoodHealth());
@@ -1231,40 +1230,6 @@ static function X2AbilityTemplate Mayhem()
 	//  NOTE: No visualization on purpose!
 	
 	Template.bCrossClassEligible = default.MAYHEM_AWC;
-
-	return Template;
-}
-
-// Ready For Anything
-// (AbilityName="F_ReadyForAnything", ApplyToWeaponSlot=eInvSlot_Unknown)
-// If the unit does not move this turn, then it automatically enters overwatch at the end of its turn.
-static function X2AbilityTemplate ReadyForAnything()
-{
-	local X2AbilityTemplate								Template;
-	local X2Effect_ReadyForAnything	Effect;
-	
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_ReadyForAnything');
-	
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
-	Template.Hostility = eHostility_Neutral;
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_ReadyForAnything";
-
-	Template.AbilityToHitCalc = default.DeadEye;
-	Template.AbilityTargetStyle = default.SelfTarget;
-	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
-
-	Effect = new class'X2Effect_ReadyForAnything';
-	Effect.EffectName = 'F_ReadyForAnything';
-	Effect.DuplicateResponse = eDupe_Ignore;
-	Effect.BuildPersistentEffect(1, true, false);
-	Effect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,, Template.AbilitySourceName);
-	Template.AddTargetEffect(Effect);
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	//  NOTE: No visualization on purpose!
-
-	Template.bCrossClassEligible = default.READYFORANYTHING_AWC;
 
 	return Template;
 }
