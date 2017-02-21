@@ -214,6 +214,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'STANDYOURGROUND_REQUIRED_ACTION_POINTS_SPENT':
 			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.STANDYOURGROUND_REQUIRED_ACTION_POINTS_SPENT, "action point", "action points");
 			return true;
+		case 'BULLETPROOF_ARMOR':
+			OutString = string(class'X2Ability_Favid'.default.BULLETPROOF_ARMOR);
+			return true;
+		case 'BULLETPROOF_SHIELD':
+			OutString = string(class'X2Ability_Favid'.default.BULLETPROOF_SHIELD);
+			return true;
 		default: 
 			return false;
 	}

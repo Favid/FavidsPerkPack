@@ -59,7 +59,7 @@ var config int BULLETTIME_CHARGES;
 var config bool BULLETTIME_AWC;
 var config int PREDATOR_AIM_BONUS;
 var config bool PREDATOR_AWC;
-var config int BULLETPROOF_HP;
+var config int BULLETPROOF_SHIELD;
 var config int BULLETPROOF_ARMOR;
 var config bool BULLETPROOF_AWC;
 var config bool ARMEDTOTHETEETH_AWC;
@@ -174,6 +174,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Resupply());
 	Templates.AddItem(BulletTime());
 	Templates.AddItem(Predator());
+	Templates.AddItem(BulletProof());
 	Templates.AddItem(ArmedToTheTeeth());
 	Templates.AddItem(StandYourGround());			// Applies twice - verify
 	Templates.AddItem(ExtraShred());
@@ -769,7 +770,6 @@ static function X2AbilityTemplate ExposeWeakness()
 	WeaknessExposedEffect.DamageModifier = default.EXPOSEWEAKNESS_DAMAGEMODIFIER;
 	WeaknessExposedEffect.BuildPersistentEffect(default.EXPOSEWEAKNESS_DURATION, false, true, false, eGameRule_PlayerTurnEnd);
 	WeaknessExposedEffect.bRemoveWhenTargetDies = true;
-	Template.AddTargetEffect(WeaknessExposedEffect);
 
 	// Start with the targeted debuff template
 	Template = TargetedDebuff('F_ExposeWeakness', "img:///UILibrary_FavidsPerkPack.UIPerk_ExposeWeakness", default.EXPOSEWEAKNESS_AWC, WeaknessExposedEffect, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_Single);
@@ -799,7 +799,6 @@ static function X2AbilityTemplate QuickFeet()
 	QuickFeetEffect = new class'X2Effect_QuickFeet';
 	QuickFeetEffect.EffectName = 'F_QuickFeet';
 	QuickFeetEffect.BuildPersistentEffect(1, true, false, false);
-	QuickFeetEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,,Template.AbilitySourceName);
 
 	// Create the template using a helper function
 	Template = Passive('F_QuickFeet', "img:///UILibrary_FavidsPerkPack.UIPerk_QuickFeet", default.QUICKFEET_AWC, QuickFeetEffect);
@@ -986,15 +985,15 @@ static function X2AbilityTemplate ArmedToTheTeeth()
 
 // Bullet Proof
 // (AbilityName="F_BulletProof", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants a bonus to HP and Armor
+// Grants a bonus to Shields and Armor
 static function X2AbilityTemplate BulletProof()
 {
 	local X2Effect_PersistentStatChange Effect;
 
-	// Create a persistent stat change effect that grants health and armor bonus
+	// Create a persistent stat change effect that grants shield and armor bonus
 	Effect = new class'X2Effect_PersistentStatChange';
 	Effect.EffectName = 'F_BulletProofBonus';
-	Effect.AddPersistentStatChange(eStat_HP, default.BULLETPROOF_HP);
+	Effect.AddPersistentStatChange(eStat_ShieldHP, default.BULLETPROOF_SHIELD);
 	Effect.AddPersistentStatChange(eStat_ArmorMitigation, default.BULLETPROOF_ARMOR);
 
 	// Create the template using a helper function

@@ -37,5 +37,5 @@ function ModifyReactionFireSuccess(XComGameState_Unit UnitState, XComGameState_U
 DefaultProperties
 {
 	DuplicateResponse = eDupe_Ignore
-	AbilityToActivate = 'OverwatchShot';
+	AbilityToActivate = 'OverwatchShot'
 }
