@@ -208,6 +208,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'PREDATOR_AIM_BONUS':
 			OutString = string(class'X2Ability_Favid'.default.PREDATOR_AIM_BONUS);
 			return true;
+		case 'STANDYOURGROUND_AIM_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.STANDYOURGROUND_AIM_BONUS);
+			return true;
+		case 'STANDYOURGROUND_REQUIRED_ACTION_POINTS_SPENT':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.STANDYOURGROUND_REQUIRED_ACTION_POINTS_SPENT, "action point", "action points");
+			return true;
 		default: 
 			return false;
 	}

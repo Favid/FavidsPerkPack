@@ -64,6 +64,7 @@ var config int BULLETPROOF_ARMOR;
 var config bool BULLETPROOF_AWC;
 var config bool ARMEDTOTHETEETH_AWC;
 var config int STANDYOURGROUND_AIM_BONUS;
+var config int STANDYOURGROUND_REQUIRED_ACTION_POINTS_SPENT;
 var config bool STANDYOURGROUND_AWC;
 var config int EXTRASHRED_SHRED_BONUS;
 var config bool EXTRASHRED_AWC;
@@ -1002,7 +1003,7 @@ static function X2AbilityTemplate BulletProof()
 
 // Stand Your Ground
 // (AbilityName="F_StandYourGround", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Firing with more than one action point remaining confers +15 Hit Chance.
+// Firing with more than one action point remaining confers an aim bonus.
 static function X2AbilityTemplate StandYourGround()
 {
 	local XMBEffect_ConditionalBonus Effect;
@@ -1011,7 +1012,7 @@ static function X2AbilityTemplate StandYourGround()
 
 	// Require that the activated ability costs 1 action point, but actually spent at least 2
 	Condition = new class'XMBCondition_ActionPointsRemaining';
-	Condition.PointsRequired = 2;
+	Condition.PointsRequired = default.STANDYOURGROUND_REQUIRED_ACTION_POINTS_SPENT;
 
 	// Create a persistent stat change effect that grants an aim bonus
 	Effect = new class'XMBEffect_ConditionalBonus';
