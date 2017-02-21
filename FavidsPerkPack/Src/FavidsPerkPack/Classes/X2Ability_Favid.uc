@@ -75,11 +75,6 @@ var config int SUBSONICROUND_CHARGES;
 var config bool SUBSONICROUND_AWC;
 var config int INTHEZONE_MAX_REFUNDS_PER_TURN;
 var config bool INTHEZONE_AWC;
-var config float BURSTSHOT_DAMAGE_MULTIPLIER;
-var config bool BURSTSHOT_AWC;
-var config int FLUSH_COOLDOWN;
-var config int FLUSH_AIM_BONUS;
-var config bool FLUSH_AWC;
 var config int LIVINGVIRUS_AIM_BONUS;
 var config int LIVINGVIRUS_CRIT_BONUS;
 var config int LIVINGVIRUS_DEFENSE_BONUS;
@@ -1109,126 +1104,6 @@ static function X2AbilityTemplate InTheZone()
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 
 	Template.bCrossClassEligible = default.INTHEZONE_AWC;
-
-	return Template;
-}
-
-// Flush
-// (AbilityName="F_Flush", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Fire a shot with an increased chance to hit but decreased damage that forces the target to move to new cover.
-static function X2AbilityTemplate Flush()
-{
-	local X2AbilityTemplate                 Template;
-	local X2AbilityCooldown                 Cooldown;
-	local X2AbilityToHitCalc_StandardAim    ToHitCalc;
-	local X2AbilityCost_Ammo                AmmoCost;
-	local X2AbilityCost_ActionPoints        ActionPointCost;
-	local X2Effect_RunBehaviorTree			FlushEffect;
-	local X2Effect_GrantActionPoints		Flushable;
-	local X2Condition_Visibility            VisibilityCondition;
-
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_Flush');
-
-	Template.AdditionalAbilities.AddItem('GunnerFlushDamage');
-
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_Flush";
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;
-	Template.Hostility = eHostility_Offensive;
-	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY;
-	Template.AbilityConfirmSound = "TacticalUI_ActivateAbility";
-
-	Template.TargetingMethod = class'X2TargetingMethod_OverTheShoulder';
-	Template.bUsesFiringCamera = true;
-	Template.CinescriptCameraType = "StandardGunFiring";
-
-	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = default.FLUSH_COOLDOWN;
-	Template.AbilityCooldown = Cooldown;
-
-	ToHitCalc = new class'X2AbilityToHitCalc_StandardAim';
-	ToHitCalc.BuiltInHitMod = default.FLUSH_AIM_BONUS;
-	ToHitCalc.bAllowCrit = false;
-	Template.AbilityToHitCalc = ToHitCalc;
-
-	AmmoCost = new class'X2AbilityCost_Ammo';
-	AmmoCost.iAmmo = 2;
-	Template.AbilityCosts.AddItem(AmmoCost);
-
-	ActionPointCost = new class'X2AbilityCost_ActionPoints';
-	ActionPointCost.iNumPoints = 0;
-	ActionPointCost.bConsumeAllPoints = true;
-	ActionPointCost.bAddWeaponTypicalCost = true;
-	Template.AbilityCosts.AddItem(ActionPointCost);
-
-	Template.AbilityTargetStyle = default.SimpleSingleTarget;
-	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
-
-	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
-	Template.AddShooterEffectExclusions();
-
-	Template.AbilityTargetConditions.AddItem(default.LivingHostileTargetProperty);
-
-	VisibilityCondition = new class'X2Condition_Visibility';
-	VisibilityCondition.bRequireGameplayVisible = true;
-	VisibilityCondition.bAllowSquadsight = true;
-
-	Template.AbilityTargetConditions.AddItem(VisibilityCondition);
-
-	//  Put holo target effect first because if the target dies from this shot, it will be too late to notify the effect.
-	Template.AddTargetEffect(class'X2Ability_GrenadierAbilitySet'.static.HoloTargetEffect());
-
-	Flushable = new class'X2Effect_GrantActionPoints';
-	Flushable.NumActionPoints = 1;
-	Flushable.PointType = class'X2CharacterTemplateManager'.default.MoveActionPoint;
-	Flushable.SetupEffectOnShotContextResult(true, true);
-	Template.AddTargetEffect(Flushable);
-
-
-	FlushEffect = new class'X2Effect_RunBehaviorTree';
-	FlushEffect.BehaviorTreeName = 'Flush-Root';
-	FlushEffect.SetupEffectOnShotContextResult(true, true);
-	Template.AddTargetEffect(FlushEffect);
-
-	Template.AddTargetEffect(class'X2Ability_GrenadierAbilitySet'.static.ShredderDamageEffect());
-	Template.AddTargetEffect(default.WeaponUpgradeMissDamage);
-
-	Template.bAllowAmmoEffects = true;
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-
-	Template.bCrossClassEligible = default.FLUSH_AWC;
-
-	return Template;
-}
-
-static function X2AbilityTemplate FlushDamage()
-{
-	local X2AbilityTemplate						Template;
-	local X2Effect_AbilityDamageMod             DamageEffect;
-
-	// Icon Properties
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'GunnerFlushDamage');
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_Flush";
-
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
-	Template.Hostility = eHostility_Neutral;
-
-	Template.AbilityToHitCalc = default.DeadEye;
-	Template.AbilityTargetStyle = default.SelfTarget;
-	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
-
-	DamageEffect = new class'X2Effect_AbilityDamageMod';
-	DamageEffect.BuildPersistentEffect(1, true, false, false);
-	DamageEffect.DamageMultiplier = -0.5f;
-	DamageEffect.AbilityName = 'F_Flush';
-	DamageEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, false,,Template.AbilitySourceName);
-	Template.AddTargetEffect(DamageEffect);
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	//  NOTE: No visualization on purpose!
 
 	return Template;
 }
