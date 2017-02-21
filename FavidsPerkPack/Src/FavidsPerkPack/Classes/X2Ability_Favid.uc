@@ -75,8 +75,6 @@ var config int SUBSONICROUND_CHARGES;
 var config bool SUBSONICROUND_AWC;
 var config int INTHEZONE_MAX_REFUNDS_PER_TURN;
 var config bool INTHEZONE_AWC;
-var config int VANISH_COOLDOWN;
-var config bool VANISH_AWC;
 var config float BURSTSHOT_DAMAGE_MULTIPLIER;
 var config bool BURSTSHOT_AWC;
 var config int FLUSH_COOLDOWN;
@@ -178,8 +176,6 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CutsThroughSteel());
 	Templates.AddItem(SubsonicRound());				// TODO rework
 	Templates.AddItem(InTheZone());
-	Templates.AddItem(Vanish());
-	Templates.AddItem(VanishTrigger());
 	Templates.AddItem(PoweredShot());
 	Templates.AddItem(PoweredShotBonuses());
 	Templates.AddItem(Flush());
@@ -1115,71 +1111,6 @@ static function X2AbilityTemplate InTheZone()
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 
 	Template.bCrossClassEligible = default.INTHEZONE_AWC;
-
-	return Template;
-}
-
-// Vanish
-// (AbilityName="F_Vanish", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Gain concealment when out of enemy view. 2 turn cooldown. Passive.
-static function X2AbilityTemplate Vanish()
-{
-	local X2AbilityTemplate						Template;
-	Template = PurePassive('F_Vanish', "img:///UILibrary_FavidsPerkPack.UIPerk_Vanish", true);
-	Template.AdditionalAbilities.AddItem('ShadowOps_VanishTrigger');
-
-	return Template;
-}
-
-static function X2AbilityTemplate VanishTrigger()
-{
-	local X2AbilityTemplate						Template;
-	local X2Effect_RangerStealth                StealthEffect;
-	local X2Condition_NotVisibleToEnemies		VisibilityCondition;
-	local X2AbilityTrigger_EventListener		EventListener;
-	local X2AbilityCooldown						Cooldown;
-
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'ShadowOps_VanishTrigger');
-
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
-	Template.Hostility = eHostility_Neutral;
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_Vanish";
-
-	Template.AbilityToHitCalc = default.DeadEye;
-	Template.AbilityTargetStyle = default.SelfTarget;
-
-	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = default.VANISH_COOLDOWN;
-	Template.AbilityCooldown = Cooldown;
-
-	EventListener = new class'X2AbilityTrigger_EventListener';
-	EventListener.ListenerData.Deferral = ELD_OnStateSubmitted;
-	EventListener.ListenerData.EventID = 'PlayerTurnBegun';
-	EventListener.ListenerData.EventFn = class'XComGameState_Ability'.static.AbilityTriggerEventListener_Self;
-	EventListener.ListenerData.Filter = eFilter_Player;
-	Template.AbilityTriggers.AddItem(EventListener);
-
-	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
-	Template.AbilityShooterConditions.AddItem(new class'X2Condition_Stealth');
-
-	VisibilityCondition = new class'X2Condition_NotVisibleToEnemies';
-	Template.AbilityShooterConditions.AddItem(VisibilityCondition);
-
-	StealthEffect = new class'X2Effect_RangerStealth';
-	StealthEffect.BuildPersistentEffect(1, true, true, false, eGameRule_PlayerTurnEnd);
-	StealthEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.GetMyHelpText(), Template.IconImage, true);
-	StealthEffect.bRemoveWhenTargetConcealmentBroken = true;
-	Template.AddTargetEffect(StealthEffect);
-
-	Template.AddTargetEffect(class'X2Effect_Spotted'.static.CreateUnspottedEffect());
-
-	Template.ActivationSpeech = 'ActivateConcealment';
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-	Template.bSkipFireAction = true;
-
-	Template.bCrossClassEligible = default.VANISH_AWC;
 
 	return Template;
 }
