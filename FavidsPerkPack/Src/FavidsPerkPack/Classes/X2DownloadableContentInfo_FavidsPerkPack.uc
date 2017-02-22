@@ -235,6 +235,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'INTHEZONE_MAX_REFUNDS_PER_TURN':
 			OutString = getInTheZoneRefundString(class'X2Ability_Favid'.default.INTHEZONE_MAX_REFUNDS_PER_TURN);
 			return true;
+		case 'INGOODHEALTH_AIM_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.INGOODHEALTH_AIM_BONUS);
+			return true;
+		case 'INGOODHEALTH_DAMAGE_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.INGOODHEALTH_DAMAGE_BONUS);
+			return true;
 		default: 
 			return false;
 	}

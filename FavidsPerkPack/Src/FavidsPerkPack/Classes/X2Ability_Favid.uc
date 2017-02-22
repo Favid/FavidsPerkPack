@@ -174,7 +174,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(LivingVirus());				// TODO rework
 	Templates.AddItem(Decoy());
 	Templates.AddItem(Mayhem());					// TODO rework
-	Templates.AddItem(Sprinter());
+	Templates.AddItem(Sprinter());					// TODO rework
 	Templates.AddItem(Foresight());
 	Templates.AddItem(InGoodHealth());
 	Templates.AddItem(RemoveInGoodHealth());
@@ -1270,7 +1270,7 @@ static function X2AbilityTemplate Sprinter()
 
 // Foresight
 // (AbilityName="F_Foresight", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants two free Battle Scanners
+// Grants free Battle Scanners
 static function X2AbilityTemplate Foresight()
 {
 	local X2AbilityTemplate Template;
@@ -1323,7 +1323,6 @@ static function X2AbilityTemplate InGoodHealth()
 	DamageBonus = new class'X2Effect_InGoodHealthDamage';
 	DamageBonus.BonusDamage = default.INGOODHEALTH_DAMAGE_BONUS;
 	DamageBonus.BuildPersistentEffect(1,true,true,false);
-	//DamageBonus.SetDisplayInfo (ePerkBuff_Bonus,Template.LocFriendlyName, Template.GetMyHelpText(), Template.IconImage,,, Template.AbilitySourceName); 
 	DamageBonus.EffectName='InGoodHealthDamageEffect';
 	Template.AddTargetEffect(DamageBonus);
 	
