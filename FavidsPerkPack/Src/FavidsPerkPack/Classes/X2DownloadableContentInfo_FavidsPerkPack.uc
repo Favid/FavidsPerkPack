@@ -265,6 +265,9 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'THEBIGGERTHEYARE_AIM_BONUS':
 			OutString = string(class'X2Ability_Favid'.default.THEBIGGERTHEYARE_AIM_BONUS);
 			return true;
+		case 'RECHARGE_COOLDOWN_AMOUNT':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.RECHARGE_COOLDOWN_AMOUNT, "turn", "turns");
+			return true;
 		default: 
 			return false;
 	}
