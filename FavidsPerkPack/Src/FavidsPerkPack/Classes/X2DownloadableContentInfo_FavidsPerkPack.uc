@@ -256,6 +256,15 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'SLASHANDDASH_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.SLASHANDDASH_COOLDOWN);
 			return true;
+		case 'LOCKNLOAD_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.LOCKNLOAD_COOLDOWN);
+			return true;
+		case 'SALTINTHEWOUND_DAMAGE_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.SALTINTHEWOUND_DAMAGE_BONUS);
+			return true;
+		case 'THEBIGGERTHEYARE_AIM_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.THEBIGGERTHEYARE_AIM_BONUS);
+			return true;
 		default: 
 			return false;
 	}
