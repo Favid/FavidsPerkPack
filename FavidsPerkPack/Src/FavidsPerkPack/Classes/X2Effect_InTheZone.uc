@@ -27,13 +27,18 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 
 	// if we already hit the max number of refunds, return false
 	SourceUnit.GetUnitValue('RefundsThisTurn', CountUnitValue);
-	if (MaxRefundsPerTurn >= 0 && CountUnitValue.fValue >= MaxRefundsPerTurn)
+	if (MaxRefundsPerTurn > 0 && CountUnitValue.fValue >= MaxRefundsPerTurn)
 	{
 		return false;
 	}
 
 	//  if under the effect of Serial, let that handle restoring the full action cost
 	if (SourceUnit.IsUnitAffectedByEffectName(class'X2Effect_Serial'.default.EffectName))
+	{
+		return false;
+	}
+
+	// if the kill wasn't made with the specified weapon, return false
 	{
 		return false;
 	}

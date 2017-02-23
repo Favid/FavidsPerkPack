@@ -1074,31 +1074,13 @@ static function X2AbilityTemplate InTheZone()
 	local X2AbilityTemplate						Template;
 	local X2Effect_InTheZone               InTheZoneEffect;
 
-	// Icon Properties
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_InTheZone');
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone";
-
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
-	Template.Hostility = eHostility_Neutral;
-
-	// Setup Passive
-	Template.AbilityToHitCalc = default.DeadEye;
-	Template.AbilityTargetStyle = default.SelfTarget;
-	Template.bIsPassive = true;
-	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
-
-	// Effect
 	InTheZoneEffect = new class'X2Effect_InTheZone';
 	InTheZoneEffect.EffectName = 'F_InTheZone';
 	InTheZoneEffect.BuildPersistentEffect(1, true, false, false);
 	InTheZoneEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,,Template.AbilitySourceName);
 	InTheZoneEffect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
-	Template.AddTargetEffect(InTheZoneEffect);
 
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-
-	Template.bCrossClassEligible = default.INTHEZONE_AWC;
+	Template = Passive('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, InTheZoneEffect, false, false);
 
 	return Template;
 }
@@ -1394,7 +1376,7 @@ static function X2AbilityTemplate Genji()
 	CritChanceModEffect.AddToHitModifier(default.GENJI_CRITICAL_CHANCE, eHit_Crit);
 	CritChanceModEffect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
 
-	Template = Passive('F_Genji', "img:///UILibrary_FavidsPerkPack.UIPerk_Genji", default.GENJI_AWC, CritChanceModEffect, true, false);
+	Template = Passive('F_Genji', "img:///UILibrary_FavidsPerkPack.UIPerk_Genji", default.GENJI_AWC, CritChanceModEffect, false, false);
 
 	return Template;
 }
