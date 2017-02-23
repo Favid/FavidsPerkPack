@@ -1457,7 +1457,7 @@ static function X2AbilityTemplate TrenchWarfare()
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 
 	Template.bCrossClassEligible = default.TRENCHWARFARE_AWC;
-
+	
 	return Template;
 }
 
