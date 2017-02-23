@@ -610,7 +610,7 @@ static function X2AbilityTemplate Unload2()
 }
 
 // Battle Vision
-// (AbilityName="F_BattleVision", ApplyToWeaponSlot=eInvSlot_Unknown)
+// (AbilityName="F_BattleVision", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
 // Gain 3 aim for each enemy you can see, up to a maximum of 15 aim.
 static function X2AbilityTemplate BattleVision()
 {
@@ -632,6 +632,9 @@ static function X2AbilityTemplate BattleVision()
 	// The effect scales with the number of visible enemy units, to a maximum
 	Effect.ScaleValue = Value;
 	Effect.ScaleMax = default.BATTLEVISION_SCALE_MAX;
+	
+	// Effect only applies to matching weapon
+	Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
 
 	// Create the template using a helper function
 	return Passive('F_BattleVision', "img:///UILibrary_FavidsPerkPack.UIPerk_Confidence", default.BATTLEVISION_AWC, Effect);
