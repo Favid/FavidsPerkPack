@@ -241,6 +241,9 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'INGOODHEALTH_DAMAGE_BONUS':
 			OutString = string(class'X2Ability_Favid'.default.INGOODHEALTH_DAMAGE_BONUS);
 			return true;
+		case 'GENJI_CRITICAL_CHANCE':
+			OutString = string(class'X2Ability_Favid'.default.GENJI_CRITICAL_CHANCE);
+			return true;
 		default: 
 			return false;
 	}

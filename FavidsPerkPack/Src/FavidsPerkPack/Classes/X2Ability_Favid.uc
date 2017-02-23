@@ -1388,31 +1388,13 @@ static function X2AbilityTemplate RemoveInGoodHealth()
 static function X2AbilityTemplate Genji()
 {
 	local X2AbilityTemplate						Template;
-	local X2Effect_ToHitModifier                CritChanceModEffect;
+	local XMBEffect_ConditionalBonus CritChanceModEffect;
 
-	// Icon Properties
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_Genji');
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_Genji";
+	CritChanceModEffect = new class'XMBEffect_ConditionalBonus';
+	CritChanceModEffect.AddToHitModifier(default.GENJI_CRITICAL_CHANCE, eHit_Crit);
+	CritChanceModEffect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
 
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
-	Template.Hostility = eHostility_Neutral;
-
-	Template.AbilityToHitCalc = default.DeadEye;
-	Template.AbilityTargetStyle = default.SelfTarget;
-	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
-
-	CritChanceModEffect = new class'X2Effect_ToHitModifier';
-	CritChanceModEffect.AddEffectHitModifier(eHit_Crit, default.GENJI_CRITICAL_CHANCE, Template.LocFriendlyName, , true, false, true, true);
-	CritChanceModEffect.BuildPersistentEffect(1, true, false, false);
-	CritChanceModEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,,Template.AbilitySourceName);
-	CritChanceModEffect.EffectName = 'F_GenjiCritChance';
-	Template.AddTargetEffect(CritChanceModEffect);
-
-	Template.bCrossClassEligible = default.GENJI_AWC;
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	//  NOTE: No visualization on purpose!
+	Template = Passive('F_Genji', "img:///UILibrary_FavidsPerkPack.UIPerk_Genji", default.GENJI_AWC, CritChanceModEffect, true, false);
 
 	return Template;
 }
