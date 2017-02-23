@@ -282,7 +282,7 @@ static function X2AbilityTemplate ChipAwayBonuses()
 	Effect.AddShredModifier(default.CHIPAWAY_SHRED_CV, eHit_Success, 'conventional');
 	Effect.AddShredModifier(default.CHIPAWAY_SHRED_LS, eHit_Success, 'laser_lw');
 	Effect.AddShredModifier(default.CHIPAWAY_SHRED_MG, eHit_Success, 'magnetic');
-	Effect.AddShredModifier(default.CHIPAWAY_SHRED_CL , eHit_Success, 'coilgun_lw');
+	Effect.AddShredModifier(default.CHIPAWAY_SHRED_CL, eHit_Success, 'coilgun_lw');
 	Effect.AddShredModifier(default.CHIPAWAY_SHRED_BM, eHit_Success, 'beam');
 	
 	// The bonus only applies to the Chip Away ability
@@ -1338,8 +1338,8 @@ static function X2AbilityTemplate Genji()
 }
 
 // Momentum
-// (AbilityName="F_Momentum", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants increased aim and damage if you have moved this turn
+// (AbilityName="F_Momentum", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
+// Grants increased aim, critical chance, and damage with your primary weapon if you have moved this turn
 static function X2AbilityTemplate Momentum()
 {
 	local X2AbilityTemplate Template;
@@ -1358,6 +1358,9 @@ static function X2AbilityTemplate Momentum()
 	Condition = new class'X2Condition_UnitValue';
 	Condition.AddCheckValue('MovesThisTurn', 0, eCheck_GreaterThan);
 	OffenseEffect.AbilityShooterConditions.AddItem(Condition);
+
+	// Must match weapon type
+	OffenseEffect.AbilityShooterConditions.AddItem(default.MatchingWeaponCondition);
 	
 	// Create the template using a helper function
 	Template = Passive('F_Momentum', "img:///UILibrary_FavidsPerkPack.UIPerk_Momentum", default.MOMENTUM_AWC, OffenseEffect, true, true);

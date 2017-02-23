@@ -244,6 +244,18 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'GENJI_CRITICAL_CHANCE':
 			OutString = string(class'X2Ability_Favid'.default.GENJI_CRITICAL_CHANCE);
 			return true;
+		case 'MOMENTUM_AIM_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.MOMENTUM_AIM_BONUS);
+			return true;
+		case 'MOMENTUM_CRIT_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.MOMENTUM_CRIT_BONUS);
+			return true;
+		case 'MOMENTUM_DAMAGE_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.MOMENTUM_DAMAGE_BONUS);
+			return true;
+		case 'SLASHANDDASH_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.SLASHANDDASH_COOLDOWN);
+			return true;
 		default: 
 			return false;
 	}
