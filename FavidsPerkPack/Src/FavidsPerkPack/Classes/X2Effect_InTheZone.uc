@@ -39,6 +39,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	}
 
 	// if the kill wasn't made with the specified weapon, return false
+	if (kAbility.SourceWeapon != EffectState.ApplyEffectParameters.ItemStateObjectRef)
 	{
 		return false;
 	}

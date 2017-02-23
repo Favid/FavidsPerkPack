@@ -1640,7 +1640,7 @@ static function X2AbilityTemplate TheBiggerTheyAre()
 	// Add the aim bonus
 	Effect.AddToHitModifier(default.THEBIGGERTHEYARE_AIM_BONUS);
 
-	// Target must be in full cover
+	// Target must not be allowed to take cover (like MECs and Drones)
 	Effect.AbilityTargetConditions.AddItem(default.CantTakeCoverCondition);
 	
 	// Create the template using a helper function
