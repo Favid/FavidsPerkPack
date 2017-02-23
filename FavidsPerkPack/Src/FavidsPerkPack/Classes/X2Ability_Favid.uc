@@ -101,9 +101,6 @@ var config int INGOODHEALTH_DAMAGE_BONUS;
 var config bool INGOODHEALTH_AWC;
 var config int GENJI_CRITICAL_CHANCE;
 var config bool GENJI_AWC;
-var config int HONINGIN_AIM_BONUS;
-var config int HONINGIN_CRIT_BONUS;
-var config bool HONINGIN_AWC;
 var config int MOMENTUM_AIM_BONUS;
 var config int MOMENTUM_CRIT_BONUS;
 var config int MOMENTUM_DAMAGE_BONUS;
@@ -174,7 +171,6 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(InGoodHealth());
 	Templates.AddItem(RemoveInGoodHealth());
 	Templates.AddItem(Genji());
-	Templates.AddItem(HoningIn());
 	Templates.AddItem(Momentum());
 	Templates.AddItem(SlashAndDash());
 	Templates.AddItem(SlashAndDashActivator());
@@ -1337,33 +1333,6 @@ static function X2AbilityTemplate Genji()
 	CritChanceModEffect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
 
 	Template = Passive('F_Genji', "img:///UILibrary_FavidsPerkPack.UIPerk_Genji", default.GENJI_AWC, CritChanceModEffect, false, false);
-
-	return Template;
-}
-
-// Honing In
-// (AbilityName="F_HoningIn", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants increased critical chance if you haven't moved this turn
-static function X2AbilityTemplate HoningIn()
-{
-	local X2AbilityTemplate Template;
-	local XMBEffect_ConditionalBonus OffenseEffect;
-	local X2Condition_UnitValue Condition;
-
-	// Create a conditional bonus effect
-	OffenseEffect = new class'XMBEffect_ConditionalBonus';
-
-	// Add the aim and crit bonuses
-	OffenseEffect.AddToHitModifier(default.HONINGIN_AIM_BONUS, eHit_Success);
-	OffenseEffect.AddToHitModifier(default.HONINGIN_CRIT_BONUS, eHit_Crit);
-
-	// Only if you haven't moved this turn
-	Condition = new class'X2Condition_UnitValue';
-	Condition.AddCheckValue('MovesThisTurn', 0, eCheck_Exact);
-	OffenseEffect.AbilityShooterConditions.AddItem(Condition);
-	
-	// Create the template using a helper function
-	Template = Passive('F_HoningIn', "img:///UILibrary_FavidsPerkPack.UIPerk_HoningIn", default.HONINGIN_AWC, OffenseEffect, true, true);
 
 	return Template;
 }
