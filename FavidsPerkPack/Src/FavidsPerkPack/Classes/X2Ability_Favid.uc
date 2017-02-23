@@ -86,7 +86,6 @@ var config int SABOTROUND_DAMAGE_BONUS_T1;
 var config int SABOTROUND_DAMAGE_BONUS_T2;
 var config int SABOTROUND_DAMAGE_BONUS_T3;
 var config bool SABOTROUND_AWC;
-var config bool DECOY_AWC;
 var config int MAYHEM_DAMAGE_T1;
 var config int MAYHEM_DAMAGE_T2;
 var config int MAYHEM_DAMAGE_T3;
@@ -97,8 +96,6 @@ var config int SPRINTER_MOBILITY;
 var config int SPRINTER_DURATION;
 var config int SPRINTER_COOLDOWN;
 var config bool SPRINTER_AWC;
-var config int FORESIGHT_CHARGES;
-var config bool FORESIGHT_AWC;
 var config int INGOODHEALTH_AIM_BONUS;
 var config int INGOODHEALTH_DAMAGE_BONUS;
 var config bool INGOODHEALTH_AWC;
@@ -167,15 +164,13 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Predator());
 	Templates.AddItem(BulletProof());
 	Templates.AddItem(ArmedToTheTeeth());
-	Templates.AddItem(StandYourGround());			// Applies twice - verify
+	Templates.AddItem(StandYourGround());
 	Templates.AddItem(CutsThroughSteel());
 	Templates.AddItem(SubsonicRound());				// TODO rework
 	Templates.AddItem(InTheZone());
 	Templates.AddItem(LivingVirus());				// TODO rework
-	Templates.AddItem(Decoy());
 	Templates.AddItem(Mayhem());					// TODO rework
 	Templates.AddItem(Sprinter());					// TODO rework
-	Templates.AddItem(Foresight());
 	Templates.AddItem(InGoodHealth());
 	Templates.AddItem(RemoveInGoodHealth());
 	Templates.AddItem(Genji());
@@ -1131,23 +1126,6 @@ static function X2AbilityTemplate LivingVirus()
 	return Template;
 }
 
-// Decoy
-// (AbilityName="F_Decoy", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants a free Mimic Beacon.
-static function X2AbilityTemplate Decoy()
-{
-	local X2AbilityTemplate Template;
-	local XMBEffect_AddUtilityItem ItemEffect;
-
-	ItemEffect = new class 'XMBEffect_AddUtilityItem';
-	ItemEffect.DataName = 'MimicBeacon';
-
-	// Create the template using a helper function
-	Template = Passive('F_Decoy', "img:///UILibrary_PerkIcons.UIPerk_item_mimicbeacon", default.DECOY_AWC, ItemEffect, false);
-
-	return Template;
-}
-
 // Mayhem
 // (AbilityName="F_Mayhem", ApplyToWeaponSlot=eInvSlot_Unknown)
 // Area Suppression now does 1/2/3 damage to the primary target based on weapon tier. Can shred armor and apply ammo effects.
@@ -1246,24 +1224,6 @@ static function X2AbilityTemplate Sprinter()
 
 	// Cooldown
 	AddCooldown(Template, default.SPRINTER_COOLDOWN);
-
-	return Template;
-}
-
-// Foresight
-// (AbilityName="F_Foresight", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants free Battle Scanners
-static function X2AbilityTemplate Foresight()
-{
-	local X2AbilityTemplate Template;
-	local XMBEffect_AddUtilityItem ItemEffect;
-
-	ItemEffect = new class 'XMBEffect_AddUtilityItem';
-	ItemEffect.DataName = 'BattleScanner';
-	ItemEffect.BaseCharges = default.FORESIGHT_CHARGES;
-
-	// Create the template using a helper function
-	Template = Passive('F_Foresight', "img:///UILibrary_FavidsPerkPack.UIPerk_Foresight", default.FORESIGHT_AWC, ItemEffect, false);
 
 	return Template;
 }
