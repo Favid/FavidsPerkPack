@@ -186,6 +186,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(AmplifiedShot());				// TODO fix LW2 compatibility
 	Templates.AddItem(Ignite());
 	Templates.AddItem(NaturalTwenty());
+	Templates.AddItem(PierceTheVeil());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1714,7 +1715,6 @@ static function X2AbilityTemplate Recharge()
 	Effect.ReduceAll = false;
 	
 	// Effect only applies to matching weapon
-	//Effect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
 	Effect.TargetConditions.AddItem(default.MatchingWeaponCondition);
 
 	// Create a triggered ability that activates whenever the unit gets a kill
@@ -1722,6 +1722,51 @@ static function X2AbilityTemplate Recharge()
 
 	// Trigger abilities don't appear as passives. Add a passive ability icon.
 	AddIconPassive(Template);
+
+	return Template;
+}
+
+static function X2AbilityTemplate PierceTheVeil()
+{
+	local XMBEffect_ConditionalBonus AimEffect;
+	local X2AbilityTemplate Template;
+	local X2Condition_UnitProperty				OrganicCondition;
+	local X2Effect_IncreaseCooldowns CooldownEffect;
+	local XMBCondition_AbilityName Condition;
+
+	// Create a persistent stat change effect that grants an aim bonus TODO config TODO primary weapon only
+	AimEffect = new class'XMBEffect_ConditionalBonus';
+	AimEffect.EffectName = 'F_PierceTheVeilAim';
+	AimEffect.AddToHitModifier(20);
+
+	// Only against organics 
+	OrganicCondition = new class'X2Condition_UnitProperty';
+	OrganicCondition.ExcludeRobotic = true;
+	AimEffect.AbilityTargetConditions.AddItem(OrganicCondition);
+	
+	// Prevent the effect from applying to a unit more than once
+	AimEffect.DuplicateResponse = eDupe_Refresh;
+
+	// The effect lasts for one turn TODO config
+	AimEffect.BuildPersistentEffect(1, false, true, false, eGameRule_PlayerTurnBegin);
+	
+	// Add a visualization that plays a flyover over the target unit
+	AimEffect.VisualizationFn = EffectFlyOver_Visualization;
+	
+	// Activated ability that targets user TODO awc
+	Template = SelfTargetActivated('F_PierceTheVeil', "img:///UILibrary_FavidsPerkPack.UIPerk_AmplifiedShot", false, AimEffect, class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY, eCost_Free);
+	
+	// Cannot be used while burning, etc.
+	Template.AddShooterEffectExclusions();
+
+	// Cooldown TODO config
+	AddCooldown(Template, 1);
+
+	// Now the effect to increase cooldowns TODO config
+	CooldownEffect = new class'X2Effect_IncreaseCooldowns';
+	CooldownEffect.Amount = 1;
+	CooldownEffect.IncreaseAll = false;
+	Template.AddTargetEffect(CooldownEffect);
 
 	return Template;
 }

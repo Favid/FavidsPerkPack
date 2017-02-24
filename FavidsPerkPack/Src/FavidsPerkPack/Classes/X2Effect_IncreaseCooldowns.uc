@@ -29,6 +29,10 @@ simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffe
 	local int maxCooldown;
 
 	History = `XCOMHISTORY;
+	`LOG("================================================");
+	`LOG("================================================");
+	`LOG("================================================");
+	`LOG("X2Effect_IncreaseCooldowns: OnEffectAdded.");
 
 	UnitState = XComGameState_Unit(kNewTargetState);
 	if(UnitState == none)
@@ -40,13 +44,22 @@ simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffe
 	// apply the desired reduction to every ability on the unit
 	foreach UnitState.Abilities(AbilityRef)
 	{
+		`LOG("X2Effect_IncreaseCooldowns: 1");
 		AbilityState = XComGameState_Ability(History.GetGameStateForObjectID(AbilityRef.ObjectID));
-		`assert(AbilityState != none);
+		//`assert(AbilityState != none);
+
+		if(AbilityState == none)
+		{
+			`LOG("X2Effect_IncreaseCooldowns: 2");
+			continue;
+		}
 
 		if(AbilityState.iCooldown > 0)
 		{
+			`LOG("X2Effect_IncreaseCooldowns: 3");
 			if(AbilitiesToTick.Length == 0 || AbilitiesToTick.Find(AbilityState.GetMyTemplateName()) != INDEX_NONE)
 			{
+				`LOG("X2Effect_IncreaseCooldowns: 4");
 				maxCooldown = AbilityState.GetMyTemplate().AbilityCooldown.iNumTurns;
 				AbilityState = XComGameState_Ability(NewGameState.CreateStateObject(AbilityState.Class, AbilityState.ObjectID));
 				AbilityState.iCooldown = IncreaseAll ? maxCooldown : Min(AbilityState.iCooldown + Amount, maxCooldown);
@@ -54,6 +67,8 @@ simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffe
 			}
 		}
 	}
+
+	`LOG("X2Effect_IncreaseCooldowns: 5");
 }
 
 defaultproperties

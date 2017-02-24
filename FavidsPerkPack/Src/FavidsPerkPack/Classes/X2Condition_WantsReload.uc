@@ -10,7 +10,7 @@ event name CallAbilityMeetsCondition(XComGameState_Ability kAbility, XComGameSta
 	if (PrimaryWantsReload)
 	{
 		UnitState = XComGameState_Unit(kTarget);
-		PrimaryWeapon = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon);
+		PrimaryWeapon = UnitState.GetItemInSlot(eInvSlot_PrimaryWeapon); // TODO validate PrimaryWeapon is not null before using
 
 		if (PrimaryWeapon.Ammo == PrimaryWeapon.GetClipSize())
 		{
