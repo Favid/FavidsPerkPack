@@ -125,6 +125,9 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_TrenchWarfare.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_UnloadDamage.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_WeaknessExposed.uc">
       <SubType>Content</SubType>
     </Content>

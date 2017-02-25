@@ -29,7 +29,7 @@ var config int SNIPERSEYE_AIM_BONUS;
 var config bool SNIPERSEYE_AWC;
 var config int UNLOAD_AIM_BONUS;
 var config bool UNLOAD_ALLOW_CRIT;
-var config int UNLOAD_DAMAGE_BONUS;
+var config float UNLOAD_DAMAGE_MODIFIER;
 var config int UNLOAD_COOLDOWN;
 var config bool UNLOAD_AWC;
 var config int BATTLEVISION_AIM_BONUS;
@@ -149,8 +149,9 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(ReactionProtocol());
 	Templates.AddItem(Imposition());
 	Templates.AddItem(SnipersEye());
-	Templates.AddItem(Unload());					// TODO finish
+	Templates.AddItem(Unload());
 	Templates.AddItem(Unload2());
+	Templates.AddItem(UnloadDamageBonus());
 	Templates.AddItem(BattleVision());
 	Templates.AddItem(Entrenched());
 	Templates.AddItem(Maim());						// TODO rework
@@ -477,82 +478,42 @@ static function X2AbilityTemplate SnipersEye()
 static function X2AbilityTemplate Unload()
 {
 	local X2AbilityTemplate					Template;
-	local X2AbilityCost_ActionPoints		AbilityActionPointCost;
 	local X2AbilityCost_Ammo				AmmoCost;
 	local X2AbilityToHitCalc_StandardAim    ToHitCalc;
-	local X2AbilityCooldown                 Cooldown;
-	local X2Effect_ApplyWeaponDamage        WeaponDamageEffect;
 
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_Unload');
+	// Start with basic attack template, with a 0 ammo cost because we're going to do that in a very specific way on our own
+	Template = Attack('F_Unload', "img:///UILibrary_FavidsPerkPack.UIPerk_Unload", default.UNLOAD_AWC, none, class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY, eCost_WeaponConsumeAll, 0);
+	
+	// Cooldown
+	AddCooldown(Template, default.UNLOAD_COOLDOWN);
 
-	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY;
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_Unload";
-	Template.AbilityConfirmSound = "TacticalUI_ActivateAbility";
-
-	Template.TargetingMethod = class'X2TargetingMethod_OverTheShoulder';
-	Template.bUsesFiringCamera = true;
-	Template.CinescriptCameraType = "StandardGunFiring";	
-
-	AbilityActionPointCost = new class'X2AbilityCost_ActionPoints';
-	AbilityActionPointCost.iNumPoints = 1;
-	AbilityActionPointCost.bConsumeAllPoints = true;
-	Template.AbilityCosts.AddItem(AbilityActionPointCost);
-
-	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = default.UNLOAD_COOLDOWN;
-	Template.AbilityCooldown = Cooldown;
-
-	//  require 2 ammo to be present so that at least two shots can be taken
+	// Require 2 ammo to be present so that at least two shots can be taken
 	AmmoCost = new class'X2AbilityCost_Ammo';
 	AmmoCost.iAmmo = 2;
 	AmmoCost.bFreeCost = true;
 	Template.AbilityCosts.AddItem(AmmoCost);
-	//  actually charge 1 ammo for this shot. followup shot will charge the extra ammo.
+
+	// Actually charge 1 ammo for this shot. Follow-up shots will charge the extra ammo
 	AmmoCost = new class'X2AbilityCost_Ammo';
 	AmmoCost.iAmmo = 1;
 	Template.AbilityCosts.AddItem(AmmoCost);
-	
+
+	// Custom aim bonus/malus and potentially disallow critical hits
 	ToHitCalc = new class'X2AbilityToHitCalc_StandardAim';
 	ToHitCalc.BuiltInHitMod = default.UNLOAD_AIM_BONUS;
 	ToHitCalc.bAllowCrit = default.UNLOAD_ALLOW_CRIT;
 	Template.AbilityToHitCalc = ToHitCalc;
 	Template.AbilityToHitOwnerOnMissCalc = ToHitCalc;
-	
-	Template.AbilityTargetStyle = default.SimpleSingleTarget;
 
-	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
-	Template.AddShooterEffectExclusions();
-
-	Template.AbilityTargetConditions.AddItem(default.LivingHostileTargetProperty);
-	Template.AbilityTargetConditions.AddItem(default.GameplayVisibilityCondition);
-
-	// Applies holo-targetting and other ammo effects
-	Template.AddTargetEffect(class'X2Ability_GrenadierAbilitySet'.static.HoloTargetEffect());
-	Template.AssociatedPassives.AddItem('HoloTargeting');
-	Template.AddTargetEffect(class'X2Ability'.default.WeaponUpgradeMissDamage);
-	Template.bAllowAmmoEffects = true;
-	Template.bAllowBonusWeaponEffects = true;
-
-	// Applies shredder and a damage bonus/malice
-	WeaponDamageEffect = class'X2Ability_GrenadierAbilitySet'.static.ShredderDamageEffect();
-	WeaponDamageEffect.EffectDamageValue.Damage = default.UNLOAD_DAMAGE_BONUS;
-	Template.AddTargetEffect(WeaponDamageEffect);
-
-	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-	Template.BuildInterruptGameStateFn = TypicalAbility_BuildInterruptGameState;
-
+	// Now set the ability up for triggering the follow-up shots
 	Template.AdditionalAbilities.AddItem('F_Unload2');
 	Template.PostActivationEvents.AddItem('F_Unload2');
-	Template.CinescriptCameraType = "StandardGunFiring";
 
+	// This should grant the damage modification effect that only applies to Unload
+	Template.AdditionalAbilities.AddItem('F_UnloadDamage');
+
+	// So that the Codex and Avatar can't teleport between shots
 	Template.bPreventsTargetTeleport = true;
-
-	Template.bCrossClassEligible = default.UNLOAD_AWC;
 
 	return Template;
 }
@@ -560,40 +521,23 @@ static function X2AbilityTemplate Unload()
 static function X2AbilityTemplate Unload2()
 {
 	local X2AbilityTemplate					Template;
-	local X2AbilityCost_Ammo				AmmoCost;
 	local X2AbilityToHitCalc_StandardAim    ToHitCalc;
 	local X2AbilityTrigger_EventListener    Trigger;
-	local X2Effect_ApplyWeaponDamage		WeaponDamageEffect;
 
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_Unload2');
-
-	AmmoCost = new class'X2AbilityCost_Ammo';
-	AmmoCost.iAmmo = 1;
-	Template.AbilityCosts.AddItem(AmmoCost);
-
+	// Start with basic attack template
+	Template = Attack('F_Unload2', "img:///UILibrary_FavidsPerkPack.UIPerk_Unload", false, none, class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY, eCost_None, 1);
+	
+	// Custom aim bonus/malus and potentially disallow critical hits
 	ToHitCalc = new class'X2AbilityToHitCalc_StandardAim';
 	ToHitCalc.BuiltInHitMod = default.UNLOAD_AIM_BONUS;
 	ToHitCalc.bAllowCrit = default.UNLOAD_ALLOW_CRIT;
 	Template.AbilityToHitCalc = ToHitCalc;
 	Template.AbilityToHitOwnerOnMissCalc = ToHitCalc;
 
-	Template.AbilityTargetStyle = default.SimpleSingleTarget;
+	// Remove the activate ability trigger added by the Attack helper function
+	Template.AbilityTriggers.Length = 0;
 
-	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
-	Template.AddShooterEffectExclusions();
-
-	Template.AbilityTargetConditions.AddItem(default.LivingHostileTargetProperty);
-
-	Template.AddTargetEffect(class'X2Ability_GrenadierAbilitySet'.static.HoloTargetEffect());
-	Template.AssociatedPassives.AddItem('HoloTargeting');
-	Template.AddTargetEffect(class'X2Ability'.default.WeaponUpgradeMissDamage);
-	Template.bAllowAmmoEffects = true;
-	Template.bAllowBonusWeaponEffects = true;
-
-	WeaponDamageEffect = class'X2Ability_GrenadierAbilitySet'.static.ShredderDamageEffect();
-	WeaponDamageEffect.EffectDamageValue.Damage = default.UNLOAD_DAMAGE_BONUS;
-	Template.AddTargetEffect(WeaponDamageEffect);
-
+	// Set the ability to trigger with a listener
 	Trigger = new class'X2AbilityTrigger_EventListener';
 	Trigger.ListenerData.Deferral = ELD_OnStateSubmitted;
 	Trigger.ListenerData.EventID = 'F_Unload2';
@@ -601,20 +545,39 @@ static function X2AbilityTemplate Unload2()
 	Trigger.ListenerData.EventFn = class'XComGameState_Ability'.static.RapidFireListener;
 	Template.AbilityTriggers.AddItem(Trigger);
 
-	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY;
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_Unload";
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
-	Template.BuildInterruptGameStateFn = TypicalAbility_BuildInterruptGameState;
-
+	// Now set the ability up for triggering the follow-up shots
+	Template.AdditionalAbilities.AddItem('F_Unload2');
 	Template.PostActivationEvents.AddItem('F_Unload2');
-	Template.bShowActivation = true;
 	Template.CinescriptCameraType = "StandardGunFiring";
 
+	// We don't want this ability to actually show up to the user
+	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
+
+	// So that the Codex and Avatar can't teleport between shots
+	Template.bPreventsTargetTeleport = true;
+
+	// Show a flyover for each follow-up shot
+	Template.bShowActivation = true;
+	
 	return Template;
+}
+
+static function X2AbilityTemplate UnloadDamageBonus()
+{
+	local X2AbilityTemplate			Template;
+	local X2Effect_UnloadDamage		DamageEffect;
+
+	// The effect that modifies the damage of the Unload abilities
+	DamageEffect = new class'X2Effect_UnloadDamage';
+    DamageEffect.BuildPersistentEffect(1, true, false, false);
+
+	// Create the template using a helper function
+	Template = Passive('F_UnloadDamage', "img:///UILibrary_FavidsPerkPack.UIPerk_Unload", false, DamageEffect);
+
+	// The Unload ability will show up as an active ability, so hide the icon for the passive damage effect
+	HidePerkIcon(Template);
+
+    return Template;
 }
 
 // Battle Vision

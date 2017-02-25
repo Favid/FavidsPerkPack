@@ -300,6 +300,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'IMPOSITION_AIM_BONUS':
 			OutString = string(class'X2Ability_Favid'.default.IMPOSITION_AIM_BONUS);
 			return true;
+		case 'UNLOAD_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.UNLOAD_COOLDOWN);
+			return true;
+		case 'UNLOAD_DAMAGE_MODIFIER':
+			OutString = getOneMinusFloatValueString(class'X2Ability_Favid'.default.UNLOAD_DAMAGE_MODIFIER);
+			return true;
 		default: 
 			return false;
 	}
@@ -337,5 +343,15 @@ private static function string getInTheZoneRefundString(int maxRefunds)
 	}
 	
 	return "Can activate" @ string(maxRefunds) @ "times per turn.";
+}
 
+private static function string getOneMinusFloatValueString(float modifier)
+{
+	local float result;
+	local string returnString;
+
+	result = 1 - modifier;
+	returnString = string(result) $ "%";
+
+	return returnString;
 }
