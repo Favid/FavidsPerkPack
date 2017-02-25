@@ -306,6 +306,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'UNLOAD_DAMAGE_MODIFIER':
 			OutString = getOneMinusFloatValueString(class'X2Ability_Favid'.default.UNLOAD_DAMAGE_MODIFIER);
 			return true;
+		case 'MAIM_AMMO_COST':
+			OutString = string(class'X2Ability_Favid'.default.MAIM_AMMO_COST);
+			return true;
+		case 'MAIM_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.MAIM_COOLDOWN);
+			return true;
 		default: 
 			return false;
 	}

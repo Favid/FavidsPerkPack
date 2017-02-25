@@ -25,14 +25,3 @@ simulated function OnEffectRemoved(const out EffectAppliedData ApplyEffectParame
 
 	super.OnEffectRemoved(ApplyEffectParameters, NewGameState, bCleansed, RemovedEffectState);
 }
-
-//simulated function AddX2ActionsForVisualization(XComGameState VisualizeGameState, out VisualizationTrack BuildTrack, const name EffectApplyResult)
-//{
-	//local X2Action_PlaySoundAndFlyOver SoundAndFlyOver;
-//
-	//if (EffectApplyResult != 'AA_Success')
-		//return;
-//
-	//SoundAndFlyOver = X2Action_PlaySoundAndFlyOver(class'X2Action_PlaySoundAndFlyOver'.static.AddToVisualizationTrack(BuildTrack, VisualizeGameState.GetContext()));
-	//SoundAndFlyOver.SetSoundAndFlyOverParameters(None, "Maimed!", '', eColor_Bad);
-//}

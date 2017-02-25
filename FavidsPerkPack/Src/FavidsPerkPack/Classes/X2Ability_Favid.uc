@@ -79,19 +79,11 @@ var config int LIVINGVIRUS_AIM_BONUS;
 var config int LIVINGVIRUS_CRIT_BONUS;
 var config int LIVINGVIRUS_DEFENSE_BONUS;
 var config bool LIVINGVIRUS_AWC;
-var config int SABOTROUND_ENV_DAMAGE;
-var config int SABOTROUND_COOLDOWN;
-var config int SABOTROUND_AMMO_COST;
-var config int SABOTROUND_DAMAGE_BONUS_T1;
-var config int SABOTROUND_DAMAGE_BONUS_T2;
-var config int SABOTROUND_DAMAGE_BONUS_T3;
-var config bool SABOTROUND_AWC;
 var config int MAYHEM_DAMAGE_T1;
 var config int MAYHEM_DAMAGE_T2;
 var config int MAYHEM_DAMAGE_T3;
 var config int MAYHEM_DAMAGE;
 var config bool MAYHEM_AWC;
-var config bool READYFORANYTHING_AWC;
 var config int SPRINTER_MOBILITY;
 var config int SPRINTER_DURATION;
 var config int SPRINTER_COOLDOWN;
@@ -642,7 +634,7 @@ static function X2AbilityTemplate Maim()
 {
 	local X2AbilityTemplate Template;
 	local X2Effect_Maim Effect;
-
+	
 	// Create the template using a helper function
 	Template = Attack('F_Maim', "img:///UILibrary_FavidsPerkPack.UIPerk_Maim", default.MAIM_AWC, none, class'UIUtilities_Tactical'.const.CLASS_LIEUTENANT_PRIORITY, eCost_WeaponConsumeAll, default.MAIM_AMMO_COST);
 
@@ -653,7 +645,7 @@ static function X2AbilityTemplate Maim()
 	Effect = new class'X2Effect_Maim';
 	Effect.EffectName = 'F_MaimBonuses';
 	Effect.DuplicateResponse = eDupe_Refresh;
-	Effect.BuildPersistentEffect(default.MAIM_DURATION, false, true, , eGameRule_PlayerTurnEnd);
+	Effect.BuildPersistentEffect(default.MAIM_DURATION, false, true, , eGameRule_PlayerTurnBegin);
 	Effect.AddPersistentStatChange(eStat_Mobility, 0, MODOP_Multiplication);
 	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true, , Template.AbilitySourceName);
 	Effect.VisualizationFn = EffectFlyOver_Visualization;
