@@ -147,7 +147,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Concentration());
 	Templates.AddItem(Spot());
 	Templates.AddItem(ReactionProtocol());
-	Templates.AddItem(Imposition());				// TODO finish
+	Templates.AddItem(Imposition());
 	Templates.AddItem(SnipersEye());
 	Templates.AddItem(Unload());					// TODO finish
 	Templates.AddItem(Unload2());
@@ -414,11 +414,15 @@ static function X2AbilityTemplate ReactionProtocol()
 
 // Imposition
 // (AbilityName="F_Imposition", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Firing at enemy with the unit's Primary Weapon lowers the target's Hit Chance until next turn.
+// Firing at enemy with the unit's primary weapon lowers the target's aim until next turn.
 static function X2AbilityTemplate Imposition()
 {
+	local X2AbilityTemplate Template;
+
 	// Start with the passive template
-	return Passive('F_Imposition', "img:///UILibrary_FavidsPerkPack.UIPerk_Imposition", default.IMPOSITION_AWC, none);
+	Template = Passive('F_Imposition', "img:///UILibrary_FavidsPerkPack.UIPerk_Imposition", default.IMPOSITION_AWC, none);
+	
+	return Template;
 }
 
 static function X2Effect_Imposition ImpositionEffect()
@@ -432,7 +436,8 @@ static function X2Effect_Imposition ImpositionEffect()
 	Effect.bUseSourcePlayerState = true;
 	Effect.bApplyOnMiss = true;
 	
-	Effect.SetDisplayInfo(ePerkBuff_Penalty, "Imposition", "This unit suffers -10 Aim until the beginning of the player's next turn.", "img:///UILibrary_FavidsPerkPack.UIPerk_Imposition", true);
+	// TODO figure out how to do this without hardcoding
+	Effect.SetDisplayInfo(ePerkBuff_Penalty, "Imposition", "This unit suffers " $ string(default.IMPOSITION_AIM_BONUS) $ " aim until the beginning of the player's next turn.", "img:///UILibrary_FavidsPerkPack.UIPerk_Imposition", true);
 	Effect.VisualizationFn = EffectFlyOver_Visualization_Imposition;
 	Effect.DuplicateResponse = eDupe_Ignore;
 	

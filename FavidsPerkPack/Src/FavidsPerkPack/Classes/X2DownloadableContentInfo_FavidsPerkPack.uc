@@ -29,6 +29,13 @@ static event InstallNewCampaign(XComGameState StartState)
 /// </summary>
 static event OnPostTemplatesCreated()
 {
+	PatchAbilitiesForImposition();
+	PatchAreaSuppressionMayhem();
+}
+
+// Update abilities to function with the Imposition ability where necessary
+private static function PatchAbilitiesForImposition()
+{
 	local X2DataTemplate DataTemplate;
 	local X2AbilityTemplate AbilityTemplate;
 
@@ -37,15 +44,13 @@ static event OnPostTemplatesCreated()
 		AbilityTemplate = X2AbilityTemplate(DataTemplate);
 		if (AbilityTemplate != none)
 		{
-			UpdateForImpositionEffect(AbilityTemplate);
+			UpdateAbilityForImpositionEffect(AbilityTemplate);
 		}
 	}
-
-	PatchAreaSuppressionMayhem();
 }
 
-// We'll piggy-back off the holotargeting effect - this way, any ability that applies holo-targeting will also apply Imposition
-private static function UpdateForImpositionEffect(X2AbilityTemplate Template)
+// We'll piggy-back off the holo-targeting effect - this way, any ability that applies holo-targeting will also apply Imposition
+private static function UpdateAbilityForImpositionEffect(X2AbilityTemplate Template)
 {
 	local X2Effect_HoloTarget HoloTargetEffect;
 	local int i;
@@ -291,6 +296,9 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 			return true;
 		case 'PIERCETHEVEIL_INCREASE_COOLDOWN_AMOUNT':
 			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.PIERCETHEVEIL_INCREASE_COOLDOWN_AMOUNT, "turn", "turns");
+			return true;
+		case 'IMPOSITION_AIM_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.IMPOSITION_AIM_BONUS);
 			return true;
 		default: 
 			return false;
