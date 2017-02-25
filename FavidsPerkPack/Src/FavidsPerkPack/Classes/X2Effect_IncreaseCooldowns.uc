@@ -9,8 +9,7 @@
 //---------------------------------------------------------------------------------------
 class X2Effect_IncreaseCooldowns extends X2Effect;
 
-// Amount of cooldown to remove. If there are 5 turns remaining on an ability and Amount is 3,
-// then after applying this effect only 2 turns will remain.
+// Amount of cooldown to increase. Cannot be increased beyond the abilities' max cooldown.
 var int Amount;
 
 // If true, Amount is ignored and cooldown is increased to maximum.
@@ -20,59 +19,74 @@ var bool IncreaseAll;
 // all abilities attached to this unit will be increased
 var array<name> AbilitiesToTick;
 
+// If true, only abilities that have a current cooldown > 0.
+var bool OnlyAlreadyOnCooldown;
+
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
 	local XComGameStateHistory History;
 	local XComGameState_Unit UnitState;
 	local StateObjectReference AbilityRef;
 	local XComGameState_Ability AbilityState;
-	local int maxCooldown;
 
 	History = `XCOMHISTORY;
-	`LOG("================================================");
-	`LOG("================================================");
-	`LOG("================================================");
-	`LOG("X2Effect_IncreaseCooldowns: OnEffectAdded.");
 
 	UnitState = XComGameState_Unit(kNewTargetState);
 	if(UnitState == none)
 	{
-		`Redscreen("X2Effect_ReduceCooldowns applied to " $ self $ ", this is meaningless as there are no abilities.");
 		return;
 	}
 
-	// apply the desired reduction to every ability on the unit
 	foreach UnitState.Abilities(AbilityRef)
 	{
-		`LOG("X2Effect_IncreaseCooldowns: 1");
 		AbilityState = XComGameState_Ability(History.GetGameStateForObjectID(AbilityRef.ObjectID));
-		//`assert(AbilityState != none);
 
-		if(AbilityState == none)
+		if(shouldIncreaseAbilityCooldown(AbilityState))
 		{
-			`LOG("X2Effect_IncreaseCooldowns: 2");
-			continue;
+			increaseAbilityCooldown(AbilityState, NewGameState);
 		}
 
-		if(AbilityState.iCooldown > 0)
+	}
+}
+
+private function bool shouldIncreaseAbilityCooldown(XComGameState_Ability AbilityState)
+{
+	if(AbilityState != none)
+	{
+		if(AbilityState.iCooldown > 0 || !OnlyAlreadyOnCooldown)
 		{
-			`LOG("X2Effect_IncreaseCooldowns: 3");
 			if(AbilitiesToTick.Length == 0 || AbilitiesToTick.Find(AbilityState.GetMyTemplateName()) != INDEX_NONE)
 			{
-				`LOG("X2Effect_IncreaseCooldowns: 4");
-				maxCooldown = AbilityState.GetMyTemplate().AbilityCooldown.iNumTurns;
-				AbilityState = XComGameState_Ability(NewGameState.CreateStateObject(AbilityState.Class, AbilityState.ObjectID));
-				AbilityState.iCooldown = IncreaseAll ? maxCooldown : Min(AbilityState.iCooldown + Amount, maxCooldown);
-				NewGameState.AddStateObject(AbilityState);
+				return true;
 			}
 		}
 	}
+	
+	return false;
+}
 
-	`LOG("X2Effect_IncreaseCooldowns: 5");
+private function increaseAbilityCooldown(XComGameState_Ability AbilityState, XComGameState NewGameState)
+{
+	local int maxCooldown;
+
+	maxCooldown = AbilityState.GetMyTemplate().AbilityCooldown.iNumTurns;
+	AbilityState = XComGameState_Ability(NewGameState.CreateStateObject(AbilityState.Class, AbilityState.ObjectID));
+
+	if(IncreaseAll)
+	{
+		AbilityState.iCooldown = maxCooldown;
+	}
+	else
+	{
+		AbilityState.iCooldown = Min(AbilityState.iCooldown + Amount, maxCooldown);
+	}
+
+	NewGameState.AddStateObject(AbilityState);
 }
 
 defaultproperties
 {
 	IncreaseAll = false
 	Amount = 1
+	OnlyAlreadyOnCooldown = false
 }

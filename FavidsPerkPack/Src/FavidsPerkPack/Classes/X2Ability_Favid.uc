@@ -1766,7 +1766,10 @@ static function X2AbilityTemplate PierceTheVeil()
 	CooldownEffect = new class'X2Effect_IncreaseCooldowns';
 	CooldownEffect.Amount = 1;
 	CooldownEffect.IncreaseAll = false;
+	CooldownEffect.OnlyAlreadyOnCooldown = false;
 	Template.AddTargetEffect(CooldownEffect);
+
+
 
 	return Template;
 }
