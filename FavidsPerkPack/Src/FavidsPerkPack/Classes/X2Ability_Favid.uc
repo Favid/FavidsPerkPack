@@ -1676,7 +1676,7 @@ static function X2AbilityTemplate PierceTheVeil()
 
 // Ingite
 // (AbilityName="F_Ingite", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Light an organic enemy on fire. 4 turn cooldown.
+// Light an organic enemy on fire. Cooldown.
 static function X2AbilityTemplate Ignite()
 {
 	local X2AbilityTemplate                 Template;
