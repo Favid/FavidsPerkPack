@@ -318,6 +318,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'IGNITE_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.IGNITE_COOLDOWN);
 			return true;
+		case 'MINDBLAST_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.MINDBLAST_COOLDOWN);
+			return true;
+		case 'MINDBLAST_STUN_ACTIONS':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.MINDBLAST_STUN_ACTIONS, "action", "actions");
+			return true;
 		default: 
 			return false;
 	}

@@ -1481,7 +1481,8 @@ static function X2AbilityTemplate TheBiggerTheyAre()
 
 // Mind Blast
 // (AbilityName="F_MindBlast", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Deal 1/2/3 damage based on secondary weapon tier and remove one Action Point from the target for next turn. 3 turn cooldown.
+// Deal 1/2/3 damage based on secondary weapon tier and removes action points from the target for next turn. Cooldown.
+// TODO Find way to not hard-code damage values in the translation file
 static function X2AbilityTemplate MindBlast()
 {
 	local X2AbilityTemplate                 Template;
