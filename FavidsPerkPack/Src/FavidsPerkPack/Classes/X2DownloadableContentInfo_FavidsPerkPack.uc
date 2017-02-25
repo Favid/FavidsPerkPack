@@ -30,7 +30,7 @@ static event InstallNewCampaign(XComGameState StartState)
 static event OnPostTemplatesCreated()
 {
 	PatchAbilitiesForImposition();
-	PatchAreaSuppressionMayhem();
+	//PatchAreaSuppressionMayhem();
 }
 
 // Update abilities to function with the Imposition ability where necessary
