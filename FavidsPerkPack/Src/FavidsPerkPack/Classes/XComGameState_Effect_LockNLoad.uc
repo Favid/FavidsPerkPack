@@ -28,8 +28,7 @@ function EventListenerReturn OnTacticalGameEnd(Object EventData, Object EventSou
 function EventListenerReturn OnAbilityActivated(Object EventData, Object EventSource, XComGameState GameState, Name EventID)
 {
 	local XComGameStateHistory History;
-	local X2EventManager EventMgr;
-	local XComGameState_Ability AbilityStateInput, AbilityStateLockNLoad;
+	local XComGameState_Ability AbilityStateInput;
 	local XComGameState_Item SourceWeapon;
 	local XComGameState_Unit SourceUnit;
 	local bool hasEffect;

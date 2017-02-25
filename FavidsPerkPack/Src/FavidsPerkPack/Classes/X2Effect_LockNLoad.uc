@@ -17,7 +17,6 @@ function RegisterForEvents(XComGameState_Effect EffectGameState)
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)
 {
 	local XComGameState_Unit TargetUnit;
-	local XComGameState_Player PlayerState;
 	local XComGameState_Effect_LockNLoad LockNLoadEffectState;
 	local X2EventManager EventMgr;
 	local Object ListenerObj;

@@ -33,8 +33,6 @@ function EventListenerReturn OnUnitDied(Object EventData, Object EventSource, XC
 	local UnitValue						CountUnitValue;
 	local XComGameState					NewGameState;
 	local XComGameStateContext_Ability	AbilityContext;
-	local XComGameState_Ability			AbilityState;
-	local X2EventManager				EventMgr;
 	
 	`LOG("TRENCH WARFARE: OnUnitDied start");
 
@@ -69,11 +67,7 @@ function EventListenerReturn OnPlayerTurnEnded(Object EventData, Object EventSou
 	local XComGameStateHistory			History;
 	local XComGameState_Unit			TargetUnit;
 	local UnitValue						UnitValue;
-	local StateObjectReference			AbilityRef;
-	local XComGameState_Ability			AbilityState;
 	local XComGameState					NewGameState;
-	local name							CanShootCode;
-	local XComGameStateContext_Ability	AbilityContext;
 	local StateObjectReference HunkerDownRef;
 	local XComGameState_Ability HunkerDownState;
 	

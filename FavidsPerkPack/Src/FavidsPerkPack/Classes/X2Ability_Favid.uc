@@ -966,7 +966,6 @@ static function X2AbilityTemplate InTheZone()
 	InTheZoneEffect = new class'X2Effect_InTheZone';
 	InTheZoneEffect.EffectName = 'F_InTheZone';
 	InTheZoneEffect.BuildPersistentEffect(1, true, false, false);
-	InTheZoneEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true,,Template.AbilitySourceName);
 	InTheZoneEffect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
 
 	Template = Passive('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, InTheZoneEffect, false, false);
@@ -1629,8 +1628,8 @@ static function X2AbilityTemplate PierceTheVeil()
 	local XMBEffect_ConditionalBonus ShootingEffect;
 	local X2AbilityTemplate Template;
 	local X2Condition_UnitProperty				OrganicCondition;
-	local X2Effect_IncreaseCooldowns CooldownEffect;
 	local XMBCondition_AbilityName Condition;
+	local X2Effect_IncreaseCooldowns CooldownEffect;
 
 	// Create a stat change effect that grants an aim bonus, damage bonus, and armor piercing bonus
 	ShootingEffect = new class'XMBEffect_ConditionalBonus';
@@ -1683,7 +1682,6 @@ static function X2AbilityTemplate Ignite()
 	local X2AbilityTemplate                 Template;
 	local X2AbilityCost_ActionPoints        ActionPointCost;
 	local X2Condition_UnitProperty          TargetProperty;
-	local X2Effect_ApplyWeaponDamage        WeaponDamageEffect;
 	local X2AbilityCooldown                 Cooldown;
 	local X2Effect_Burning					BurningEffect;
 
