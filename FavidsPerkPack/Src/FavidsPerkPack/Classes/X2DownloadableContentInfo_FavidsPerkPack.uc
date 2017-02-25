@@ -105,26 +105,10 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 			OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_AIM_BONUS);
 			return true;
 		case 'EYESTRAIN_CHARGES':
-			OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_CHARGES);
-			if(class'X2Ability_Favid'.default.EYESTRAIN_CHARGES > 1)
-			{
-				OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_CHARGES) @ "charges";
-			}
-			else
-			{
-				OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_CHARGES) @ "charge";
-			}
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.EYESTRAIN_CHARGES, "charge", "charges");
 			return true;
 		case 'EYESTRAIN_DURATION':
-			OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_DURATION);
-			if(class'X2Ability_Favid'.default.EYESTRAIN_DURATION > 1)
-			{
-				OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_DURATION) @ "turns";
-			}
-			else
-			{
-				OutString = string(class'X2Ability_Favid'.default.EYESTRAIN_DURATION) @ "turn";
-			}
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.EYESTRAIN_DURATION, "turn", "turns");
 			return true;
 		case 'FREEFIRE_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.FREEFIRE_COOLDOWN);
@@ -175,7 +159,7 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 			OutString = string(class'X2Ability_Favid'.default.BATTLEVISION_AIM_BONUS * class'X2Ability_Favid'.default.BATTLEVISION_SCALE_MAX);
 			return true;
 		case 'ENTRENCHED_DEFENSE_BONUS':
-			OutString = string(class'X2Ability_Favid'.default.ENTRENCHED_DEFENSE_BONUS);
+			OutString = getInversedValueString(class'X2Ability_Favid'.default.ENTRENCHED_DEFENSE_BONUS);
 			return true;
 		case 'EXPOSEWEAKNESS_DAMAGEMODIFIER':
 			OutString = string(class'X2Ability_Favid'.default.EXPOSEWEAKNESS_DAMAGEMODIFIER);
@@ -372,4 +356,9 @@ private static function string getOneMinusFloatValueString(float modifier)
 	returnString = string(result) $ "%";
 
 	return returnString;
+}
+
+private static function string getInversedValueString(int value)
+{
+	return string(-1 * value);
 }
