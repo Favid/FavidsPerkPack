@@ -1,12 +1,3 @@
-//---------------------------------------------------------------------------------------
-//  FILE:    X2Effect_IncreaseCooldowns.uc
-//  AUTHOR:  David Burchanowski
-//
-//  Removes x turns from the cooldown counters on a unit
-//           
-//---------------------------------------------------------------------------------------
-//  Copyright (c) 2016 Firaxis Games, Inc. All rights reserved.
-//---------------------------------------------------------------------------------------
 class X2Effect_IncreaseCooldowns extends X2Effect;
 
 // Amount of cooldown to increase. Cannot be increased beyond the abilities' max cooldown.
@@ -45,7 +36,6 @@ simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffe
 		{
 			increaseAbilityCooldown(AbilityState, NewGameState);
 		}
-
 	}
 }
 
