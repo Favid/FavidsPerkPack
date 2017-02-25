@@ -155,9 +155,9 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(StandYourGround());
 	Templates.AddItem(CutsThroughSteel());
 	Templates.AddItem(InTheZone());
-	Templates.AddItem(LivingVirus());				// TODO rework
-	Templates.AddItem(Mayhem());					// TODO rework
-	Templates.AddItem(Sprinter());					// TODO rework
+	//Templates.AddItem(LivingVirus());				// TODO rework
+	//Templates.AddItem(Mayhem());					// TODO rework
+	//Templates.AddItem(Sprinter());					// TODO rework
 	Templates.AddItem(InGoodHealth());
 	Templates.AddItem(RemoveInGoodHealth());
 	Templates.AddItem(Genji());
@@ -242,7 +242,7 @@ static function X2AbilityTemplate FreeFire()
 
 // Chip Away
 // (AbilityName="F_ChipAway", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Fire a shot that shreds 2/4/6 armor based on weapon tier. Uses 2 ammo. 3 turn cooldown.
+// Fire a shot that shreds additional armor. Cooldown-based.
 static function X2AbilityTemplate ChipAway()
 {
 	local X2AbilityTemplate Template;
@@ -292,7 +292,7 @@ static function X2AbilityTemplate ChipAwayBonuses()
 
 // Concentration
 // (AbilityName="F_Concentration", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Your grazing shots are automatically upgraded to normal hits.
+// Your grazing shots are automatically upgraded to normal hits. Passive.
 static function X2AbilityTemplate Concentration()
 {
 	local X2AbilityTemplate Template;
@@ -366,7 +366,7 @@ static function X2AbilityTemplate Spot()
 
 // Reaction Protocol
 // (AbilityName="F_ReactionProtocol", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Grant a Covering Fire overwatch shot to an ally while also giving them the effects of Cool Under Pressure. Charge based.
+// Grant a Covering Fire overwatch shot to an ally while also giving them the effects of Cool Under Pressure. Charge-based.
 static function X2AbilityTemplate ReactionProtocol()
 {
 	local X2AbilityTemplate                     Template;
@@ -402,7 +402,7 @@ static function X2AbilityTemplate ReactionProtocol()
 
 // Imposition
 // (AbilityName="F_Imposition", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Firing at enemy with the unit's primary weapon lowers the target's aim until next turn.
+// Firing at enemy with the unit's primary weapon lowers the target's aim until next turn. Passive.
 static function X2AbilityTemplate Imposition()
 {
 	local X2AbilityTemplate Template;
@@ -461,7 +461,7 @@ static function X2AbilityTemplate SnipersEye()
 
 // Unload
 // (AbilityName="F_Unload", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Fire with the unit's primary weapon until out of ammo or the target is dead.
+// Fire with the unit's primary weapon until out of ammo or the target is dead. Shots cannot critical. Cooldown-based.
 static function X2AbilityTemplate Unload()
 {
 	local X2AbilityTemplate					Template;
@@ -569,7 +569,7 @@ static function X2AbilityTemplate UnloadDamageBonus()
 
 // Battle Vision
 // (AbilityName="F_BattleVision", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Gain 3 aim for each enemy you can see, up to a maximum of 15 aim.
+// Gain aim for each enemy you can see, up to a specified maximum. Passive.
 static function X2AbilityTemplate BattleVision()
 {
 	local XMBEffect_ConditionalBonus Effect;
@@ -600,7 +600,7 @@ static function X2AbilityTemplate BattleVision()
 
 // Entrenched
 // (AbilityName="F_Entrenched", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Full cover provides additional defense.
+// Full cover provides additional defense. Passive.
 static function X2AbilityTemplate Entrenched()
 {
 	local X2AbilityTemplate Template;
@@ -624,7 +624,7 @@ static function X2AbilityTemplate Entrenched()
 
 // Maim
 // (AbilityName="F_Maim", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Fire a shot that immobilizes the target until the end of their next turn.
+// Fire a shot that immobilizes the target until the end of their next turn. Cooldown-based.
 static function X2AbilityTemplate Maim()
 {
 	local X2AbilityTemplate Template;
@@ -651,7 +651,7 @@ static function X2AbilityTemplate Maim()
 
 // Expose Weakness
 // (AbilityName="F_ExposeWeakness", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Increases damage taken by the targetted unit for a few turns.
+// Increases damage taken by the targetted unit for a few turns. Cooldown-based.
 static function X2AbilityTemplate ExposeWeakness()
 {
 	local X2AbilityTemplate				Template;
@@ -681,7 +681,7 @@ static function X2AbilityTemplate ExposeWeakness()
 
 // Quick Feet
 // (AbilityName="F_QuickFeet", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Refunds one action point when you are revealed from concealment via your own action.
+// Refunds one action point when you are revealed from concealment via your own action. Passive.
 static function X2AbilityTemplate QuickFeet()
 {
 	local X2AbilityTemplate						Template;
@@ -700,7 +700,7 @@ static function X2AbilityTemplate QuickFeet()
 
 // Disabling Shot
 // (AbilityName="F_DisablingShot", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Primary weapon shot that, if it hits, stuns the target. Cannot critically hit.
+// Primary weapon shot that, if it hits, stuns the target. Cannot critically hit. Cooldown-based.
 static function X2AbilityTemplate DisablingShot()
 {
 	local X2AbilityTemplate Template;
@@ -726,7 +726,7 @@ static function X2AbilityTemplate DisablingShot()
 
 // Resupply
 // (AbilityName="F_Resupply", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Refill the ammo of all allies.
+// Refill the ammo of all allies. Charge-based.
 static function X2AbilityTemplate Resupply()
 {
 	local X2AbilityTemplate                 Template;
@@ -868,7 +868,7 @@ static function X2AbilityTemplate Predator()
 
 // Armed To The Teeth
 // (AbilityName="F_ArmedToTheTeeth", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants an ammo only utility slot.
+// Grants an ammo only utility slot. Passive.
 static function X2AbilityTemplate ArmedToTheTeeth()
 {
 	// Create the template using a helper function - XcomGameData.ini sets this perk as unlocking the ammo pocket
@@ -877,7 +877,7 @@ static function X2AbilityTemplate ArmedToTheTeeth()
 
 // Bullet Proof
 // (AbilityName="F_BulletProof", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants a bonus to Shields and Armor
+// Grants a bonus to Shields and Armor. Passive.
 static function X2AbilityTemplate BulletProof()
 {
 	local X2Effect_PersistentStatChange Effect;
@@ -894,7 +894,7 @@ static function X2AbilityTemplate BulletProof()
 
 // Stand Your Ground
 // (AbilityName="F_StandYourGround", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Firing with more than one action point remaining confers an aim bonus.
+// Firing with more than one action point remaining confers an aim bonus. Passive.
 static function X2AbilityTemplate StandYourGround()
 {
 	local XMBEffect_ConditionalBonus Effect;
@@ -925,7 +925,7 @@ static function X2AbilityTemplate StandYourGround()
 
 // Cuts Through Steel
 // (AbilityName="F_CutsThroughSteel", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Sword attacks against robotic enemies shred armor and have increased Critical Chance.
+// Sword attacks against robotic enemies shred armor and have increased critical chance. Passive.
 static function X2AbilityTemplate CutsThroughSteel()
 {
 	local X2AbilityTemplate					    Template;
@@ -957,7 +957,7 @@ static function X2AbilityTemplate CutsThroughSteel()
 
 // In The Zone
 // (AbilityName="F_InTheZone", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Killing a flanked target refunds one Action Point.
+// Killing a flanked target refunds one action point. Passive.
 static function X2AbilityTemplate InTheZone()
 {
 	local X2AbilityTemplate						Template;
@@ -1124,7 +1124,7 @@ static function X2AbilityTemplate Sprinter()
 
 // In Good Health
 // (AbilityName="F_InGoodHealth", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants increased aim and damage while this unit is at full health. The bonus is removed when the unit takes damage the first time during a mission.
+// Grants increased aim and damage while this unit is at full health. The bonus is removed when the unit takes damage the first time during a mission. Passive.
 static function X2AbilityTemplate InGoodHealth()
 {
 	local X2AbilityTemplate						Template;	
@@ -1220,7 +1220,7 @@ static function X2AbilityTemplate RemoveInGoodHealth()
 
 // Genji
 // (AbilityName="F_Genji", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Swords have increased critical chance.
+// Swords have increased critical chance. Passive.
 static function X2AbilityTemplate Genji()
 {
 	local X2AbilityTemplate						Template;
@@ -1237,7 +1237,7 @@ static function X2AbilityTemplate Genji()
 
 // Momentum
 // (AbilityName="F_Momentum", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Grants increased aim, critical chance, and damage with your primary weapon if you have moved this turn
+// Grants increased aim, critical chance, and damage with your primary weapon if you have moved this turn. Passive.
 static function X2AbilityTemplate Momentum()
 {
 	local X2AbilityTemplate Template;
@@ -1268,7 +1268,7 @@ static function X2AbilityTemplate Momentum()
 
 // Slash and Dash
 // (AbilityName="F_SlashAndDash", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Free action. After your next sword attack this turn, gain a free move. 3 turn cooldown.
+// Free action. After your next sword attack this turn, gain a free move. Cooldown-based.
 static function X2AbilityTemplate SlashAndDash()
 {
 	local X2AbilityTemplate		Template;
@@ -1328,7 +1328,7 @@ static function X2AbilityTemplate SlashAndDashActivator()
 
 // Trench Warfare
 // (AbilityName="F_TrenchWarfare", ApplyToWeaponSlot=eInvSlot_Unknown)
-// If you get at least one kill during your turn, automatically hunker down at the end of it.
+// If you get at least one kill during your turn, automatically hunker down at the end of it. Passive.
 static function X2AbilityTemplate TrenchWarfare()
 {
 	local X2AbilityTemplate								Template;
@@ -1361,7 +1361,7 @@ static function X2AbilityTemplate TrenchWarfare()
 
 // Lock N' Load
 // (AbilityName="F_LockNLoad", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Activated ability that does not cost an action point. Until the beginning of next turn, your ammo will be refunded after each shot you take.
+// Activated ability that does not cost an action point. Until the beginning of next turn, your ammo will be refunded after each shot you take. Cooldown-based.
 static function X2AbilityTemplate LockNLoad()
 {
 	local X2AbilityTemplate		Template;
@@ -1421,7 +1421,7 @@ static function X2AbilityTemplate LockNLoadActivator()
 
 // Salt In The Wound
 // (AbilityName="F_SaltInTheWound", ApplyToWeaponSlot=eInvSlot_Unknown)
-// All attacks deal increased damage to enemies that are Poisoned, Burning, or Acid Burning
+// All attacks deal increased damage to enemies that are Poisoned, Burning, or Acid Burning. Passive.
 static function X2AbilityTemplate SaltInTheWound()
 {
 	local X2AbilityTemplate						Template;	
@@ -1458,7 +1458,7 @@ static function X2AbilityTemplate SaltInTheWound()
 
 // The Bigger They Are
 // (AbilityName="F_TheBiggerTheyAre", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Grants increased aim against targets that cannot take cover.
+// Grants increased aim against targets that cannot take cover. Passive.
 static function X2AbilityTemplate TheBiggerTheyAre()
 {
 	local X2AbilityTemplate Template;
@@ -1481,7 +1481,7 @@ static function X2AbilityTemplate TheBiggerTheyAre()
 
 // Mind Blast
 // (AbilityName="F_MindBlast", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Deal 1/2/3 damage based on secondary weapon tier and removes action points from the target for next turn. Cooldown.
+// Deal a small amount of damage based on secondary weapon tier and remove action points from the target for next turn. Cooldown-based.
 // TODO Find way to not hard-code damage values in the translation file
 static function X2AbilityTemplate MindBlast()
 {
@@ -1567,7 +1567,7 @@ static function X2AbilityTemplate EmpoweredBlast()
 
 // Strength in Numbers
 // (AbilityName="F_StrengthInNumbers", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Gain 3 aim for each ally you can see, up to a maximum of 15 aim.
+// Gain aim for each ally you can see, up to a specified maximum. Passive.
 static function X2AbilityTemplate StrengthInNumbers()
 {
 	local XMBEffect_ConditionalBonus Effect;
@@ -1598,7 +1598,7 @@ static function X2AbilityTemplate StrengthInNumbers()
 
 // Recharge
 // (AbilityName="F_Recharge", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Killing an enemy with your primary weapon reduces the cooldown of all abilities by 1 turn.
+// Killing an enemy with your primary weapon reduces the cooldown of all abilities. Passive.
 static function X2AbilityTemplate Recharge()
 {
 	local X2AbilityTemplate Template;
@@ -1623,7 +1623,7 @@ static function X2AbilityTemplate Recharge()
 
 // Pierce The Veil
 // (AbilityName="F_PierceTheVeil", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Activated ability that confers bonus aim, damage, and armor piercing to organic targets with your primary weapon, while increasing the cooldown of all of your other abilities.
+// Activated ability that confers bonus aim, damage, and armor piercing to organic targets with your primary weapon, while increasing the cooldown of all of your other abilities. Cooldown-based.
 static function X2AbilityTemplate PierceTheVeil()
 {
 	local XMBEffect_ConditionalBonus ShootingEffect;
@@ -1677,7 +1677,7 @@ static function X2AbilityTemplate PierceTheVeil()
 
 // Ingite
 // (AbilityName="F_Ingite", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Light an organic enemy on fire. Cooldown.
+// Light an organic enemy on fire. Cooldown-based.
 static function X2AbilityTemplate Ignite()
 {
 	local X2AbilityTemplate                 Template;
@@ -1736,7 +1736,7 @@ static function X2AbilityTemplate Ignite()
 
 // Natural Twenty
 // (AbilityName="F_NaturalTwenty", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// While active, all shots that hit normally are automatically upgraded to critical hits. Cooldown.
+// While active, all shots that hit normally are automatically upgraded to critical hits. Cooldown-based.
 static function X2AbilityTemplate NaturalTwenty()
 {
 	local X2Effect_NaturalTwenty Effect;
