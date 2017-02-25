@@ -71,8 +71,6 @@ var config int CUTSTHROUGHSTEEL_SHRED_MG;
 var config int CUTSTHROUGHSTEEL_SHRED_BM;
 var config int CUTSTHROUGHSTEEL_CRIT_BONUS;
 var config bool CUTSTHROUGHSTEEL_AWC;
-var config int SUBSONICROUND_CHARGES;
-var config bool SUBSONICROUND_AWC;
 var config int INTHEZONE_MAX_REFUNDS_PER_TURN;
 var config bool INTHEZONE_AWC;
 var config int LIVINGVIRUS_AIM_BONUS;
@@ -146,7 +144,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(UnloadDamageBonus());
 	Templates.AddItem(BattleVision());
 	Templates.AddItem(Entrenched());
-	Templates.AddItem(Maim());						// TODO rework
+	Templates.AddItem(Maim());
 	Templates.AddItem(Fireworks());					// TODO rework
 	Templates.AddItem(ExposeWeakness());
 	Templates.AddItem(QuickFeet());
@@ -158,7 +156,6 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(ArmedToTheTeeth());
 	Templates.AddItem(StandYourGround());
 	Templates.AddItem(CutsThroughSteel());
-	Templates.AddItem(SubsonicRound());				// TODO rework
 	Templates.AddItem(InTheZone());
 	Templates.AddItem(LivingVirus());				// TODO rework
 	Templates.AddItem(Mayhem());					// TODO rework
@@ -999,28 +996,6 @@ static function X2AbilityTemplate CutsThroughSteel()
 	Template = Passive('F_CutsThroughSteel', "img:///UILibrary_FavidsPerkPack.UIPerk_CutsThroughSteel", default.CUTSTHROUGHSTEEL_AWC, Effect, false, false);
 	
 	return Template;		
-}
-
-// Subsonic Round
-// (AbilityName="F_SubsonicRound", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Fire a pistol shot that does not reveal the user.
-static function X2AbilityTemplate SubsonicRound()
-{
-	local X2AbilityTemplate					Template;
-
-	// Create the template using a helper function
-	Template = Attack('F_SubsonicRound', "img:///UILibrary_FavidsPerkPack.UIPerk_SubsonicRound", default.SUBSONICROUND_AWC, none, class'UIUtilities_Tactical'.const.STANDARD_PISTOL_SHOT_PRIORITY, eCost_WeaponConsumeAll, 0);
-	
-	// Always remain concealed
-	Template.ConcealmentRule = eConceal_Always;
-	Template.bSilentAbility = true;
-
-	// Charges
-	AddCharges(Template, default.SUBSONICROUND_CHARGES);
-
-	Template.OverrideAbilities.AddItem('PistolOverwatch');
-
-	return Template;
 }
 
 // In The Zone
