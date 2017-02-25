@@ -243,8 +243,6 @@ static function X2AbilityTemplate Attack(name DataName, string IconImage, option
 
 	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
 
-	Template.AddShooterEffectExclusions();
-
 	VisibilityCondition = new class'X2Condition_Visibility';
 	VisibilityCondition.bRequireGameplayVisible = true;
 	VisibilityCondition.bAllowSquadsight = true;
@@ -253,8 +251,6 @@ static function X2AbilityTemplate Attack(name DataName, string IconImage, option
 	Template.AbilityTargetConditions.AddItem(default.LivingHostileTargetProperty);
 
 	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
-
-	// Don't allow the ability to be used while the unit is disoriented, burning, unconscious, etc.
 	Template.AddShooterEffectExclusions();
 
 	Template.AbilityTargetStyle = default.SimpleSingleTarget;

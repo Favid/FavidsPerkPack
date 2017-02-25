@@ -312,6 +312,9 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'MAIM_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.MAIM_COOLDOWN);
 			return true;
+		case 'NATURALTWENTY_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.NATURALTWENTY_COOLDOWN);
+			return true;
 		default: 
 			return false;
 	}

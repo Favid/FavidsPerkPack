@@ -123,7 +123,6 @@ var config int PIERCETHEVEIL_COOLDOWN;
 var config bool PIERCETHEVEIL_AWC;
 var config int IGNITE_COOLDOWN;
 var config bool IGNITE_AWC;
-var config int NATURALTWENTY_CRIT_BONUS;
 var config int NATURALTWENTY_COOLDOWN;
 var config bool NATURALTWENTY_AWC;
 
@@ -1736,46 +1735,26 @@ static function X2AbilityTemplate Ignite()
 
 // Natural Twenty
 // (AbilityName="F_NaturalTwenty", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Fire a shot that is guarenteed to critical if it hits. Cooldown.
+// While active, all shots that hit normally are automatically upgraded to critical hits. Cooldown.
 static function X2AbilityTemplate NaturalTwenty()
 {
+	local X2Effect_NaturalTwenty Effect;
 	local X2AbilityTemplate Template;
 
-	// Create the template using a helper function
-	Template = Attack('F_NaturalTwenty', "img:///UILibrary_PerkIcons.UIPerk_command", default.NATURALTWENTY_AWC, none, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_WeaponConsumeAll, 1);
+	// Create the effect to guarentee crits on successful shots
+	Effect = new class'X2Effect_NaturalTwenty';
 
+	// The effect lasts for one turn
+	Effect.BuildPersistentEffect(1, false, true, false, eGameRule_PlayerTurnBegin);
+	
+	// Add a visualization that plays a flyover over the target unit
+	Effect.VisualizationFn = EffectFlyOver_Visualization;
+	
+	// Activated ability that targets user
+	Template = SelfTargetActivated('F_NaturalTwenty', "img:///UILibrary_FavidsPerkPack.UIPerk_command", default.NATURALTWENTY_AWC, Effect, class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY, eCost_Free);
+	
 	// Add cooldown
 	AddCooldown(Template, default.NATURALTWENTY_COOLDOWN);
-
-	// Add a secondary ability to provide bonuses on the shot
-	AddSecondaryAbility(Template, NaturalTwentyBonuses());
-	
-	return Template;
-}
-
-static function X2AbilityTemplate NaturalTwentyBonuses()
-{
-	local X2AbilityTemplate Template;
-	local XMBEffect_ConditionalBonus Effect;
-	local XMBCondition_AbilityName Condition;
-
-	// Create a conditional bonus effect
-	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.EffectName = 'F_NaturalTwentyBonuses';
-
-	// The bonus adds +200 Crit chance by default. Should be enough to guarentee crits.
-	Effect.AddToHitModifier(default.NATURALTWENTY_CRIT_BONUS, eHit_Crit);
-
-	// The bonus only applies to the Natural Twenty ability
-	Condition = new class'XMBCondition_AbilityName';
-	Condition.IncludeAbilityNames.AddItem('F_NaturalTwenty');
-	Effect.AbilityTargetConditions.AddItem(Condition);
-
-	// Create the template using a helper function
-	Template = Passive('F_NaturalTwentyBonuses', "img:///UILibrary_PerkIcons.UIPerk_command", false, Effect);
-
-	// The Power Shot ability will show up as an active ability, so hide the icon for the passive damage effect
-	HidePerkIcon(Template);
 
 	return Template;
 }

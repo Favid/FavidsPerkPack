@@ -107,6 +107,9 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Momentum.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_NaturalTwenty.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_QuickFeet.uc">
       <SubType>Content</SubType>
     </Content>
