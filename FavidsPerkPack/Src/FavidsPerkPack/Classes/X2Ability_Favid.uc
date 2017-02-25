@@ -145,7 +145,6 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(BattleVision());
 	Templates.AddItem(Entrenched());
 	Templates.AddItem(Maim());
-	Templates.AddItem(Fireworks());					// TODO rework
 	Templates.AddItem(ExposeWeakness());
 	Templates.AddItem(QuickFeet());
 	Templates.AddItem(DisablingShot());
@@ -647,47 +646,6 @@ static function X2AbilityTemplate Maim()
 	Effect.SetDisplayInfo(ePerkBuff_Penalty, Template.LocFriendlyName, Template.LocLongDescription, Template.IconImage, true, , Template.AbilitySourceName);
 	Effect.VisualizationFn = EffectFlyOver_Visualization;
 	Template.AddTargetEffect(Effect);
-
-	return Template;
-}
-
-// Fireworks
-// (AbilityName="F_Fireworks", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
-// Once per turn, free pistol shot on enemies that move within 4 tiles.
-static function X2AbilityTemplate Fireworks()
-{
-	local X2AbilityTemplate Template;
-	local X2AbilityToHitCalc_StandardAim ToHit;
-	local X2Effect_ApplyWeaponDamage		WeaponDamageEffect;
-
-	WeaponDamageEffect = new class'X2Effect_ApplyWeaponDamage';
-
-	// Create the template using a helper function
-	Template = Attack('F_Fireworks', "img:///UILibrary_FavidsPerkPack.UIPerk_Fireworks", false, WeaponDamageEffect, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_None);
-	
-	// Reaction fire shouldn't show up as an activatable ability, it should be a passive instead
-	HidePerkIcon(Template);
-	AddIconPassive(Template);
-
-	// Set the shot to be considered reaction fire
-	ToHit = new class'X2AbilityToHitCalc_StandardAim';
-	ToHit.bReactionFire = true;
-	Template.AbilityToHitCalc = ToHit;
-
-	// Remove the default trigger of being activated by the player
-	Template.AbilityTriggers.Length = 0;
-
-	// Add a trigger that activates the ability on movement
-	AddMovementTrigger(Template);
-
-	// Restrict the shot to units within 4 tiles
-	Template.AbilityTargetConditions.AddItem(TargetWithinTiles(4));
-
-	// Since the attack has no cost, if we don't do anything else, it will be able to attack many
-	// times per turn (until we run out of ammo). AddPerTargetCooldown uses an X2Effect_Persistent
-	// that does nothing to mark our target unit, and a condition to prevent taking a second 
-	// attack on a marked target in the same turn.
-	AddPerTargetCooldown(Template, 1);
 
 	return Template;
 }
