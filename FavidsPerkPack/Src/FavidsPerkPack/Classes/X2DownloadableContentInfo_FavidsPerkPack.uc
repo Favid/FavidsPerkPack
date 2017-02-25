@@ -274,6 +274,24 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'STRENGTHINNUMBERS_SCALE_MAX':
 			OutString = string(class'X2Ability_Favid'.default.STRENGTHINNUMBERS_AIM_BONUS * class'X2Ability_Favid'.default.STRENGTHINNUMBERS_SCALE_MAX);
 			return true;
+		case 'PIERCETHEVEIL_DAMAGE_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.PIERCETHEVEIL_DAMAGE_BONUS);
+			return true;
+		case 'PIERCETHEVEIL_AIM_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.PIERCETHEVEIL_AIM_BONUS);
+			return true;
+		case 'PIERCETHEVEIL_ARMOR_PIERCING':
+			OutString = string(class'X2Ability_Favid'.default.PIERCETHEVEIL_ARMOR_PIERCING);
+			return true;
+		case 'PIERCETHEVEIL_DURATION':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.PIERCETHEVEIL_DURATION, "turn", "turns");
+			return true;
+		case 'PIERCETHEVEIL_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.PIERCETHEVEIL_COOLDOWN);
+			return true;
+		case 'PIERCETHEVEIL_INCREASE_COOLDOWN_AMOUNT':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.PIERCETHEVEIL_INCREASE_COOLDOWN_AMOUNT, "turn", "turns");
+			return true;
 		default: 
 			return false;
 	}

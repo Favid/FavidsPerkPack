@@ -124,11 +124,13 @@ var config int STRENGTHINNUMBERS_SCALE_MAX;
 var config bool STRENGTHINNUMBERS_AWC;
 var config int RECHARGE_COOLDOWN_AMOUNT;
 var config bool RECHARGE_AWC;
-var config int AMPLIFIEDSHOT_CRIT_BONUS;
-var config int AMPLIFIEDSHOT_DAMAGE_BONUS_T1;
-var config int AMPLIFIEDSHOT_DAMAGE_BONUS_T2;
-var config int AMPLIFIEDSHOT_DAMAGE_BONUS_T3;
-var config bool AMPLIFIEDSHOT_AWC;
+var config int PIERCETHEVEIL_AIM_BONUS;
+var config int PIERCETHEVEIL_DAMAGE_BONUS;
+var config int PIERCETHEVEIL_ARMOR_PIERCING;
+var config int PIERCETHEVEIL_DURATION;
+var config int PIERCETHEVEIL_INCREASE_COOLDOWN_AMOUNT;
+var config int PIERCETHEVEIL_COOLDOWN;
+var config bool PIERCETHEVEIL_AWC;
 var config int IGNITE_COOLDOWN;
 var config bool IGNITE_AWC;
 var config int NATURALTWENTY_CRIT_BONUS;
@@ -183,7 +185,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(EmpoweredBlast());
 	Templates.AddItem(StrengthInNumbers());
 	Templates.AddItem(Recharge());
-	Templates.AddItem(AmplifiedShot());				// TODO fix LW2 compatibility
+	Templates.AddItem(PierceTheVeil());
 	Templates.AddItem(Ignite());
 	Templates.AddItem(NaturalTwenty());
 	Templates.AddItem(PierceTheVeil());
@@ -1726,125 +1728,56 @@ static function X2AbilityTemplate Recharge()
 	return Template;
 }
 
+// Pierce The Veil
+// (AbilityName="F_PierceTheVeil", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
+// Activated ability that confers bonus aim, damage, and armor piercing to organic targets with your primary weapon, while increasing the cooldown of all of your other abilities.
 static function X2AbilityTemplate PierceTheVeil()
 {
-	local XMBEffect_ConditionalBonus AimEffect;
+	local XMBEffect_ConditionalBonus ShootingEffect;
 	local X2AbilityTemplate Template;
 	local X2Condition_UnitProperty				OrganicCondition;
 	local X2Effect_IncreaseCooldowns CooldownEffect;
 	local XMBCondition_AbilityName Condition;
 
-	// Create a persistent stat change effect that grants an aim bonus TODO config TODO primary weapon only
-	AimEffect = new class'XMBEffect_ConditionalBonus';
-	AimEffect.EffectName = 'F_PierceTheVeilAim';
-	AimEffect.AddToHitModifier(20);
+	// Create a stat change effect that grants an aim bonus, damage bonus, and armor piercing bonus
+	ShootingEffect = new class'XMBEffect_ConditionalBonus';
+	ShootingEffect.EffectName = 'F_PierceTheVeilBonuses';
+	ShootingEffect.AddToHitModifier(default.PIERCETHEVEIL_AIM_BONUS);
+	ShootingEffect.AddDamageModifier(default.PIERCETHEVEIL_DAMAGE_BONUS);
+	ShootingEffect.AddArmorPiercingModifier(default.PIERCETHEVEIL_ARMOR_PIERCING);
 
 	// Only against organics 
 	OrganicCondition = new class'X2Condition_UnitProperty';
 	OrganicCondition.ExcludeRobotic = true;
-	AimEffect.AbilityTargetConditions.AddItem(OrganicCondition);
-	
-	// Prevent the effect from applying to a unit more than once
-	AimEffect.DuplicateResponse = eDupe_Refresh;
+	ShootingEffect.AbilityTargetConditions.AddItem(OrganicCondition);
 
-	// The effect lasts for one turn TODO config
-	AimEffect.BuildPersistentEffect(1, false, true, false, eGameRule_PlayerTurnBegin);
+	// Only with the associated weapon
+	ShootingEffect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
+
+	// Prevent the effect from applying to a unit more than once
+	ShootingEffect.DuplicateResponse = eDupe_Refresh;
+
+	// The effect lasts for one turn
+	ShootingEffect.BuildPersistentEffect(default.PIERCETHEVEIL_DURATION, false, true, false, eGameRule_PlayerTurnBegin);
 	
 	// Add a visualization that plays a flyover over the target unit
-	AimEffect.VisualizationFn = EffectFlyOver_Visualization;
+	ShootingEffect.VisualizationFn = EffectFlyOver_Visualization;
 	
-	// Activated ability that targets user TODO awc
-	Template = SelfTargetActivated('F_PierceTheVeil', "img:///UILibrary_FavidsPerkPack.UIPerk_AmplifiedShot", false, AimEffect, class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY, eCost_Free);
+	// Activated ability that targets user
+	Template = SelfTargetActivated('F_PierceTheVeil', "img:///UILibrary_FavidsPerkPack.UIPerk_AmplifiedShot", default.PIERCETHEVEIL_AWC, ShootingEffect, class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY, eCost_Free);
 	
 	// Cannot be used while burning, etc.
 	Template.AddShooterEffectExclusions();
 
-	// Cooldown TODO config
-	AddCooldown(Template, 1);
+	// Cooldown
+	AddCooldown(Template, default.PIERCETHEVEIL_COOLDOWN);
 
-	// Now the effect to increase cooldowns TODO config
+	// Now the effect to increase cooldowns
 	CooldownEffect = new class'X2Effect_IncreaseCooldowns';
-	CooldownEffect.Amount = 1;
+	CooldownEffect.Amount = default.PIERCETHEVEIL_INCREASE_COOLDOWN_AMOUNT;
 	CooldownEffect.IncreaseAll = false;
 	CooldownEffect.OnlyAlreadyOnCooldown = false;
 	Template.AddTargetEffect(CooldownEffect);
-
-
-
-	return Template;
-}
-
-// Amplified Shot
-// (AbilityName="F_AmplifiedShot", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Fire a shot with +30 crit and +1/2/3 damage based on weapon tier. Increases cooldown of all other abilities by 1
-static function X2AbilityTemplate AmplifiedShot()
-{
-	local X2AbilityTemplate Template;
-
-	// Create the template using a helper function
-	Template = Attack('F_AmplifiedShot', "img:///UILibrary_FavidsPerkPack.UIPerk_AmplifiedShot", default.AMPLIFIEDSHOT_AWC, none, class'UIUtilities_Tactical'.const.CLASS_SERGEANT_PRIORITY, eCost_WeaponConsumeAll, 1);
-
-	// Add a secondary ability to provide bonuses on the shot
-	AddSecondaryAbility(Template, AmplifiedShotBonuses());
-	AddSecondaryAbility(Template, AmplifiedShotCooldown());
-	
-	return Template;
-}
-
-// This portion of the Amplified Shot causes crashes with LW2
-static function X2AbilityTemplate AmplifiedShotCooldown()
-{
-	local X2AbilityTemplate Template;
-	local X2Effect_IncreaseCooldowns Effect;
-	local XMBCondition_AbilityName Condition;
-	
-	// Create an effect that increases all cooldowns
-	Effect = new class'X2Effect_IncreaseCooldowns';
-	Effect.Amount = 1;
-	Effect.IncreaseAll = false;
-	
-	// The bonus only applies to the Power Shot ability
-	Condition = new class'XMBCondition_AbilityName';
-	Condition.IncludeAbilityNames.AddItem('F_AmplifiedShot');
-	Effect.TargetConditions.AddItem(Condition);
-
-	// Create the template using a helper function
-	Template = SelfTargetTrigger('F_AmplifiedShotCooldown', "img:///UILibrary_FavidsPerkPack.UIPerk_AmplifiedShot", false, Effect, 'AbilityActivated');
-	
-	// ... but only for reaction fire abilities.
-	//AddTriggerTargetCondition(Template, Condition);
-
-	return Template;
-}
-
-static function X2AbilityTemplate AmplifiedShotBonuses()
-{
-	local X2AbilityTemplate Template;
-	local XMBEffect_ConditionalBonus Effect;
-	local XMBCondition_AbilityName Condition;
-
-	// Create a conditional bonus effect
-	Effect = new class'XMBEffect_ConditionalBonus';
-	Effect.EffectName = 'F_AmplifiedShotBonuses';
-
-	// The bonus adds +20 Crit chance
-	Effect.AddToHitModifier(default.AMPLIFIEDSHOT_CRIT_BONUS, eHit_Crit);
-
-	// The bonus adds +3/4/5 damage on hit dependent on tech level
-	Effect.AddDamageModifier(default.AMPLIFIEDSHOT_DAMAGE_BONUS_T1, eHit_Success, 'conventional');
-	Effect.AddDamageModifier(default.AMPLIFIEDSHOT_DAMAGE_BONUS_T2, eHit_Success, 'magnetic');
-	Effect.AddDamageModifier(default.AMPLIFIEDSHOT_DAMAGE_BONUS_T3, eHit_Success, 'beam');
-
-	// The bonus only applies to the Power Shot ability
-	Condition = new class'XMBCondition_AbilityName';
-	Condition.IncludeAbilityNames.AddItem('F_AmplifiedShot');
-	Effect.AbilityTargetConditions.AddItem(Condition);
-
-	// Create the template using a helper function
-	Template = Passive('F_AmplifiedShotBonuses', "img:///UILibrary_FavidsPerkPack.UIPerk_AmplifiedShot", false, Effect);
-
-	// The Power Shot ability will show up as an active ability, so hide the icon for the passive damage effect
-	HidePerkIcon(Template);
 
 	return Template;
 }
