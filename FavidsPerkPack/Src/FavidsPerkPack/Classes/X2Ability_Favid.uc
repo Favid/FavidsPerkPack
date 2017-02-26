@@ -177,6 +177,9 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Ignite());
 	Templates.AddItem(NaturalTwenty());
 	Templates.AddItem(PierceTheVeil());
+	Templates.AddItem(RegenBiofield());
+	Templates.AddItem(RegenBiofieldPassive());
+	Templates.AddItem(RegenBiofieldCleanse());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1763,6 +1766,121 @@ static function X2AbilityTemplate NaturalTwenty()
 	
 	// Add cooldown
 	AddCooldown(Template, default.NATURALTWENTY_COOLDOWN);
+
+	return Template;
+}
+
+static function X2AbilityTemplate RegenBiofield()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_RegenBiofield               Effect;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_RegenBiofield');
+
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_solace";
+	Template.AbilitySourceName = 'eAbilitySource_Psionic';
+	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+	Template.AbilityMultiTargetStyle = new class'X2AbilityMultiTarget_AllAllies';
+
+	Effect = new class'X2Effect_RegenBiofield';
+	Effect.BuildPersistentEffect(1, true, false);
+	Effect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true,, Template.AbilitySourceName);
+	Template.AddMultiTargetEffect(Effect);
+
+	Template.AdditionalAbilities.AddItem('F_RegenBiofieldCleanse');
+	Template.AdditionalAbilities.AddItem('F_RegenBiofieldPassive');
+
+	Template.bSkipFireAction = true;
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
+
+	return Template;
+}
+
+static function X2AbilityTemplate RegenBiofieldPassive()
+{
+	return PurePassive('F_RegenBiofieldPassive', "img:///UILibrary_PerkIcons.UIPerk_solace");
+}
+
+static function X2AbilityTemplate RegenBiofieldCleanse()
+{
+	local X2AbilityTemplate                     Template;
+	local X2AbilityTrigger_EventListener        EventListener;
+	local X2Condition_UnitProperty              DistanceCondition;
+	local X2Effect_RemoveEffects                MentalEffectRemovalEffect;
+	local X2Effect_RemoveEffects                MindControlRemovalEffect;
+	local X2Condition_UnitProperty              EnemyCondition;
+	local X2Condition_UnitProperty              FriendCondition;
+	local X2Effect_RegenBiofieldHealing				RegenerationEffect;
+
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_RegenBiofieldCleanse');
+
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_solace";
+	Template.AbilitySourceName = 'eAbilitySource_Psionic';
+	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SimpleSingleTarget;
+	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
+
+	EventListener = new class'X2AbilityTrigger_EventListener';
+	EventListener.ListenerData.Deferral = ELD_OnStateSubmitted;
+	EventListener.ListenerData.EventID = 'UnitMoveFinished';
+	EventListener.ListenerData.Filter = eFilter_None;
+	EventListener.ListenerData.EventFn = class'XComGameState_Ability'.static.SolaceCleanseListener;
+	Template.AbilityTriggers.AddItem(EventListener);
+
+	// Build the regeneration effect
+	RegenerationEffect = new class'X2Effect_RegenBiofieldHealing';
+	RegenerationEffect.BuildPersistentEffect(1, true, true, false, eGameRule_PlayerTurnBegin);
+	RegenerationEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, false, , Template.AbilitySourceName);
+	RegenerationEffect.HealAmount = 1; // TODO config
+	RegenerationEffect.MaxHealAmount = 3; // TODO config
+	RegenerationEffect.HealthRegeneratedName = 'RegenBiofieldHealthRegenerated';
+
+	// Regen effect only affects allies
+	FriendCondition = new class'X2Condition_UnitProperty';
+	FriendCondition.ExcludeFriendlyToSource = false;
+	FriendCondition.ExcludeHostileToSource = true;
+	RegenerationEffect.TargetConditions.AddItem(FriendCondition);
+	Template.AddTargetEffect(RegenerationEffect);
+
+	//Naming confusion: CreateMindControlRemoveEffects removes everything _except_ mind control, and is used when mind-controlling an enemy.
+	//We want to remove all those other status effects on friendly units; we want to remove mind-control itself from enemy units.
+	//(Enemy units with mind-control will be back on our team once it's removed.)
+	//MentalEffectRemovalEffect = class'X2StatusEffects'.static.CreateMindControlRemoveEffects();
+	//FriendCondition = new class'X2Condition_UnitProperty';
+	//FriendCondition.ExcludeFriendlyToSource = false;
+	//FriendCondition.ExcludeHostileToSource = true;
+	//MentalEffectRemovalEffect.TargetConditions.AddItem(FriendCondition);
+	//Template.AddTargetEffect(MentalEffectRemovalEffect);
+//
+	//MindControlRemovalEffect = new class'X2Effect_RemoveEffects';
+	//MindControlRemovalEffect.EffectNamesToRemove.AddItem(class'X2Effect_MindControl'.default.EffectName);
+	//EnemyCondition = new class'X2Condition_UnitProperty';
+	//EnemyCondition.ExcludeFriendlyToSource = true;
+	//EnemyCondition.ExcludeHostileToSource = false;
+	//MindControlRemovalEffect.TargetConditions.AddItem(EnemyCondition);
+	//Template.AddTargetEffect(MindControlRemovalEffect);
+
+
+	DistanceCondition = new class'X2Condition_UnitProperty';
+	DistanceCondition.RequireWithinRange = true;
+	DistanceCondition.WithinRange = Sqrt(class'X2Ability_PsiOperativeAbilitySet'.default.SOLACE_DISTANCE_SQ) *  class'XComWorldData'.const.WORLD_StepSize;
+	DistanceCondition.ExcludeFriendlyToSource = false;
+	DistanceCondition.ExcludeHostileToSource = false;
+	Template.AbilityTargetConditions.AddItem(DistanceCondition);
+
+	Template.bSkipFireAction = true;
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
 
 	return Template;
 }
