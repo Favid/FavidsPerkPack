@@ -308,6 +308,15 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'MINDBLAST_STUN_ACTIONS':
 			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.MINDBLAST_STUN_ACTIONS, "action", "actions");
 			return true;
+		case 'OLYMPICDASH_MOBILITY':
+			OutString = string(class'X2Ability_Favid'.default.OLYMPICDASH_MOBILITY);
+			return true;
+		case 'OLYMPICDASH_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.OLYMPICDASH_COOLDOWN);
+			return true;
+		case 'OLYMPICDASH_DURATION':
+			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.OLYMPICDASH_DURATION, "turn", "turns");
+			return true;
 		default: 
 			return false;
 	}

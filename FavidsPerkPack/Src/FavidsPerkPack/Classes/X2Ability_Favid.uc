@@ -82,10 +82,10 @@ var config int MAYHEM_DAMAGE_T2;
 var config int MAYHEM_DAMAGE_T3;
 var config int MAYHEM_DAMAGE;
 var config bool MAYHEM_AWC;
-var config int SPRINTER_MOBILITY;
-var config int SPRINTER_DURATION;
-var config int SPRINTER_COOLDOWN;
-var config bool SPRINTER_AWC;
+var config int OLYMPICDASH_MOBILITY;
+var config int OLYMPICDASH_DURATION;
+var config int OLYMPICDASH_COOLDOWN;
+var config bool OLYMPICDASH_AWC;
 var config int INGOODHEALTH_AIM_BONUS;
 var config int INGOODHEALTH_DAMAGE_BONUS;
 var config bool INGOODHEALTH_AWC;
@@ -157,7 +157,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(InTheZone());
 	//Templates.AddItem(LivingVirus());				// TODO rework
 	//Templates.AddItem(Mayhem());					// TODO rework
-	//Templates.AddItem(Sprinter());					// TODO rework
+	Templates.AddItem(OlympicDash());
 	Templates.AddItem(InGoodHealth());
 	Templates.AddItem(RemoveInGoodHealth());
 	Templates.AddItem(Genji());
@@ -1087,36 +1087,45 @@ static function X2AbilityTemplate Mayhem()
 	return Template;
 }
 
-// Sprinter
-// (AbilityName="F_Sprinter", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Free action. Grants 4 mobility for the rest of the turn. 3 turn cooldown.
-static function X2AbilityTemplate Sprinter()
+// Olympic Dash
+// (AbilityName="F_OlympicDash", ApplyToWeaponSlot=eInvSlot_Unknown)
+// Free action. Gain bonus mobility and ignore reaction fire for the rest of the turn. Cooldown-based.
+static function X2AbilityTemplate OlympicDash()
 {
 	local X2AbilityTemplate Template;
 	local X2Effect_PersistentStatChange Effect;
+	local X2Effect_Persistent           ShadowstepEffect;
 
 	// Create a persistent stat change effect that grants an aim bonus
 	Effect = new class'X2Effect_PersistentStatChange';
-	Effect.EffectName = 'F_SprinterMobility';
-	Effect.AddPersistentStatChange(eStat_Mobility, default.SPRINTER_MOBILITY);
+	Effect.EffectName = 'F_OlympicDashMobility';
+	Effect.AddPersistentStatChange(eStat_Mobility, default.OLYMPICDASH_MOBILITY);
 	
 	// Prevent the effect from applying to a unit more than once
 	Effect.DuplicateResponse = eDupe_Refresh;
 
 	// The effect lasts for one turn
-	Effect.BuildPersistentEffect(default.SPRINTER_DURATION, false, true, false, eGameRule_PlayerTurnBegin);
+	Effect.BuildPersistentEffect(default.OLYMPICDASH_DURATION, false, true, false, eGameRule_PlayerTurnBegin);
 	
 	// Add a visualization that plays a flyover over the target unit
 	Effect.VisualizationFn = EffectFlyOver_Visualization;
 	
 	// Activated ability that targets user
-	Template = SelfTargetActivated('F_Sprinter', "img:///UILibrary_FavidsPerkPack.UIPerk_Sprinter", default.SPRINTER_AWC, Effect, class'UIUtilities_Tactical'.const.CLASS_CORPORAL_PRIORITY, eCost_Free);
+	Template = SelfTargetActivated('F_OlympicDash', "img:///UILibrary_FavidsPerkPack.UIPerk_Sprinter", default.OLYMPICDASH_AWC, Effect, class'UIUtilities_Tactical'.const.CLASS_CORPORAL_PRIORITY, eCost_Free);
 	
 	// Cannot be used while burning, etc.
 	Template.AddShooterEffectExclusions();
 
+	// Effect for ignoring reaction fire
+	ShadowstepEffect = new class'X2Effect_Persistent';
+	ShadowstepEffect.EffectName = 'Shadowstep';
+	ShadowstepEffect.DuplicateResponse = eDupe_Ignore;
+	ShadowstepEffect.BuildPersistentEffect(1, true, false);
+	ShadowstepEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+	Template.AddTargetEffect(ShadowstepEffect);
+
 	// Cooldown
-	AddCooldown(Template, default.SPRINTER_COOLDOWN);
+	AddCooldown(Template, default.OLYMPICDASH_COOLDOWN);
 
 	return Template;
 }
