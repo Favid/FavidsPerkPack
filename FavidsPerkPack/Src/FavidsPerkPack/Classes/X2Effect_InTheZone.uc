@@ -24,6 +24,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	local XComGameState_Ability AbilityState;
 	local bool flanked;
 	local UnitValue CountUnitValue;
+	local GameRulesCache_VisibilityInfo VisInfo;
 
 	// if we already hit the max number of refunds, return false
 	SourceUnit.GetUnitValue('RefundsThisTurn', CountUnitValue);
@@ -47,11 +48,17 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	History = `XCOMHISTORY;
 
 	TargetUnit = XComGameState_Unit(NewGameState.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
-
+	
 	if (TargetUnit != None)
 	{
 		PrevTargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(TargetUnit.ObjectID));      
-		flanked = TargetUnit.isFlanked(AbilityContext.InputContext.SourceObject);
+		//flanked = TargetUnit.isFlanked(AbilityContext.InputContext.SourceObject);
+
+		if (!`TACTICALRULES.VisibilityMgr.GetVisibilityInfo(SourceUnit.ObjectID, PrevTargetUnit.ObjectID, VisInfo, History.GetCurrentHistoryIndex()))
+		{
+			`LOG("ITZ: GetVisibilityInfo is true");
+			flanked = (TargetUnit.isFlanked(AbilityContext.InputContext.SourceObject) || (PrevTargetUnit.GetMyTemplate().bCanTakeCover && VisInfo.TargetCover == INDEX_NONE));
+		}
 		
 		if (TargetUnit.IsDead() && PrevTargetUnit != None && flanked)
 		{

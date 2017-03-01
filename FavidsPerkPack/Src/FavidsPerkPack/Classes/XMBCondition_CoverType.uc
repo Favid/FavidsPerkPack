@@ -13,7 +13,7 @@
 //  default.HalfCoverCondition			The target is in half cover
 //  default.NoCoverCondition			The target is not in cover
 //  default.FlankedCondition			The target is not in cover and can be flanked
-//  default.CantTakeCoverCondition		The target is not in cover and can be flanked
+//  default.CantTakeCoverCondition		The target is not in cover and cannot be flanked
 //
 //  EXAMPLES
 //

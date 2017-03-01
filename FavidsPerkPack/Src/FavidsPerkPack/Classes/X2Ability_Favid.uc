@@ -177,6 +177,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Ignite());
 	Templates.AddItem(NaturalTwenty());
 	Templates.AddItem(PierceTheVeil());
+	Templates.AddItem(Regeneration());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -958,17 +959,52 @@ static function X2AbilityTemplate CutsThroughSteel()
 // In The Zone
 // (AbilityName="F_InTheZone", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
 // Killing a flanked target refunds one action point. Passive.
+//static function X2AbilityTemplate InTheZone()
+//{
+	//local X2AbilityTemplate						Template;
+	//local X2Effect_InTheZone               InTheZoneEffect;
+//
+	//InTheZoneEffect = new class'X2Effect_InTheZone';
+	//InTheZoneEffect.EffectName = 'F_InTheZone';
+	//InTheZoneEffect.BuildPersistentEffect(1, true, false, false);
+	//InTheZoneEffect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
+//
+	//Template = Passive('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, InTheZoneEffect, false, false);
+//
+	//return Template;
+//}
+
 static function X2AbilityTemplate InTheZone()
 {
-	local X2AbilityTemplate						Template;
-	local X2Effect_InTheZone               InTheZoneEffect;
+	local X2Effect_GrantActionPoints Effect;
+	local X2AbilityTemplate Template;
+	local XMBCondition_AbilityCost CostCondition;
 
-	InTheZoneEffect = new class'X2Effect_InTheZone';
-	InTheZoneEffect.EffectName = 'F_InTheZone';
-	InTheZoneEffect.BuildPersistentEffect(1, true, false, false);
-	InTheZoneEffect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
+	// Add a single movement-only action point to the unit
+	Effect = new class'X2Effect_GrantActionPoints';
+	Effect.NumActionPoints = 1;
+	Effect.PointType = class'X2CharacterTemplateManager'.default.StandardActionPoint;
 
-	Template = Passive('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, InTheZoneEffect, false, false);
+	// Create a triggered ability that will activate whenever the unit uses an ability that meets the condition
+	Template = SelfTargetTrigger('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, Effect, 'KillMail');
+
+	// Trigger abilities don't appear as passives. Add a passive ability icon.
+	AddIconPassive(Template);
+
+	// Require that the activated ability costs 1 action point, but actually spent at least 2
+	CostCondition = new class'XMBCondition_AbilityCost';
+	CostCondition.bRequireMinimumPointsSpent = true;
+	CostCondition.MinimumPointsSpent = 1;
+	AddTriggerTargetCondition(Template, CostCondition);
+	
+	// Require that target is flanked
+	AddTriggerTargetCondition(Template, default.FlankedCondition);
+
+	// Require that the shot was made with the associated weapon TODO test
+	AddTriggerTargetCondition(Template, default.MatchingWeaponCondition);
+
+	// Show a flyover when activated
+	Template.bShowActivation = true;
 
 	return Template;
 }
@@ -1763,6 +1799,82 @@ static function X2AbilityTemplate NaturalTwenty()
 	
 	// Add cooldown
 	AddCooldown(Template, default.NATURALTWENTY_COOLDOWN);
+
+	return Template;
+}
+
+static function X2AbilityTemplate Regeneration()
+{
+	local X2AbilityTemplate				Template;
+	local X2AbilityCost_ActionPoints	ActionPointCost;
+	local X2Effect_GrantActionPoints	ActionPointEffect;
+	local X2Effect_Persistent			ActionPointPersistEffect;
+	local X2Condition_UnitProperty      TargetCondition;
+	local X2AbilityCooldown             Cooldown;
+	local X2Condition_UnitValue         ValueCondition;
+	local X2Effect_PsiRegeneration				RegenerationEffect;
+
+	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_Regeneration');
+
+	// Icon Properties
+	Template.AbilitySourceName = 'eAbilitySource_Psionic';                                       // color of the icon
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_inspire";
+	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_CORPORAL_PRIORITY;
+	Template.Hostility = eHostility_Defensive;
+	Template.bLimitTargetIcons = true;
+	Template.eAbilityIconBehaviorHUD = eAbilityIconBehavior_AlwaysShow;	
+	
+	Template.AbilityTriggers.AddItem(default.PlayerInputTrigger);
+
+	ActionPointCost = new class'X2AbilityCost_ActionPoints';
+	ActionPointCost.iNumPoints = 1;
+	ActionPointCost.bConsumeAllPoints = true;
+	Template.AbilityCosts.AddItem(ActionPointCost);
+
+	Cooldown = new class'X2AbilityCooldown';
+	Cooldown.iNumTurns = 4; // TODO config
+	Template.AbilityCooldown = Cooldown;
+
+	Template.AbilityToHitCalc = default.DeadEye;
+
+	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
+	Template.AddShooterEffectExclusions();
+
+	// 
+	TargetCondition = new class'X2Condition_UnitProperty';
+	TargetCondition.ExcludeHostileToSource = true;
+	TargetCondition.ExcludeFriendlyToSource = false;
+	TargetCondition.RequireSquadmates = true;
+	TargetCondition.FailOnNonUnits = true;
+	TargetCondition.ExcludeDead = true;
+	TargetCondition.ExcludeRobotic = true;
+	Template.AbilityTargetConditions.AddItem(TargetCondition);
+	Template.AbilityTargetConditions.AddItem(default.GameplayVisibilityCondition);
+
+	// Can only be used on each ally once
+	ValueCondition = new class'X2Condition_UnitValue';
+	ValueCondition.AddCheckValue('F_HasExperiencedRegeneration', 0, eCheck_Exact);
+	Template.AbilityTargetConditions.AddItem(ValueCondition);
+
+	// Build the regeneration effect
+	RegenerationEffect = new class'X2Effect_PsiRegeneration';
+	RegenerationEffect.BuildPersistentEffect(1, true, false, false, eGameRule_PlayerTurnEnd); // TODO config
+	RegenerationEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true, , Template.AbilitySourceName);
+	RegenerationEffect.bRemoveWhenTargetDies = true;
+	RegenerationEffect.HealAmount = 1; // TODO config
+	RegenerationEffect.MaxHealAmount = 3; // TODO config
+	RegenerationEffect.HealthRegeneratedName = 'F_RegenerationCount';
+	RegenerationEffect.HasExperiencedRegenerationName = 'F_HasExperiencedRegeneration';
+	RegenerationEffect.VisualizationFn = EffectFlyOver_Visualization;
+	Template.AddTargetEffect(RegenerationEffect);
+
+	Template.AbilityTargetStyle = default.SimpleSingleTarget;
+	
+	Template.bShowActivation = true;
+	Template.CustomFireAnim = 'HL_Psi_ProjectileMedium';
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
+	Template.CinescriptCameraType = "Psionic_FireAtUnit";
 
 	return Template;
 }
