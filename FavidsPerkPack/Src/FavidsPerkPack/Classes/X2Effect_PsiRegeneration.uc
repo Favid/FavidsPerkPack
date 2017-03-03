@@ -13,33 +13,33 @@ function bool PsiRegenerationTicked(X2Effect_Persistent PersistentEffect, const 
 {
 	local XComGameState_Unit OldTargetState, NewTargetState, SourceUnitState;
 	local UnitValue HealthRegenerated;
-	local int AmountToHeal, Healed, NewHealthRegenerated, HealAmount, MaxHealAmount;
+	local int AmountToHeal, Healed, NewHealthRegenerated, ActualHealAmount, ActualMaxHealAmount;
 	
 	OldTargetState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ApplyEffectParameters.TargetStateObjectRef.ObjectID));
 	SourceUnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ApplyEffectParameters.SourceStateObjectRef.ObjectID));
 
-	HealAmount = getHealAmount(SourceUnitState);
-	MaxHealAmount = getMaxHealAmount(SourceUnitState);
+	ActualHealAmount = getHealAmount(SourceUnitState);
+	ActualMaxHealAmount = getMaxHealAmount(SourceUnitState);
 
-	if (HealthRegeneratedName != '' && MaxHealAmount > 0)
+	if (HealthRegeneratedName != '' && ActualMaxHealAmount > 0)
 	{
 		OldTargetState.GetUnitValue(HealthRegeneratedName, HealthRegenerated);
 
 		// If the unit has already been healed the maximum number of times, do not regen
-		if (HealthRegenerated.fValue >= MaxHealAmount)
+		if (HealthRegenerated.fValue >= ActualMaxHealAmount)
 		{
 			return false;
 		}
 		else
 		{
 			// Ensure the unit is not healed for more than the maximum allowed amount
-			AmountToHeal = min(HealAmount, (MaxHealAmount - HealthRegenerated.fValue));
+			AmountToHeal = min(ActualHealAmount, (ActualMaxHealAmount - HealthRegenerated.fValue));
 		}
 	}
 	else
 	{
 		// If no value tracking for health regenerated is set, heal for the default amount
-		AmountToHeal = HealAmount;
+		AmountToHeal = ActualHealAmount;
 	}	
 
 	// Perform the heal
@@ -62,7 +62,7 @@ function bool PsiRegenerationTicked(X2Effect_Persistent PersistentEffect, const 
 			NewTargetState.SetUnitFloatValue(HealthRegeneratedName, NewHealthRegenerated, eCleanup_BeginTactical);
 
 			// Return true to remove the effect if this has healed the max amount
-			if(NewHealthRegenerated >= MaxHealAmount)
+			if(NewHealthRegenerated >= ActualMaxHealAmount)
 			{
 				return true;
 			}
@@ -78,7 +78,6 @@ private function int getHealAmount(XComGameState_Unit SourceUnitState)
 	local X2WeaponTemplate	SecondaryWeapon;
 
 	SecondaryWeaponItem = SourceUnitState.GetSecondaryWeapon();
-
 	SecondaryWeapon = X2WeaponTemplate(SecondaryWeaponItem.GetMyTemplate());
 
 	switch(SecondaryWeapon.WeaponTech)
@@ -100,7 +99,6 @@ private function int getMaxHealAmount(XComGameState_Unit SourceUnitState)
 	local X2WeaponTemplate	SecondaryWeapon;
 
 	SecondaryWeaponItem = SourceUnitState.GetSecondaryWeapon();
-
 	SecondaryWeapon = X2WeaponTemplate(SecondaryWeaponItem.GetMyTemplate());
 
 	switch(SecondaryWeapon.WeaponTech)

@@ -133,7 +133,7 @@ var config int REGENERATION_HEALAMOUNT_BM;
 var config int REGENERATION_MAXHEALAMOUNT_CV;
 var config int REGENERATION_MAXHEALAMOUNT_MG;
 var config int REGENERATION_MAXHEALAMOUNT_BM;
-var config bool REGENERATION_AWC; // TODO use
+var config bool REGENERATION_AWC;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -1658,7 +1658,6 @@ static function X2AbilityTemplate PierceTheVeil()
 	local XMBEffect_ConditionalBonus ShootingEffect;
 	local X2AbilityTemplate Template;
 	local X2Condition_UnitProperty				OrganicCondition;
-	local XMBCondition_AbilityName Condition;
 	local X2Effect_IncreaseCooldowns CooldownEffect;
 
 	// Create a stat change effect that grants an aim bonus, damage bonus, and armor piercing bonus
@@ -1780,7 +1779,7 @@ static function X2AbilityTemplate NaturalTwenty()
 	Effect.VisualizationFn = EffectFlyOver_Visualization;
 	
 	// Activated ability that targets user
-	Template = SelfTargetActivated('F_NaturalTwenty', "img:///UILibrary_FavidsPerkPack.UIPerk_command", default.NATURALTWENTY_AWC, Effect, class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY, eCost_Free);
+	Template = SelfTargetActivated('F_NaturalTwenty', "img:///UILibrary_FavidsPerkPack.UIPerk_NaturalTwenty", default.NATURALTWENTY_AWC, Effect, class'UIUtilities_Tactical'.const.CLASS_COLONEL_PRIORITY, eCost_Free);
 	
 	// Add cooldown
 	AddCooldown(Template, default.NATURALTWENTY_COOLDOWN);
@@ -1788,12 +1787,13 @@ static function X2AbilityTemplate NaturalTwenty()
 	return Template;
 }
 
+// Regeneration
+// (AbilityName="F_Regeneration", ApplyToWeaponSlot=eInvSlot_SecondaryWeapon)
+// Restore health to an ally gradually over time. Cooldown-based.
 static function X2AbilityTemplate Regeneration()
 {
 	local X2AbilityTemplate				Template;
 	local X2AbilityCost_ActionPoints	ActionPointCost;
-	local X2Effect_GrantActionPoints	ActionPointEffect;
-	local X2Effect_Persistent			ActionPointPersistEffect;
 	local X2Condition_UnitProperty      TargetCondition;
 	local X2AbilityCooldown             Cooldown;
 	local X2Condition_UnitValue         ValueCondition;
@@ -1803,7 +1803,7 @@ static function X2AbilityTemplate Regeneration()
 
 	// Icon Properties
 	Template.AbilitySourceName = 'eAbilitySource_Psionic';                                       // color of the icon
-	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_inspire";
+	Template.IconImage = "img:///UILibrary_PerkIcons.UIPerk_Regeneration";
 	Template.ShotHUDPriority = class'UIUtilities_Tactical'.const.CLASS_CORPORAL_PRIORITY;
 	Template.Hostility = eHostility_Defensive;
 	Template.bLimitTargetIcons = true;
@@ -1825,7 +1825,7 @@ static function X2AbilityTemplate Regeneration()
 	Template.AbilityShooterConditions.AddItem(default.LivingShooterProperty);
 	Template.AddShooterEffectExclusions();
 
-	// 
+	// Can target ranged ally or self
 	TargetCondition = new class'X2Condition_UnitProperty';
 	TargetCondition.ExcludeHostileToSource = true;
 	TargetCondition.ExcludeFriendlyToSource = false;
@@ -1864,6 +1864,8 @@ static function X2AbilityTemplate Regeneration()
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 	Template.BuildVisualizationFn = TypicalAbility_BuildVisualization;
 	Template.CinescriptCameraType = "Psionic_FireAtUnit";
+
+	Template.bCrossClassEligible = default.REGENERATION_AWC;
 
 	return Template;
 }

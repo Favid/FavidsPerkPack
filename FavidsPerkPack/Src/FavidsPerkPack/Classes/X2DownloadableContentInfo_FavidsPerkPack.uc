@@ -317,6 +317,27 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'OLYMPICDASH_DURATION':
 			OutString = getStringBasedOnValue(class'X2Ability_Favid'.default.OLYMPICDASH_DURATION, "turn", "turns");
 			return true;
+		case 'REGENERATION_HEALAMOUNT_CV':
+			OutString = string(class'X2Ability_Favid'.default.REGENERATION_HEALAMOUNT_CV);
+			return true;
+		case 'REGENERATION_HEALAMOUNT_MG':
+			OutString = string(class'X2Ability_Favid'.default.REGENERATION_HEALAMOUNT_MG);
+			return true;
+		case 'REGENERATION_HEALAMOUNT_BM':
+			OutString = string(class'X2Ability_Favid'.default.REGENERATION_HEALAMOUNT_BM);
+			return true;
+		case 'REGENERATION_MAXHEALAMOUNT_CV':
+			OutString = string(class'X2Ability_Favid'.default.REGENERATION_MAXHEALAMOUNT_CV);
+			return true;
+		case 'REGENERATION_MAXHEALAMOUNT_MG':
+			OutString = string(class'X2Ability_Favid'.default.REGENERATION_MAXHEALAMOUNT_MG);
+			return true;
+		case 'REGENERATION_MAXHEALAMOUNT_BM':
+			OutString = string(class'X2Ability_Favid'.default.REGENERATION_MAXHEALAMOUNT_BM);
+			return true;
+		case 'REGENERATION_COOLDOWN':
+			OutString = string(class'X2Ability_Favid'.default.REGENERATION_COOLDOWN);
+			return true;
 		default: 
 			return false;
 	}
