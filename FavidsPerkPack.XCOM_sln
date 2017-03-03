@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # XCOM ModBuddy Solution File, Format Version 11.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{5DAE07AF-E217-45C1-8DE7-FF99D6011E8A}") = "FavidsPerkPack", "FavidsPerkPack\FavidsPerkPack.x2proj", "{5DBDCC4B-1425-4037-9D7E-88F492F9338A}"
+Project("{5DAE07AF-E217-45C1-8DE7-FF99D6011E8A}") = "FavidsPerkPack", "FavidsPerkPack\FavidsPerkPack.x2proj", "{D12446F7-E926-453E-9964-88D3F0B77420}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|XCOM 2 = Debug|XCOM 2
 		Default|XCOM 2 = Default|XCOM 2
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5DBDCC4B-1425-4037-9D7E-88F492F9338A}.Default|XCOM 2.ActiveCfg = Default|XCOM 2
-		{5DBDCC4B-1425-4037-9D7E-88F492F9338A}.Default|XCOM 2.Build.0 = Default|XCOM 2
+		{D12446F7-E926-453E-9964-88D3F0B77420}.Debug|XCOM 2.ActiveCfg = Default|XCOM 2
+		{D12446F7-E926-453E-9964-88D3F0B77420}.Debug|XCOM 2.Build.0 = Default|XCOM 2
+		{D12446F7-E926-453E-9964-88D3F0B77420}.Debug|XCOM 2.Deploy.0 = Default|XCOM 2
+		{D12446F7-E926-453E-9964-88D3F0B77420}.Default|XCOM 2.ActiveCfg = Default|XCOM 2
+		{D12446F7-E926-453E-9964-88D3F0B77420}.Default|XCOM 2.Build.0 = Default|XCOM 2
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

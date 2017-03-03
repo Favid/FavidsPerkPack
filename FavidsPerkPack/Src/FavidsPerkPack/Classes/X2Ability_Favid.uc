@@ -125,6 +125,14 @@ var config int IGNITE_COOLDOWN;
 var config bool IGNITE_AWC;
 var config int NATURALTWENTY_COOLDOWN;
 var config bool NATURALTWENTY_AWC;
+var config int REGENERATION_COOLDOWN;
+var config int REGENERATION_HEALAMOUNT_CV;
+var config int REGENERATION_HEALAMOUNT_MG;
+var config int REGENERATION_HEALAMOUNT_BM;
+var config int REGENERATION_MAXHEALAMOUNT_CV;
+var config int REGENERATION_MAXHEALAMOUNT_MG;
+var config int REGENERATION_MAXHEALAMOUNT_BM;
+var config bool REGENERATION_AWC; // TODO use
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -974,38 +982,93 @@ static function X2AbilityTemplate CutsThroughSteel()
 	//return Template;
 //}
 
+//static function X2AbilityTemplate InTheZone()
+//{
+	//local XMBEffect_AbilityCostRefund Effect;
+	//local X2AbilityTemplate Template;
+	//local XMBCondition_AbilityCost CostCondition;
+//
+	//// Create an effect that refunds one action point
+	//Effect = new class'XMBEffect_AbilityCostRefund';
+	//Effect.EffectName = 'F_InTheZone';
+	//Effect.TriggeredEvent = 'F_InTheZoneTrigger';
+	//Effect.bShowFlyOver = true;
+	//Effect.CountValueName = 'F_InTheZone_RefundsThisTurn';
+	//Effect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
+	//Effect.bRefundSinglePoint = true;
+//
+	//// Create a triggered ability that will activate whenever the unit uses an ability that meets the condition
+	//Template = SelfTargetTrigger('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, Effect, 'KillMail');
+//
+	//// Trigger abilities don't appear as passives. Add a passive ability icon.
+	//AddIconPassive(Template);
+//
+	//// Require that the activated ability spent at least 1 action point
+	//CostCondition = new class'XMBCondition_AbilityCost';
+	//CostCondition.bRequireMinimumPointsSpent = true;
+	//CostCondition.MinimumPointsSpent = 1;
+	//AddTriggerTargetCondition(Template, CostCondition);
+	//
+	//// Require that target is flanked
+	//AddTriggerTargetCondition(Template, default.FlankedCondition);
+	//
+	//// Require that target is flanked
+	//AddTriggerTargetCondition(Template, default.DeadCondition);
+//
+	//// Require that the shot was made with the associated weapon TODO test - failed with it, now try without
+	////AddTriggerTargetCondition(Template, default.MatchingWeaponCondition);
+//
+	//// Show a flyover when activated
+	////Template.bShowActivation = true;
+//
+	//return Template;
+//}
+
+//static function X2AbilityTemplate InTheZone()
+//{
+	//local XMBEffect_InTheZone Effect;
+	//
+	//// Create an effect that will refund the cost of attacks
+	//Effect = new class'XMBEffect_InTheZone';
+	//Effect.EffectName = 'F_InTheZone';
+	//Effect.TriggeredEvent = 'F_InTheZoneTrigger';
+	//Effect.bShowFlyOver = true;
+	//Effect.CountValueName = 'F_InTheZone_RefundsThisTurn';
+	//Effect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
+	//Effect.bRefundSinglePoint = true;
+//
+	//// Require that target is flanked
+	//Effect.AbilityTargetConditions.AddItem(default.FlankedCondition);
+	//
+	//// Require that target was killed
+	////Effect.AbilityTargetConditions.AddItem(default.DeadCondition);
+//
+	//// Create the template using a helper function
+	//return Passive('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, Effect, false, false);
+//}
+
 static function X2AbilityTemplate InTheZone()
 {
-	local X2Effect_GrantActionPoints Effect;
-	local X2AbilityTemplate Template;
-	local XMBCondition_AbilityCost CostCondition;
+	local X2AbilityTemplate					Template;
+	local X2Effect_InTheZone				InTheZoneEffect;
 
-	// Add a single movement-only action point to the unit
-	Effect = new class'X2Effect_GrantActionPoints';
-	Effect.NumActionPoints = 1;
-	Effect.PointType = class'X2CharacterTemplateManager'.default.StandardActionPoint;
-
-	// Create a triggered ability that will activate whenever the unit uses an ability that meets the condition
-	Template = SelfTargetTrigger('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, Effect, 'KillMail');
-
-	// Trigger abilities don't appear as passives. Add a passive ability icon.
-	AddIconPassive(Template);
-
-	// Require that the activated ability costs 1 action point, but actually spent at least 2
-	CostCondition = new class'XMBCondition_AbilityCost';
-	CostCondition.bRequireMinimumPointsSpent = true;
-	CostCondition.MinimumPointsSpent = 1;
-	AddTriggerTargetCondition(Template, CostCondition);
+	`CREATE_X2ABILITY_TEMPLATE (Template, 'F_InTheZone');
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone";
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+	Template.bIsPassive = true;
+	InTheZoneEffect = new class'X2Effect_InTheZone';
+	InTheZoneEffect.BuildPersistentEffect(1, true, false, false);
+	InTheZoneEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+	InTheZoneEffect.DuplicateResponse = eDupe_Ignore;
+	Template.AddTargetEffect(InTheZoneEffect);
+	Template.bCrossClassEligible = false;
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 	
-	// Require that target is flanked
-	AddTriggerTargetCondition(Template, default.FlankedCondition);
-
-	// Require that the shot was made with the associated weapon TODO test
-	AddTriggerTargetCondition(Template, default.MatchingWeaponCondition);
-
-	// Show a flyover when activated
-	Template.bShowActivation = true;
-
 	return Template;
 }
 
@@ -1832,7 +1895,7 @@ static function X2AbilityTemplate Regeneration()
 	Template.AbilityCosts.AddItem(ActionPointCost);
 
 	Cooldown = new class'X2AbilityCooldown';
-	Cooldown.iNumTurns = 4; // TODO config
+	Cooldown.iNumTurns = default.REGENERATION_COOLDOWN;
 	Template.AbilityCooldown = Cooldown;
 
 	Template.AbilityToHitCalc = default.DeadEye;
@@ -1858,17 +1921,21 @@ static function X2AbilityTemplate Regeneration()
 
 	// Build the regeneration effect
 	RegenerationEffect = new class'X2Effect_PsiRegeneration';
-	RegenerationEffect.BuildPersistentEffect(1, true, false, false, eGameRule_PlayerTurnEnd); // TODO config
+	RegenerationEffect.BuildPersistentEffect(1, true, false, false, eGameRule_PlayerTurnEnd);
 	RegenerationEffect.SetDisplayInfo(ePerkBuff_Bonus, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage, true, , Template.AbilitySourceName);
 	RegenerationEffect.bRemoveWhenTargetDies = true;
-	RegenerationEffect.HealAmount = 1; // TODO config
-	RegenerationEffect.MaxHealAmount = 3; // TODO config
+	RegenerationEffect.HealAmount_CV = default.REGENERATION_HEALAMOUNT_CV;
+	RegenerationEffect.HealAmount_MG = default.REGENERATION_HEALAMOUNT_MG;
+	RegenerationEffect.HealAmount_BM = default.REGENERATION_HEALAMOUNT_BM;
+	RegenerationEffect.MaxHealAmount_CV = default.REGENERATION_MAXHEALAMOUNT_CV;
+	RegenerationEffect.MaxHealAmount_MG = default.REGENERATION_MAXHEALAMOUNT_MG;
+	RegenerationEffect.MaxHealAmount_BM = default.REGENERATION_MAXHEALAMOUNT_BM;
 	RegenerationEffect.HealthRegeneratedName = 'F_RegenerationCount';
 	RegenerationEffect.HasExperiencedRegenerationName = 'F_HasExperiencedRegeneration';
 	RegenerationEffect.VisualizationFn = EffectFlyOver_Visualization;
 	Template.AddTargetEffect(RegenerationEffect);
 
-	Template.AbilityTargetStyle = default.SimpleSingleTarget;
+	Template.AbilityTargetStyle = default.SingleTargetWithSelf;
 	
 	Template.bShowActivation = true;
 	Template.CustomFireAnim = 'HL_Psi_ProjectileMedium';

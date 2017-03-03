@@ -2,14 +2,24 @@ class X2Effect_PsiRegeneration extends X2Effect_Regeneration;
 
 var name HasExperiencedRegenerationName;
 
+var int HealAmount_CV;
+var int MaxHealAmount_CV;
+var int HealAmount_MG;
+var int MaxHealAmount_MG;
+var int HealAmount_BM;
+var int MaxHealAmount_BM;
 
 function bool PsiRegenerationTicked(X2Effect_Persistent PersistentEffect, const out EffectAppliedData ApplyEffectParameters, XComGameState_Effect kNewEffectState, XComGameState NewGameState, bool FirstApplication)
 {
-	local XComGameState_Unit OldTargetState, NewTargetState;
+	local XComGameState_Unit OldTargetState, NewTargetState, SourceUnitState;
 	local UnitValue HealthRegenerated;
-	local int AmountToHeal, Healed, NewHealthRegenerated;
+	local int AmountToHeal, Healed, NewHealthRegenerated, HealAmount, MaxHealAmount;
 	
 	OldTargetState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ApplyEffectParameters.TargetStateObjectRef.ObjectID));
+	SourceUnitState = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(ApplyEffectParameters.SourceStateObjectRef.ObjectID));
+
+	HealAmount = getHealAmount(SourceUnitState);
+	MaxHealAmount = getMaxHealAmount(SourceUnitState);
 
 	if (HealthRegeneratedName != '' && MaxHealAmount > 0)
 	{
@@ -60,6 +70,50 @@ function bool PsiRegenerationTicked(X2Effect_Persistent PersistentEffect, const 
 	}
 
 	return false;
+}
+
+private function int getHealAmount(XComGameState_Unit SourceUnitState)
+{
+	local XComGameState_Item SecondaryWeaponItem;
+	local X2WeaponTemplate	SecondaryWeapon;
+
+	SecondaryWeaponItem = SourceUnitState.GetSecondaryWeapon();
+
+	SecondaryWeapon = X2WeaponTemplate(SecondaryWeaponItem.GetMyTemplate());
+
+	switch(SecondaryWeapon.WeaponTech)
+	{
+		case 'conventional':
+			return HealAmount_CV;
+		case 'magnetic':
+			return HealAmount_MG;
+		case 'beam':
+			return HealAmount_BM;
+		default:
+			return 10;
+	}
+}
+
+private function int getMaxHealAmount(XComGameState_Unit SourceUnitState)
+{
+	local XComGameState_Item SecondaryWeaponItem;
+	local X2WeaponTemplate	SecondaryWeapon;
+
+	SecondaryWeaponItem = SourceUnitState.GetSecondaryWeapon();
+
+	SecondaryWeapon = X2WeaponTemplate(SecondaryWeaponItem.GetMyTemplate());
+
+	switch(SecondaryWeapon.WeaponTech)
+	{
+		case 'conventional':
+			return MaxHealAmount_CV;
+		case 'magnetic':
+			return MaxHealAmount_MG;
+		case 'beam':
+			return MaxHealAmount_BM;
+		default:
+			return 100;
+	}
 }
 
 simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffectParameters, XComGameState_BaseObject kNewTargetState, XComGameState NewGameState, XComGameState_Effect NewEffectState)

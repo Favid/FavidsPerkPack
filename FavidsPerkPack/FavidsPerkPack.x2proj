@@ -8,6 +8,9 @@
     <AssemblyName>FavidsPerkPack</AssemblyName>
     <RootNamespace>FavidsPerkPack</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Folder Include="Config\" />
     <Folder Include="Content\" />
@@ -216,6 +219,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XMBEffect_Extended.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\XMBEffect_InTheZone.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XMBEffect_PermanentStatChange.uc">

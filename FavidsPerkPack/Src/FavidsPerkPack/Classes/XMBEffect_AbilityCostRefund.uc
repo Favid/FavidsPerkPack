@@ -33,7 +33,7 @@ var name TriggeredEvent;							// An event that will be triggered when this effe
 var bool bShowFlyOver;								// Show a flyover when this effect refunds an ability cost. Requires TriggeredEvent to be set.
 var name CountValueName;							// Name of the unit value to use to count the number of actions refunded per turn.
 var int MaxRefundsPerTurn;							// Maximum number of actions to refund per turn. Requires CountUnitValue to be set.
-
+var bool bRefundSinglePoint;						// If true, only refund one action point, instead of all action points that were spent.
 
 //////////////////////////
 // Condition properties //
@@ -69,28 +69,42 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	local XComGameState_Unit TargetUnit;
 	local UnitValue CountUnitValue;
 
+	`LOG("ITZ: PostAbilityCostPaid");
+
 	TargetUnit = XComGameState_Unit(NewGameState.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
 	if (TargetUnit == none)
 		TargetUnit = XComGameState_Unit(`XCOMHISTORY.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
 
+	`LOG("ITZ: CountValueName: " $ string(CountValueName));
 	if (CountValueName != '')
 	{
 		SourceUnit.GetUnitValue(CountValueName, CountUnitValue);
 		if (MaxRefundsPerTurn >= 0 && CountUnitValue.fValue >= MaxRefundsPerTurn)
 			return false;
 	}
-
+	
+	`LOG("ITZ: ValidatingAttack");
 	if (ValidateAttack(EffectState, SourceUnit, TargetUnit, kAbility) != 'AA_Success')
 		return false;
-
+		
+	`LOG("ITZ: PreCostActionPoints: " $ string(PreCostActionPoints.Length));
+	`LOG("ITZ: PostCostActionPoints: " $ string(SourceUnit.ActionPoints.Length));
 	//  restore the pre cost action points to fully refund this action
 	if (SourceUnit.ActionPoints.Length != PreCostActionPoints.Length)
 	{
 		AbilityState = XComGameState_Ability(`XCOMHISTORY.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
 		if (AbilityState != none)
 		{
-			SourceUnit.ActionPoints = PreCostActionPoints;
-
+			`LOG("ITZ: AbilityState is not none");
+			if(bRefundSinglePoint)
+			{
+				SourceUnit.ActionPoints.AddItem(class'X2CharacterTemplateManager'.default.StandardActionPoint);
+			}
+			else
+			{
+				SourceUnit.ActionPoints = PreCostActionPoints;
+			}
+			
 			if (CountValueName != '')
 			{
 				SourceUnit.SetUnitFloatValue(CountValueName, CountUnitValue.fValue + 1, eCleanup_BeginTurn);
@@ -115,12 +129,20 @@ function private name ValidateAttack(XComGameState_Effect EffectState, XComGameS
 
 	AvailableCode = class'XMBEffectUtilities'.static.CheckTargetConditions(AbilityTargetConditions, EffectState, Attacker, Target, AbilityState);
 	if (AvailableCode != 'AA_Success')
+	{
+		`LOG("ITZ: ValidateAttack: Failed to validate target conditions");
 		return AvailableCode;
+	}
+		
 		
 	AvailableCode = class'XMBEffectUtilities'.static.CheckShooterConditions(AbilityShooterConditions, EffectState, Attacker, Target, AbilityState);
 	if (AvailableCode != 'AA_Success')
+	{
+		`LOG("ITZ: ValidateAttack: Failed to validate shooter conditions");
 		return AvailableCode;
-		
+	}
+	
+	`LOG("ITZ: ValidateAttack: success");
 	return 'AA_Success';
 }
 
@@ -129,4 +151,5 @@ DefaultProperties
 	DuplicateResponse = eDupe_Ignore
 	bShowFlyOver = true
 	MaxRefundsPerTurn = -1;
+	bRefundSinglePoint = false;
 }
