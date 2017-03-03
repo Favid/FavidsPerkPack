@@ -23,6 +23,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	local X2EventManager						EventMgr;
 	local XComGameState_Ability					AbilityState;
 	local GameRulesCache_VisibilityInfo			VisInfo;
+	local UnitValue								CountUnitValue;
 
 	`LOG("ITZ: 0");
 
@@ -33,6 +34,13 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	// Ditto for Death From Above
 	if (SourceUnit.IsUnitAffectedByEffectName(class'X2Effect_DeathfromAbove'.default.EffectName))
 		return false;
+
+	// if we already hit the max number of refunds, return false
+	SourceUnit.GetUnitValue('RefundsThisTurn', CountUnitValue);
+	if (MaxRefundsPerTurn > 0 && CountUnitValue.fValue >= MaxRefundsPerTurn)
+	{
+		return false;
+	}
 
 	//  match the weapon associated with Hit and Run to the attacking weapon
 	if (kAbility.SourceWeapon == EffectState.ApplyEffectParameters.ItemStateObjectRef)
@@ -59,9 +67,9 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 						`LOG("ITZ: 5");
 						AbilityState = XComGameState_Ability(History.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
 						if (AbilityState != none)
-						{				
-							`LOG("ITZ: 6");
+						{
 							SourceUnit.ActionPoints.AddItem(class'X2CharacterTemplateManager'.default.StandardActionPoint);
+							SourceUnit.SetUnitFloatValue('RefundsThisTurn', CountUnitValue.fValue + 1, eCleanup_BeginTurn);
 							EventMgr = `XEVENTMGR;
 							EventMgr.TriggerEvent('InTheZone', AbilityState, SourceUnit, NewGameState);
 							return true;
@@ -71,73 +79,6 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 			}
 		}
 	}
+
 	return false;
 }
-
-//function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStateContext_Ability AbilityContext, XComGameState_Ability kAbility, XComGameState_Unit SourceUnit, XComGameState_Item AffectWeapon, XComGameState NewGameState, const array<name> PreCostActionPoints, const array<name> PreCostReservePoints)
-//{
-	//local XComGameStateHistory History;
-	//local XComGameState_Unit TargetUnit, PrevTargetUnit;
-	//local X2EventManager EventMgr;
-	//local XComGameState_Ability AbilityState;
-	//local bool flanked;
-	//local UnitValue CountUnitValue;
-	//local GameRulesCache_VisibilityInfo VisInfo;
-//
-	//// if we already hit the max number of refunds, return false
-	//SourceUnit.GetUnitValue('RefundsThisTurn', CountUnitValue);
-	//if (MaxRefundsPerTurn > 0 && CountUnitValue.fValue >= MaxRefundsPerTurn)
-	//{
-		//return false;
-	//}
-//
-	////  if under the effect of Serial, let that handle restoring the full action cost
-	//if (SourceUnit.IsUnitAffectedByEffectName(class'X2Effect_Serial'.default.EffectName))
-	//{
-		//return false;
-	//}
-//
-	//// if the kill wasn't made with the specified weapon, return false
-	//if (kAbility.SourceWeapon != EffectState.ApplyEffectParameters.ItemStateObjectRef)
-	//{
-		//return false;
-	//}
-//
-	//History = `XCOMHISTORY;
-//
-	//TargetUnit = XComGameState_Unit(NewGameState.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
-	//
-	//if (TargetUnit != None)
-	//{
-		//PrevTargetUnit = XComGameState_Unit(History.GetGameStateForObjectID(TargetUnit.ObjectID));      
-		////flanked = TargetUnit.isFlanked(AbilityContext.InputContext.SourceObject);
-//
-		//if (!`TACTICALRULES.VisibilityMgr.GetVisibilityInfo(SourceUnit.ObjectID, PrevTargetUnit.ObjectID, VisInfo, History.GetCurrentHistoryIndex()))
-		//{
-			//`LOG("ITZ: GetVisibilityInfo is true");
-			//flanked = (TargetUnit.isFlanked(AbilityContext.InputContext.SourceObject) || (PrevTargetUnit.GetMyTemplate().bCanTakeCover && VisInfo.TargetCover == INDEX_NONE));
-		//}
-		//
-		//if (TargetUnit.IsDead() && PrevTargetUnit != None && flanked)
-		//{
-			//if (SourceUnit.ActionPoints.Length != PreCostActionPoints.Length)
-			//{
-				//AbilityState = XComGameState_Ability(History.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
-				//if (AbilityState != none)
-				//{
-					//SourceUnit.ActionPoints = PreCostActionPoints;
-//
-					//SourceUnit.SetUnitFloatValue('RefundsThisTurn', CountUnitValue.fValue + 1, eCleanup_BeginTurn);
-//
-					//EventMgr = `XEVENTMGR;
-					//EventMgr.TriggerEvent('InTheZone', AbilityState, SourceUnit, NewGameState);
-//
-					//return true;
-				//}
-					//
-			//}
-		//}
-	//}
-//
-	//return false;
-//}

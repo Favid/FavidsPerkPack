@@ -967,86 +967,6 @@ static function X2AbilityTemplate CutsThroughSteel()
 // In The Zone
 // (AbilityName="F_InTheZone", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
 // Killing a flanked target refunds one action point. Passive.
-//static function X2AbilityTemplate InTheZone()
-//{
-	//local X2AbilityTemplate						Template;
-	//local X2Effect_InTheZone               InTheZoneEffect;
-//
-	//InTheZoneEffect = new class'X2Effect_InTheZone';
-	//InTheZoneEffect.EffectName = 'F_InTheZone';
-	//InTheZoneEffect.BuildPersistentEffect(1, true, false, false);
-	//InTheZoneEffect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
-//
-	//Template = Passive('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, InTheZoneEffect, false, false);
-//
-	//return Template;
-//}
-
-//static function X2AbilityTemplate InTheZone()
-//{
-	//local XMBEffect_AbilityCostRefund Effect;
-	//local X2AbilityTemplate Template;
-	//local XMBCondition_AbilityCost CostCondition;
-//
-	//// Create an effect that refunds one action point
-	//Effect = new class'XMBEffect_AbilityCostRefund';
-	//Effect.EffectName = 'F_InTheZone';
-	//Effect.TriggeredEvent = 'F_InTheZoneTrigger';
-	//Effect.bShowFlyOver = true;
-	//Effect.CountValueName = 'F_InTheZone_RefundsThisTurn';
-	//Effect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
-	//Effect.bRefundSinglePoint = true;
-//
-	//// Create a triggered ability that will activate whenever the unit uses an ability that meets the condition
-	//Template = SelfTargetTrigger('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, Effect, 'KillMail');
-//
-	//// Trigger abilities don't appear as passives. Add a passive ability icon.
-	//AddIconPassive(Template);
-//
-	//// Require that the activated ability spent at least 1 action point
-	//CostCondition = new class'XMBCondition_AbilityCost';
-	//CostCondition.bRequireMinimumPointsSpent = true;
-	//CostCondition.MinimumPointsSpent = 1;
-	//AddTriggerTargetCondition(Template, CostCondition);
-	//
-	//// Require that target is flanked
-	//AddTriggerTargetCondition(Template, default.FlankedCondition);
-	//
-	//// Require that target is flanked
-	//AddTriggerTargetCondition(Template, default.DeadCondition);
-//
-	//// Require that the shot was made with the associated weapon TODO test - failed with it, now try without
-	////AddTriggerTargetCondition(Template, default.MatchingWeaponCondition);
-//
-	//// Show a flyover when activated
-	////Template.bShowActivation = true;
-//
-	//return Template;
-//}
-
-//static function X2AbilityTemplate InTheZone()
-//{
-	//local XMBEffect_InTheZone Effect;
-	//
-	//// Create an effect that will refund the cost of attacks
-	//Effect = new class'XMBEffect_InTheZone';
-	//Effect.EffectName = 'F_InTheZone';
-	//Effect.TriggeredEvent = 'F_InTheZoneTrigger';
-	//Effect.bShowFlyOver = true;
-	//Effect.CountValueName = 'F_InTheZone_RefundsThisTurn';
-	//Effect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
-	//Effect.bRefundSinglePoint = true;
-//
-	//// Require that target is flanked
-	//Effect.AbilityTargetConditions.AddItem(default.FlankedCondition);
-	//
-	//// Require that target was killed
-	////Effect.AbilityTargetConditions.AddItem(default.DeadCondition);
-//
-	//// Create the template using a helper function
-	//return Passive('F_InTheZone', "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone", default.INTHEZONE_AWC, Effect, false, false);
-//}
-
 static function X2AbilityTemplate InTheZone()
 {
 	local X2AbilityTemplate					Template;
@@ -1065,8 +985,9 @@ static function X2AbilityTemplate InTheZone()
 	InTheZoneEffect.BuildPersistentEffect(1, true, false, false);
 	InTheZoneEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
 	InTheZoneEffect.DuplicateResponse = eDupe_Ignore;
+	InTheZoneEffect.MaxRefundsPerTurn = default.INTHEZONE_MAX_REFUNDS_PER_TURN;
 	Template.AddTargetEffect(InTheZoneEffect);
-	Template.bCrossClassEligible = false;
+	Template.bCrossClassEligible = default.INTHEZONE_AWC;
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 	
 	return Template;
