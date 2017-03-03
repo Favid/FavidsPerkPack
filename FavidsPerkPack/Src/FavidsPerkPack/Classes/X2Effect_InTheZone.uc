@@ -25,7 +25,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	local GameRulesCache_VisibilityInfo			VisInfo;
 	local UnitValue								CountUnitValue;
 
-	`LOG("ITZ: 0");
+	logIfDebugEnabled("ITZ: 0");
 
 	//  if under the effect of Serial, let that handle restoring the full action cost - will this work?
 	if (SourceUnit.IsUnitAffectedByEffectName(class'X2Effect_Serial'.default.EffectName))
@@ -45,26 +45,27 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	//  match the weapon associated with Hit and Run to the attacking weapon
 	if (kAbility.SourceWeapon == EffectState.ApplyEffectParameters.ItemStateObjectRef)
 	{
-		`LOG("ITZ: 1");
+		logIfDebugEnabled("ITZ: 1");
 		History = `XCOMHISTORY;
 		TargetUnit = XComGameState_Unit(NewGameState.GetGameStateForObjectID(AbilityContext.InputContext.PrimaryTarget.ObjectID));
 		if (!AbilityState.IsMeleeAbility() && TargetUnit != none)
 		{
-			`LOG("ITZ: 2");
+			logIfDebugEnabled("ITZ: 2");
 			if(X2TacticalGameRuleset(XComGameInfo(class'Engine'.static.GetCurrentWorldInfo().Game).GameRuleset).VisibilityMgr.GetVisibilityInfo(SourceUnit.ObjectID, TargetUnit.ObjectID, VisInfo))
 			{
-				`LOG("ITZ: 3"); //TODO test interaction with blowing up target's cover, then killing
-				`LOG("ITZ: TargetUnit.IsEnemyUnit(SourceUnit): " $ string(TargetUnit.IsEnemyUnit(SourceUnit)));
-				`LOG("ITZ: SourceUnit.CanFlank(): " $ string(SourceUnit.CanFlank()));
-				`LOG("ITZ: TargetUnit.CanTakeCover(): " $ string(TargetUnit.CanTakeCover()));
-				`LOG("ITZ: VisInfo.TargetCover: " $ VisInfo.TargetCover);
-				`LOG("ITZ: TargetUnit.IsAlive(): " $ TargetUnit.IsAlive());
+				logIfDebugEnabled("ITZ: 3"); //TODO test interaction with blowing up target's cover, then killing
+				logIfDebugEnabled("ITZ: TargetUnit.IsEnemyUnit(SourceUnit): " $ string(TargetUnit.IsEnemyUnit(SourceUnit)));
+				logIfDebugEnabled("ITZ: SourceUnit.CanFlank(): " $ string(SourceUnit.CanFlank()));
+				logIfDebugEnabled("ITZ: TargetUnit.CanTakeCover(): " $ string(TargetUnit.CanTakeCover()));
+				logIfDebugEnabled("ITZ: VisInfo.TargetCover: " $ VisInfo.TargetCover);
+				logIfDebugEnabled("ITZ: TargetUnit.IsAlive(): " $ TargetUnit.IsAlive());
+
 				if (TargetUnit.IsEnemyUnit(SourceUnit) && SourceUnit.CanFlank() && TargetUnit.CanTakeCover() && VisInfo.TargetCover == CT_None && !TargetUnit.IsAlive())
 				{
-					`LOG("ITZ: 4");
+					logIfDebugEnabled("ITZ: 4");
 					if (SourceUnit.NumActionPoints() < 2 && PreCostActionPoints.Length > 0) 
 					{
-						`LOG("ITZ: 5");
+						logIfDebugEnabled("ITZ: 5");
 						AbilityState = XComGameState_Ability(History.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
 						if (AbilityState != none)
 						{
@@ -81,4 +82,12 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 	}
 
 	return false;
+}
+
+static function logIfDebugEnabled(string message)
+{
+	if(class'X2Ability_Favid'.default.FAVID_DEBUG_LOGGING)
+	{
+		`LOG(message);
+	}
 }

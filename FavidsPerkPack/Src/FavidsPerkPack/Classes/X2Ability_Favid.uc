@@ -1,5 +1,6 @@
 class X2Ability_Favid extends XMBAbility config (Favid_Ability);
 
+var config bool FAVID_DEBUG_LOGGING;
 var config int EYESTRAIN_AIM_BONUS;
 var config int EYESTRAIN_CHARGES;
 var config int EYESTRAIN_DURATION;

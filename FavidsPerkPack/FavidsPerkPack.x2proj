@@ -221,9 +221,6 @@
     <Content Include="Src\FavidsPerkPack\Classes\XMBEffect_Extended.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\XMBEffect_InTheZone.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XMBEffect_PermanentStatChange.uc">
       <SubType>Content</SubType>
     </Content>
