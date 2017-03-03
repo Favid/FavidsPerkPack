@@ -131,6 +131,9 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_SlashAndDash.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_ThousandsToGo.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_TrenchWarfare.uc">
       <SubType>Content</SubType>
     </Content>
