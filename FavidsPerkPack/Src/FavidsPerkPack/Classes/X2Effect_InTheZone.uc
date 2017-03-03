@@ -49,7 +49,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 			logIfDebugEnabled("ITZ: 2");
 			if(X2TacticalGameRuleset(XComGameInfo(class'Engine'.static.GetCurrentWorldInfo().Game).GameRuleset).VisibilityMgr.GetVisibilityInfo(SourceUnit.ObjectID, TargetUnit.ObjectID, VisInfo))
 			{
-				logIfDebugEnabled("ITZ: 3"); //TODO test interaction with blowing up target's cover, then killing
+				logIfDebugEnabled("ITZ: 3");
 				logIfDebugEnabled("ITZ: TargetUnit.IsEnemyUnit(SourceUnit): " $ string(TargetUnit.IsEnemyUnit(SourceUnit)));
 				logIfDebugEnabled("ITZ: SourceUnit.CanFlank(): " $ string(SourceUnit.CanFlank()));
 				logIfDebugEnabled("ITZ: TargetUnit.CanTakeCover(): " $ string(TargetUnit.CanTakeCover()));
