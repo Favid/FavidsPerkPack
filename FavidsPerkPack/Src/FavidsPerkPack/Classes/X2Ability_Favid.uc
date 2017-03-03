@@ -134,6 +134,7 @@ var config int REGENERATION_MAXHEALAMOUNT_CV;
 var config int REGENERATION_MAXHEALAMOUNT_MG;
 var config int REGENERATION_MAXHEALAMOUNT_BM;
 var config bool REGENERATION_AWC;
+var config bool THOUSANDSTOGO_AWC;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -187,6 +188,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(NaturalTwenty());
 	Templates.AddItem(PierceTheVeil());
 	Templates.AddItem(Regeneration());
+	Templates.AddItem(ThousandsToGo());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1867,6 +1869,34 @@ static function X2AbilityTemplate Regeneration()
 
 	Template.bCrossClassEligible = default.REGENERATION_AWC;
 
+	return Template;
+}
+
+// Thousands To Go
+// (AbilityName="F_ThousandsToGo", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
+// Once per turn, after killing an enemy with your primary weapon, you may take an additional non-movement action. Passive.
+static function X2AbilityTemplate ThousandsToGo()
+{
+	local X2AbilityTemplate					Template;
+	local X2Effect_ThousandsToGo			ThousandsToGoEffect;
+
+	`CREATE_X2ABILITY_TEMPLATE (Template, 'F_ThousandsToGo');
+	Template.AbilitySourceName = 'eAbilitySource_Perk';
+	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
+	Template.Hostility = eHostility_Neutral;
+	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone";
+	Template.AbilityToHitCalc = default.DeadEye;
+	Template.AbilityTargetStyle = default.SelfTarget;
+	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
+	Template.bIsPassive = true;
+	ThousandsToGoEffect = new class'X2Effect_ThousandsToGo';
+	ThousandsToGoEffect.BuildPersistentEffect(1, true, false, false);
+	ThousandsToGoEffect.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
+	ThousandsToGoEffect.DuplicateResponse = eDupe_Ignore;
+	Template.AddTargetEffect(ThousandsToGoEffect);
+	Template.bCrossClassEligible = default.THOUSANDSTOGO_AWC;
+	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
+	
 	return Template;
 }
 
