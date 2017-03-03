@@ -1884,7 +1884,7 @@ static function X2AbilityTemplate ThousandsToGo()
 	Template.AbilitySourceName = 'eAbilitySource_Perk';
 	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
 	Template.Hostility = eHostility_Neutral;
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_InTheZone";
+	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_ThousandsToGo";
 	Template.AbilityToHitCalc = default.DeadEye;
 	Template.AbilityTargetStyle = default.SelfTarget;
 	Template.AbilityTriggers.AddItem(default.UnitPostBeginPlayTrigger);
