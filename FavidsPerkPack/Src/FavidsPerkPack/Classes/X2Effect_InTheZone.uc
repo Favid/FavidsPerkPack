@@ -27,12 +27,8 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 
 	logIfDebugEnabled("ITZ: 0");
 
-	//  if under the effect of Serial, let that handle restoring the full action cost - will this work?
+	//  if under the effect of Serial, let that handle restoring the full action cost
 	if (SourceUnit.IsUnitAffectedByEffectName(class'X2Effect_Serial'.default.EffectName))
-		return false;
-
-	// Ditto for Death From Above
-	if (SourceUnit.IsUnitAffectedByEffectName(class'X2Effect_DeathfromAbove'.default.EffectName))
 		return false;
 
 	// if we already hit the max number of refunds, return false
@@ -42,7 +38,7 @@ function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStat
 		return false;
 	}
 
-	//  match the weapon associated with Hit and Run to the attacking weapon
+	//  match the weapon associated with In The Zone to the attacking weapon
 	if (kAbility.SourceWeapon == EffectState.ApplyEffectParameters.ItemStateObjectRef)
 	{
 		logIfDebugEnabled("ITZ: 1");
