@@ -108,12 +108,6 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Maim.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Mayhem.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_MayhemDamage.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Momentum.uc">
       <SubType>Content</SubType>
     </Content>
