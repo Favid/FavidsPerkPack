@@ -41,6 +41,9 @@
     <Content Include="Config\XComGameData_WeaponData.ini">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Config\XComLW_AWCPack.ini">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Content\UILibrary_FavidsPerkPack.upk">
       <SubType>Content</SubType>
     </Content>

@@ -623,6 +623,7 @@ static function X2AbilityTemplate Entrenched()
 	Effect.AddToHitAsTargetModifier(default.ENTRENCHED_DEFENSE_BONUS);
 
 	// Add the condition to the bonus
+	// TODO I can probably remove one of these
 	Effect.AbilityShooterConditions.AddItem(default.FullCoverCondition);
 	Effect.AbilityTargetConditionsAsTarget.AddItem(default.FullCoverCondition);
 
