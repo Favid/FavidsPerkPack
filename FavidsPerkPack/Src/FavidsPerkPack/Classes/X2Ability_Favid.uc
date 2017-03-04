@@ -1042,7 +1042,7 @@ static function X2AbilityTemplate LivingVirus()
 
 // Havoc
 // (AbilityName="F_Havoc", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
-// Suppression and Area Suppression now deal a small amount of guarenteed damage.
+// Suppression and Area Suppression now deal a small amount of guarenteed damage. However, targets cannot be killed with this effect.
 static function X2AbilityTemplate Havoc()
 {
 	local X2AbilityTemplate						Template;

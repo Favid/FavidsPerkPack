@@ -6,10 +6,10 @@ var int MultipleTargetDamage;
 
 function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGameState_Unit Attacker, Damageable TargetDamageable, XComGameState_Ability AbilityState, const out EffectAppliedData AppliedData, const int CurrentDamage, optional XComGameState NewGameState)
 { 
-	logIfDebugEnabled("H: HitResult: " $ string(AppliedData.AbilityResultContext.HitResult));
-	logIfDebugEnabled("H: Matching Weapon: " $ string(AbilityState.SourceWeapon == EffectState.ApplyEffectParameters.ItemStateObjectRef ));
-	logIfDebugEnabled("H: AbilityStateTemplateName: " $ string(AbilityState.GetMyTemplateName()));
-	logIfDebugEnabled("H: IsAllowedAbility: " $ string(AllowedAbilities.Find(AbilityState.GetMyTemplateName()) != INDEX_NONE));
+	local int HavocDamage, TargetRemainingHp;
+	local XComGameState_Unit Target;
+
+	HavocDamage = 0;
 
 	if (AppliedData.AbilityResultContext.HitResult < eHit_Miss 
 		&& AbilityState.SourceWeapon == EffectState.ApplyEffectParameters.ItemStateObjectRef 
@@ -17,25 +17,32 @@ function int GetAttackingDamageModifier(XComGameState_Effect EffectState, XComGa
 	{	
 		if(AbilityState.GetMyTemplateName() == 'AreaSuppression')
 		{
-			logIfDebugEnabled("H: MultipleTargetDamage: " $ string(MultipleTargetDamage));
-			return MultipleTargetDamage;
+			HavocDamage = MultipleTargetDamage;
 		}
 		else
 		{
-			logIfDebugEnabled("H: SingleTargetDamage: " $ string(SingleTargetDamage));
-			return SingleTargetDamage;
+			HavocDamage = SingleTargetDamage;
+		}
+
+		Target = XComGameState_Unit(TargetDamageable);
+
+		TargetRemainingHp = Target.GetCurrentStat(eStat_HP) - HavocDamage;
+
+		// Don't kill target - if Havoc will kill, instead deal just enough damage to leave target at 1 HP
+		if(TargetRemainingHp <= 0)
+		{
+			if(Target.GetCurrentStat(eStat_HP) == 1)
+			{
+				HavocDamage = 0;
+			}
+			else
+			{
+				HavocDamage = Target.GetCurrentStat(eStat_HP) - (Target.GetCurrentStat(eStat_HP) - 1);
+			}
 		}
 	}
 
-	return 0; 
-}
-
-static function logIfDebugEnabled(string message)
-{
-	if(class'X2Ability_Favid'.default.FAVID_DEBUG_LOGGING)
-	{
-		`LOG(message);
-	}
+	return HavocDamage; 
 }
 
 DefaultProperties

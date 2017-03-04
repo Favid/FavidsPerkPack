@@ -18,7 +18,7 @@ simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffe
 
 defaultproperties
 {
-	bIgnoreBaseDamage=true;
+	bIgnoreBaseDamage=false;
 	bAllowFreeKill=false;
 	bAllowWeaponUpgrade=false;
 	RequiredAbility="F_Havoc";

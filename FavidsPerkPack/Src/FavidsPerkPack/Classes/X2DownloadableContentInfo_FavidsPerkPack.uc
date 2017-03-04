@@ -86,7 +86,6 @@ static function logIfDebugEnabled(string message)
 
 static function PatchAbilitiesForHavoc()
 {
-	logIfDebugEnabled("Havoc: Patching abilities...");
 	PatchAbilityForHavoc('Suppression');
 	PatchAbilityForHavoc('LMGSuppression');
 	PatchAbilityForHavoc('AreaSuppression');
@@ -103,7 +102,6 @@ static function PatchAbilityForHavoc(name AbilityName)
 
 	if (Template != none)
 	{
-		logIfDebugEnabled("Havoc: Patching: " $ string(AbilityName));
 		TargetEffect = new class'X2Effect_HavocDamage';
 		TargetEffect.RequiredAbility = 'F_Havoc';
 		Template.AddTargetEffect(TargetEffect);

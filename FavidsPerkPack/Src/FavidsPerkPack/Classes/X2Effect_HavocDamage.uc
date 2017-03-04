@@ -10,19 +10,9 @@ simulated protected function OnEffectAdded(const out EffectAppliedData ApplyEffe
 	History = `XCOMHISTORY;
 	SourceUnit = XComGameState_Unit(History.GetGameStateForObjectID(ApplyEffectParameters.SourceStateObjectRef.ObjectID));
 	
-	logIfDebugEnabled("HD: SourceUnitHasRequiredAbility: " $ string(SourceUnit.HasSoldierAbility(RequiredAbility)));
-
 	if (SourceUnit.HasSoldierAbility(RequiredAbility))
 	{
 		super.OnEffectAdded(ApplyEffectParameters, kNewTargetState, NewGameState, NewEffectState);
-	}
-}
-
-static function logIfDebugEnabled(string message)
-{
-	if(class'X2Ability_Favid'.default.FAVID_DEBUG_LOGGING)
-	{
-		`LOG(message);
 	}
 }
 
