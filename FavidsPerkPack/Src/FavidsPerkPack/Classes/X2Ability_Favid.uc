@@ -78,11 +78,9 @@ var config int LIVINGVIRUS_AIM_BONUS;
 var config int LIVINGVIRUS_CRIT_BONUS;
 var config int LIVINGVIRUS_DEFENSE_BONUS;
 var config bool LIVINGVIRUS_AWC;
-var config int MAYHEM_DAMAGE_T1;
-var config int MAYHEM_DAMAGE_T2;
-var config int MAYHEM_DAMAGE_T3;
-var config int MAYHEM_DAMAGE;
-var config bool MAYHEM_AWC;
+var config int HAVOC_DAMAGE_SINGLE;
+var config int HAVOC_DAMAGE_MULTIPLE;
+var config bool HAVOC_AWC;
 var config int OLYMPICDASH_MOBILITY;
 var config int OLYMPICDASH_DURATION;
 var config int OLYMPICDASH_COOLDOWN;
@@ -166,7 +164,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(CutsThroughSteel());
 	Templates.AddItem(InTheZone());
 	//Templates.AddItem(LivingVirus());				// TODO rework
-	//Templates.AddItem(Mayhem());					// TODO rework
+	Templates.AddItem(Havoc());
 	Templates.AddItem(OlympicDash());
 	Templates.AddItem(InGoodHealth());
 	Templates.AddItem(RemoveInGoodHealth());
@@ -1042,71 +1040,22 @@ static function X2AbilityTemplate LivingVirus()
 	return Template;
 }
 
-// Mayhem
-// (AbilityName="F_Mayhem", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Area Suppression now does 1/2/3 damage to the primary target based on weapon tier. Can shred armor and apply ammo effects.
-//static function X2AbilityTemplate Mayhem()
-//{
-	//local X2AbilityTemplate Template;
-	//local XMBEffect_ConditionalBonus Effect;
-	//local XMBCondition_AbilityName Condition;
-//
-	//// Create a conditional bonus effect
-	//Effect = new class'XMBEffect_ConditionalBonus';
-	//Effect.EffectName = 'F_Mayhem';
-//
-	//// The bonus adds damage dependent on tech level
-	//Effect.AddDamageModifier(default.MAYHEM_DAMAGE_T1, eHit_Success, 'conventional');
-	//Effect.AddDamageModifier(default.MAYHEM_DAMAGE_T2, eHit_Success, 'magnetic');
-	//Effect.AddDamageModifier(default.MAYHEM_DAMAGE_T3, eHit_Success, 'beam');
-//
-	//// The bonus only applies to the Chip Away ability
-	//Condition = new class'XMBCondition_AbilityName';
-	//Condition.IncludeAbilityNames.AddItem('Suppression_LW');
-	//Condition.IncludeAbilityNames.AddItem('Suppression');
-	//Condition.IncludeAbilityNames.AddItem('AreaSuppression');
-	//Effect.AbilityTargetConditions.AddItem(Condition);
-//
-	//// Create the template using a helper function
-	//Template = Passive('F_Mayhem', "img:///UILibrary_FavidsPerkPack.UIPerk_Mayhem", default.MAYHEM_AWC, Effect, false);
-//
-	//return Template;
-//}
-
-static function X2AbilityTemplate Mayhem()
+// Havoc
+// (AbilityName="F_Havoc", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
+// Suppression and Area Suppression now deal a small amount of guarenteed damage. However, targets cannot be killed with this effect.
+static function X2AbilityTemplate Havoc()
 {
 	local X2AbilityTemplate						Template;
-	local X2AbilityTargetStyle                  TargetStyle;
-	local X2AbilityTrigger						Trigger;
-	local X2Effect_Mayhem						Mayhem;
+	local X2Effect_Havoc						HavocEffect;
 
-	`CREATE_X2ABILITY_TEMPLATE(Template, 'F_Mayhem');
-	Template.IconImage = "img:///UILibrary_FavidsPerkPack.UIPerk_Mayhem";
+	HavocEffect = new class'X2Effect_Havoc';
+	HavocEffect.BuildPersistentEffect(1, true, false, false);
+	HavocEffect.SingleTargetDamage = default.HAVOC_DAMAGE_SINGLE;
+	HavocEffect.MultipleTargetDamage = default.HAVOC_DAMAGE_MULTIPLE;
+	HavocEffect.EffectName = 'F_Havoc';
 
-	Template.AbilitySourceName = 'eAbilitySource_Perk';
-	Template.eAbilityIconBehaviorHUD = EAbilityIconBehavior_NeverShow;
-	Template.Hostility = eHostility_Neutral;
-
-	Template.AbilityToHitCalc = default.DeadEye;
-
-	TargetStyle = new class'X2AbilityTarget_Self';
-	Template.AbilityTargetStyle = TargetStyle;
-
-	Trigger = new class'X2AbilityTrigger_UnitPostBeginPlay';
-	Template.AbilityTriggers.AddItem(Trigger);
-
-	Mayhem = new class'X2Effect_Mayhem';
-	Mayhem.BuildPersistentEffect(1, true, true, true);
-	Mayhem.BonusDmg = default.MAYHEM_DAMAGE;
-	Mayhem.EffectName = 'F_Mayhem';
-	Mayhem.SetDisplayInfo(ePerkBuff_Passive, Template.LocFriendlyName, Template.GetMyLongDescription(), Template.IconImage,,,Template.AbilitySourceName);
-	Template.AddTargetEffect(Mayhem);
-
-	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
-	//  NOTE: No visualization on purpose!
+	Template = Passive('F_Havoc', "img:///UILibrary_FavidsPerkPack.UIPerk_Mayhem", default.HAVOC_AWC, HavocEffect, false, false);
 	
-	Template.bCrossClassEligible = default.MAYHEM_AWC;
-
 	return Template;
 }
 

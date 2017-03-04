@@ -1,4 +1,4 @@
-class X2Effect_MayhemDamage extends X2Effect_Shredder;
+class X2Effect_HavocDamage extends X2Effect_Shredder;
 
 var name RequiredAbility;
 
@@ -21,4 +21,5 @@ defaultproperties
 	bIgnoreBaseDamage=true;
 	bAllowFreeKill=false;
 	bAllowWeaponUpgrade=false;
+	RequiredAbility="F_Havoc";
 }
