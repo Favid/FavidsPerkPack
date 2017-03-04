@@ -7,6 +7,7 @@
     <SteamPublishID>0</SteamPublishID>
     <AssemblyName>FavidsPerkPack</AssemblyName>
     <RootNamespace>FavidsPerkPack</RootNamespace>
+    <ProjectGuid>{516cf631-c2d4-40eb-b4f3-9b38c8e0be21}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
@@ -81,6 +82,12 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_ExtraShred.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Havoc.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_HavocDamage.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Imposition.uc">

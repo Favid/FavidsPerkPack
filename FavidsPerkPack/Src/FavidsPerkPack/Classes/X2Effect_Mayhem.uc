@@ -30,4 +30,5 @@ DefaultProperties
 	AllowedAbilities(1) = "LMGSuppression"
 	AllowedAbilities(2) = "AreaSuppression"
 	AllowedAbilities(3) = "Suppression_LW"
+	AllowedAbilities(4) = "ShadowOps_RifleSuppression"
 }

@@ -30,7 +30,7 @@ static event InstallNewCampaign(XComGameState StartState)
 static event OnPostTemplatesCreated()
 {
 	PatchAbilitiesForImposition();
-	//PatchAreaSuppressionMayhem();
+	PatchAbilitiesForHavoc();
 }
 
 // Update abilities to function with the Imposition ability where necessary
@@ -76,21 +76,40 @@ private static function UpdateAbilityForImpositionEffect(X2AbilityTemplate Templ
 	}
 }
 
-static function PatchAreaSuppressionMayhem()
+static function logIfDebugEnabled(string message)
+{
+	if(class'X2Ability_Favid'.default.FAVID_DEBUG_LOGGING)
+	{
+		`LOG(message);
+	}
+}
+
+static function PatchAbilitiesForHavoc()
+{
+	logIfDebugEnabled("Havoc: Patching abilities...");
+	PatchAbilityForHavoc('Suppression');
+	PatchAbilityForHavoc('LMGSuppression');
+	PatchAbilityForHavoc('AreaSuppression');
+	PatchAbilityForHavoc('Suppression_LW');
+	PatchAbilityForHavoc('ShadowOps_RifleSuppression');
+}
+
+static function PatchAbilityForHavoc(name AbilityName)
 {
 	local X2AbilityTemplate Template;
-	local X2Effect_MayhemDamage TargetEffect;
+	local X2Effect_HavocDamage TargetEffect;
 
-	Template = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate('AreaSuppression');
+	Template = class'X2AbilityTemplateManager'.static.GetAbilityTemplateManager().FindAbilityTemplate(AbilityName);
 
 	if (Template != none)
 	{
-		TargetEffect = new class'X2Effect_MayhemDamage';
-		TargetEffect.RequiredAbility = 'F_Mayhem';
+		logIfDebugEnabled("Havoc: Patching: " $ string(AbilityName));
+		TargetEffect = new class'X2Effect_HavocDamage';
+		TargetEffect.RequiredAbility = 'F_Havoc';
 		Template.AddTargetEffect(TargetEffect);
 		Template.AddMultiTargetEffect(TargetEffect);
-		Template.bAllowAmmoEffects = false;					// TODO figure out how to make this only true when the user has Mayhem
-		Template.bAllowBonusWeaponEffects = true;
+		Template.bAllowAmmoEffects = false;					// TODO figure out how to make this only true when the user has Havoc
+		Template.bAllowBonusWeaponEffects = false;
 	}
 }
 
@@ -337,6 +356,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 			return true;
 		case 'REGENERATION_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.REGENERATION_COOLDOWN);
+			return true;
+		case 'HAVOC_DAMAGE_SINGLE':
+			OutString = string(class'X2Ability_Favid'.default.HAVOC_DAMAGE_SINGLE);
+			return true;
+		case 'HAVOC_DAMAGE_MULTIPLE':
+			OutString = string(class'X2Ability_Favid'.default.HAVOC_DAMAGE_MULTIPLE);
 			return true;
 		default: 
 			return false;
