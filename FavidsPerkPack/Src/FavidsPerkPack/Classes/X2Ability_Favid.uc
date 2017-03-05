@@ -133,6 +133,7 @@ var config int REGENERATION_MAXHEALAMOUNT_MG;
 var config int REGENERATION_MAXHEALAMOUNT_BM;
 var config bool REGENERATION_AWC;
 var config bool THOUSANDSTOGO_AWC;
+var config bool OPPORTUNIST_AWC;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -187,6 +188,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(PierceTheVeil());
 	Templates.AddItem(Regeneration());
 	Templates.AddItem(ThousandsToGo());
+	Templates.AddItem(Opportunist());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1850,6 +1852,33 @@ static function X2AbilityTemplate ThousandsToGo()
 	Template.bCrossClassEligible = default.THOUSANDSTOGO_AWC;
 	Template.BuildNewGameStateFn = TypicalAbility_BuildGameState;
 	
+	return Template;
+}
+
+// Opportunist
+// (AbilityName="F_Opportunist", ApplyToWeaponSlot=eInvSlot_Unknown)
+// Missed reaction fire shots are automatically upgraded to grazes. Passive.
+static function X2AbilityTemplate Opportunist()
+{
+	local XMBEffect_ChangeHitResultForAttacker Effect;
+	local X2AbilityTemplate Template;
+
+	// Create an effect that will change attack hit results
+	Effect = new class'XMBEffect_ChangeHitResultForAttacker';
+	Effect.EffectName = 'F_Opportunist';
+
+	// The effect only affects reaction fire shots
+	Effect.AbilityTargetConditions.AddItem(default.ReactionFireCondition);
+
+	// Only change the hit result if it would have been a miss
+	Effect.bRequireMiss = true;
+
+	// Change the hit result to a hit
+	Effect.NewResult = eHit_Graze;
+
+	// Create the template using a helper function
+	Template = Passive('F_Opportunist', "img:///UILibrary_FavidsPerkPack.UIPerk_Opportunist", default.OPPORTUNIST_AWC, Effect);
+
 	return Template;
 }
 
