@@ -1873,7 +1873,7 @@ static function X2AbilityTemplate Opportunist()
 	// Only change the hit result if it would have been a miss
 	Effect.bRequireMiss = true;
 
-	// Change the hit result to a hit
+	// Change the hit result to a graze
 	Effect.NewResult = eHit_Graze;
 
 	// Create the template using a helper function
