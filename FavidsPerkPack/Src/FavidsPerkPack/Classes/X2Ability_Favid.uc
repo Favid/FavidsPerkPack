@@ -398,6 +398,9 @@ static function X2AbilityTemplate ReactionProtocol()
 	// Create a targeted buff that affects allies
 	Template = TargetedBuff('F_ReactionProtocol', "img:///UILibrary_FavidsPerkPack.UIPerk_OverwatchProtocol", default.REACTIONPROTOCOL_AWC, ReactionProtocolEffect, class'UIUtilities_Tactical'.const.CLASS_CAPTAIN_PRIORITY, eCost_Single);
 
+	// Let the ability target the user
+	Template.AbilityTargetStyle = default.SingleTargetWithSelf;
+
 	// Charges
 	AddCharges(Template, default.REACTIONPROTOCOL_CHARGES);
 
