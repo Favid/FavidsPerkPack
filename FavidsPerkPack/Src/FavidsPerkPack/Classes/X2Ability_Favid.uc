@@ -137,6 +137,10 @@ var config bool OPPORTUNIST_AWC;
 var config int LICKYOURWOUNDS_HEALAMOUNT;
 var config int LICKYOURWOUNDS_MAXHEALAMOUNT;
 var config bool LICKYOURWOUNDS_AWC;
+var config int ONAROLL_CRIT_BONUS;
+var config int ONAROLL_CRIT_DAMAGE_BONUS;
+var config int ONAROLL_MAX_STACKS;
+var config bool ONAROLL_AWC;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -193,6 +197,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(ThousandsToGo());
 	Templates.AddItem(Opportunist());
 	Templates.AddItem(LickYourWounds());
+	Templates.AddItem(OnARoll());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1913,6 +1918,57 @@ static function X2AbilityTemplate LickYourWounds()
 	// Heal the status effects that a Medkit would heal
 	Template.AddTargetEffect(class'X2Ability_SpecialistAbilitySet'.static.RemoveAllEffectsByDamageType());
 	
+	// Trigger abilities don't appear as passives. Add a passive ability icon.
+	AddIconPassive(Template);
+
+	return Template;
+}
+
+// On A Roll
+// (AbilityName="F_OnARoll", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
+// Every kill with your primary weapon grants a bonus to critical hit chance and critical hit damage for the remainder of the mission. Effect stacks. Passive.
+static function X2AbilityTemplate OnARoll()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_PersistentStatChange CritChanceEffect;
+	local X2Effect_IncrementUnitValue CountEffect;
+	local X2Effect_OnARollCritDamage CritDamageEffect;
+	local X2Condition_UnitValue UnitValueCondition;
+
+	// Create condition for maximum number of activations
+	UnitValueCondition = new class'X2Condition_UnitValue';
+	UnitValueCondition.AddCheckValue('F_OnARollActivationCounter', default.ONAROLL_MAX_STACKS, eCheck_LessThan);
+
+	// Create a persistent stat change effect that grants a crit chance bonus
+	CritChanceEffect = new class'X2Effect_PersistentStatChange';
+	CritChanceEffect.EffectName = 'F_OnARollCritChance';
+	CritChanceEffect.AddPersistentStatChange(eStat_CritChance, default.ONAROLL_CRIT_BONUS);
+	CritChanceEffect.DuplicateResponse = eDupe_Allow;
+	CritChanceEffect.TargetConditions.AddItem(default.MatchingWeaponCondition);
+	CritChanceEffect.TargetConditions.AddItem(UnitValueCondition);
+
+	// Create a triggered ability that activates whenever the unit gets a kill
+	Template = SelfTargetTrigger('F_OnARoll', "img:///UILibrary_PerkIcons.UIPerk_command", default.ONAROLL_AWC, CritChanceEffect, 'KillMail');
+
+	// Create an effect for the crit damage bonus
+	CritDamageEffect = new class'X2Effect_OnARollCritDamage';
+	CritDamageEffect.EffectName = 'F_OnARollCritDamage';
+	CritDamageEffect.BonusDamage = default.ONAROLL_CRIT_DAMAGE_BONUS;
+	CritDamageEffect.DuplicateResponse = eDupe_Allow;
+	CritDamageEffect.TargetConditions.AddItem(default.MatchingWeaponCondition);
+	CritDamageEffect.TargetConditions.AddItem(UnitValueCondition);
+	Template.AddTargetEffect(CritDamageEffect);
+
+	// Create an effect that will increment the unit value for the number of activations
+	// Note: Blame Firaxis for the terrible property names in X2Effect_IncrementUnitValue
+	CountEffect = new class'X2Effect_IncrementUnitValue';
+	CountEffect.UnitName = 'F_OnARollActivationCounter';
+	CountEffect.NewValueToSet = 1;
+	CountEffect.CleanupType = eCleanup_BeginTactical;
+	CountEffect.TargetConditions.AddItem(default.MatchingWeaponCondition);
+	CountEffect.TargetConditions.AddItem(UnitValueCondition);
+	Template.AddTargetEffect(CountEffect);
+
 	// Trigger abilities don't appear as passives. Add a passive ability icon.
 	AddIconPassive(Template);
 

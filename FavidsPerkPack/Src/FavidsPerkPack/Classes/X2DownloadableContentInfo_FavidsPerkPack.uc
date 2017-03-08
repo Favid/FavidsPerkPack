@@ -367,6 +367,15 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'LICKYOURWOUNDS_MAXHEALAMOUNT':
 			OutString = string(class'X2Ability_Favid'.default.LICKYOURWOUNDS_MAXHEALAMOUNT);
 			return true;
+		case 'ONAROLL_CRIT_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.ONAROLL_CRIT_BONUS);
+			return true;
+		case 'ONAROLL_CRIT_DAMAGE_BONUS':
+			OutString = string(class'X2Ability_Favid'.default.ONAROLL_CRIT_DAMAGE_BONUS);
+			return true;
+		case 'ONAROLL_MAX_STACKS':
+			OutString = string(class'X2Ability_Favid'.default.ONAROLL_MAX_STACKS);
+			return true;
 		default: 
 			return false;
 	}
