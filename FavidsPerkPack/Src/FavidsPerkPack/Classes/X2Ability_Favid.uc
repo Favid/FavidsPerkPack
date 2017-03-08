@@ -1941,6 +1941,7 @@ static function X2AbilityTemplate OnARoll()
 
 	// Create a persistent stat change effect that grants a crit chance bonus
 	CritChanceEffect = new class'X2Effect_PersistentStatChange';
+	CritChanceEffect.BuildPersistentEffect(1,true,true,false);
 	CritChanceEffect.EffectName = 'F_OnARollCritChance';
 	CritChanceEffect.AddPersistentStatChange(eStat_CritChance, default.ONAROLL_CRIT_BONUS);
 	CritChanceEffect.DuplicateResponse = eDupe_Allow;
@@ -1952,6 +1953,7 @@ static function X2AbilityTemplate OnARoll()
 
 	// Create an effect for the crit damage bonus
 	CritDamageEffect = new class'X2Effect_OnARollCritDamage';
+	CritDamageEffect.BuildPersistentEffect(1,true,true,false);
 	CritDamageEffect.EffectName = 'F_OnARollCritDamage';
 	CritDamageEffect.BonusDamage = default.ONAROLL_CRIT_DAMAGE_BONUS;
 	CritDamageEffect.DuplicateResponse = eDupe_Allow;
