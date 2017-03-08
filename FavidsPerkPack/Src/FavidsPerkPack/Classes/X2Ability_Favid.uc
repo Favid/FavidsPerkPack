@@ -1324,6 +1324,7 @@ static function X2AbilityTemplate SlashAndDashActivator()
 // Trench Warfare
 // (AbilityName="F_TrenchWarfare", ApplyToWeaponSlot=eInvSlot_Unknown)
 // If you get at least one kill during your turn, automatically hunker down at the end of it. Passive.
+// Bug: Flyover appears every kill, instead of just first per turn
 static function X2AbilityTemplate TrenchWarfare()
 {
 	local X2AbilityTemplate								Template;
@@ -1927,6 +1928,8 @@ static function X2AbilityTemplate LickYourWounds()
 // On A Roll
 // (AbilityName="F_OnARoll", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
 // Every kill with your primary weapon grants a bonus to critical hit chance and critical hit damage for the remainder of the mission. Effect stacks. Passive.
+// Bug: Applies and increments with secondary weapon
+// Bug: Needs flyover on kill
 static function X2AbilityTemplate OnARoll()
 {
 	local X2AbilityTemplate Template;
