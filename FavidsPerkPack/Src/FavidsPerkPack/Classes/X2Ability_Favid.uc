@@ -134,6 +134,9 @@ var config int REGENERATION_MAXHEALAMOUNT_BM;
 var config bool REGENERATION_AWC;
 var config bool THOUSANDSTOGO_AWC;
 var config bool OPPORTUNIST_AWC;
+var config int LICKYOURWOUNDS_HEALAMOUNT;
+var config int LICKYOURWOUNDS_MAXHEALAMOUNT;
+var config bool LICKYOURWOUNDS_AWC;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -189,6 +192,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(Regeneration());
 	Templates.AddItem(ThousandsToGo());
 	Templates.AddItem(Opportunist());
+	Templates.AddItem(LickYourWounds());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1878,6 +1882,39 @@ static function X2AbilityTemplate Opportunist()
 
 	// Create the template using a helper function
 	Template = Passive('F_Opportunist', "img:///UILibrary_FavidsPerkPack.UIPerk_Opportunist", default.OPPORTUNIST_AWC, Effect);
+
+	return Template;
+}
+
+// Lick Your Wounds
+// (AbilityName="F_LickYourWounds", ApplyToWeaponSlot=eInvSlot_Unknown)
+// Hunker Down restores some health, and removes poison, burning, and acid burning. Passive.
+static function X2AbilityTemplate LickYourWounds()
+{
+	local X2AbilityTemplate Template;
+	local XMBCondition_AbilityName NameCondition;
+	local X2Effect_LickYourWoundsHeal HealEffect;
+	
+	// Create a triggered ability that will activate whenever the unit uses an ability that meets the condition
+	Template = SelfTargetTrigger('F_LickYourWounds', "img:///UILibrary_PerkIcons.UIPerk_command", default.LICKYOURWOUNDS_AWC, none, 'AbilityActivated');
+
+	// Only trigger with Hunker Down
+	NameCondition = new class'XMBCondition_AbilityName';
+	NameCondition.IncludeAbilityNames.AddItem('HunkerDown');
+	AddTriggerTargetCondition(Template, NameCondition);
+
+	// Restore health effect
+	HealEffect = new class'X2Effect_LickYourWoundsHeal';
+	HealEffect.HealAmount = default.LICKYOURWOUNDS_HEALAMOUNT;
+	HealEffect.MaxHealAmount = default.LICKYOURWOUNDS_MAXHEALAMOUNT;
+	HealEffect.HealthRegeneratedName = 'LickYourWoundsHeal';
+	Template.AddTargetEffect(HealEffect);
+
+	// Heal the status effects that a Medkit would heal
+	Template.AddTargetEffect(class'X2Ability_SpecialistAbilitySet'.static.RemoveAllEffectsByDamageType());
+	
+	// Trigger abilities don't appear as passives. Add a passive ability icon.
+	AddIconPassive(Template);
 
 	return Template;
 }

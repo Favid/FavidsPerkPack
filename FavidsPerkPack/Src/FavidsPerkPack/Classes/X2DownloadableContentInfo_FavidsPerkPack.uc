@@ -361,6 +361,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'HAVOC_DAMAGE_MULTIPLE':
 			OutString = string(class'X2Ability_Favid'.default.HAVOC_DAMAGE_MULTIPLE);
 			return true;
+		case 'LICKYOURWOUNDS_HEALAMOUNT':
+			OutString = string(class'X2Ability_Favid'.default.LICKYOURWOUNDS_HEALAMOUNT);
+			return true;
+		case 'LICKYOURWOUNDS_MAXHEALAMOUNT':
+			OutString = string(class'X2Ability_Favid'.default.LICKYOURWOUNDS_MAXHEALAMOUNT);
+			return true;
 		default: 
 			return false;
 	}

@@ -105,6 +105,9 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_InTheZone.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_LickYourWoundsHeal.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_LockNLoad.uc">
       <SubType>Content</SubType>
     </Content>
