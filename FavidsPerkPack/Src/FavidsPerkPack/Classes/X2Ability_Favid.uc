@@ -137,6 +137,10 @@ var config bool OPPORTUNIST_AWC;
 var config int LICKYOURWOUNDS_HEALAMOUNT;
 var config int LICKYOURWOUNDS_MAXHEALAMOUNT;
 var config bool LICKYOURWOUNDS_AWC;
+var config int ONAROLL_CRIT_BONUS;
+var config int ONAROLL_CRIT_DAMAGE_BONUS;
+var config int ONAROLL_MAX_STACKS;
+var config bool ONAROLL_AWC;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -193,6 +197,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(ThousandsToGo());
 	Templates.AddItem(Opportunist());
 	Templates.AddItem(LickYourWounds());
+	Templates.AddItem(OnARoll());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1319,6 +1324,7 @@ static function X2AbilityTemplate SlashAndDashActivator()
 // Trench Warfare
 // (AbilityName="F_TrenchWarfare", ApplyToWeaponSlot=eInvSlot_Unknown)
 // If you get at least one kill during your turn, automatically hunker down at the end of it. Passive.
+// Bug: Flyover appears every kill, instead of just first per turn
 static function X2AbilityTemplate TrenchWarfare()
 {
 	local X2AbilityTemplate								Template;
@@ -1896,7 +1902,7 @@ static function X2AbilityTemplate LickYourWounds()
 	local X2Effect_LickYourWoundsHeal HealEffect;
 	
 	// Create a triggered ability that will activate whenever the unit uses an ability that meets the condition
-	Template = SelfTargetTrigger('F_LickYourWounds', "img:///UILibrary_PerkIcons.UIPerk_command", default.LICKYOURWOUNDS_AWC, none, 'AbilityActivated');
+	Template = SelfTargetTrigger('F_LickYourWounds', "img:///UILibrary_FavidsPerkPack.UIPerk_LickYourWounds", default.LICKYOURWOUNDS_AWC, none, 'AbilityActivated');
 
 	// Only trigger with Hunker Down
 	NameCondition = new class'XMBCondition_AbilityName';
@@ -1915,6 +1921,62 @@ static function X2AbilityTemplate LickYourWounds()
 	
 	// Trigger abilities don't appear as passives. Add a passive ability icon.
 	AddIconPassive(Template);
+
+	return Template;
+}
+
+// On A Roll
+// (AbilityName="F_OnARoll", ApplyToWeaponSlot=eInvSlot_PrimaryWeapon)
+// Every kill with your primary weapon grants a bonus to critical hit chance and critical hit damage for the remainder of the mission. Effect stacks. Passive.
+static function X2AbilityTemplate OnARoll()
+{
+	local X2AbilityTemplate Template;
+	local XMBEffect_ConditionalBonus CritEffect;
+	local X2Condition_UnitValue UnitValueCondition;
+	local XMBValue_UnitValue Value;
+
+	// Create a value that uses a unit value - will be used to apply the bonus for each primary weapon kill
+	Value = new class'XMBValue_UnitValue';
+	Value.UnitValueName = 'F_OnARollActivationCounter';
+
+	// Create a persistent stat change effect that grants a crit chance bonus with the matching weapon
+	CritEffect = new class'XMBEffect_ConditionalBonus';
+	CritEffect.AddToHitModifier(default.ONAROLL_CRIT_BONUS, eHit_Crit);
+	CritEffect.AddDamageModifier(default.ONAROLL_CRIT_DAMAGE_BONUS, eHit_Crit);
+	CritEffect.ScaleValue = Value;
+	CritEffect.ScaleMax = default.ONAROLL_MAX_STACKS;
+	CritEffect.AbilityTargetConditions.AddItem(default.MatchingWeaponCondition);
+	
+	// Create a triggered ability that activates whenever the unit gets a kill
+	Template = Passive('F_OnARoll', "img:///UILibrary_FavidsPerkPack.UIPerk_OnARoll", default.ONAROLL_AWC, CritEffect);
+
+	// Include the secondary ability for counting primary weapon kills
+	AddSecondaryAbility(Template, OnARollCounter());
+
+	return Template;
+}
+
+static function X2AbilityTemplate OnARollCounter()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_IncrementUnitValue CountEffect;
+	
+	// Create an effect that will increment the unit value for the number of activations
+	// Note: Blame Firaxis for the terrible property names in X2Effect_IncrementUnitValue
+	CountEffect = new class'X2Effect_IncrementUnitValue';
+	CountEffect.UnitName = 'F_OnARollActivationCounter';
+	CountEffect.NewValueToSet = 1;
+	CountEffect.CleanupType = eCleanup_BeginTactical;
+	
+	// Create the template using a helper function
+	Template = SelfTargetTrigger('F_OnARollCounter', "img:///UILibrary_FavidsPerkPack.UIPerk_OnARoll", false, CountEffect, 'AbilityActivated');
+
+	// Only up the count on kills with the matching weapon
+	AddTriggerTargetCondition(Template, default.MatchingWeaponCondition);
+	AddTriggerTargetCondition(Template, default.DeadCondition);
+	
+	// On A Roll will have its perk icon showing, so hide this one
+	HidePerkIcon(Template);
 
 	return Template;
 }
