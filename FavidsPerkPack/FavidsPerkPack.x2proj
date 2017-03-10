@@ -120,9 +120,6 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_NaturalTwenty.uc">
       <SubType>Content</SubType>
     </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_OnARollCritDamage.uc">
-      <SubType>Content</SubType>
-    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_PsiRegeneration.uc">
       <SubType>Content</SubType>
     </Content>
@@ -232,9 +229,6 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XMBEffect_Extended.uc">
-      <SubType>Content</SubType>
-    </Content>
-    <Content Include="Src\FavidsPerkPack\Classes\XMBEffect_OnARollCritDamage.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XMBEffect_PermanentStatChange.uc">
