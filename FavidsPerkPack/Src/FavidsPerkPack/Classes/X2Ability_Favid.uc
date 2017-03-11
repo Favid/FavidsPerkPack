@@ -121,6 +121,8 @@ var config int PIERCETHEVEIL_INCREASE_COOLDOWN_AMOUNT;
 var config int PIERCETHEVEIL_COOLDOWN;
 var config bool PIERCETHEVEIL_AWC;
 var config int IGNITE_COOLDOWN;
+var config int IGNITE_BURN_DAMAGE_BASE;
+var config int IGNITE_BURN_DAMAGE_SPREAD;
 var config bool IGNITE_AWC;
 var config int NATURALTWENTY_COOLDOWN;
 var config bool NATURALTWENTY_AWC;
@@ -1703,7 +1705,7 @@ static function X2AbilityTemplate Ignite()
 	Template.AbilityTargetConditions.AddItem(TargetProperty);
 	Template.AbilityTargetConditions.AddItem(default.GameplayVisibilityCondition);
 
-	BurningEffect = class'X2StatusEffects'.static.CreateBurningStatusEffect(2, 1);
+	BurningEffect = class'X2StatusEffects'.static.CreateBurningStatusEffect(default.IGNITE_BURN_DAMAGE_BASE, default.IGNITE_BURN_DAMAGE_SPREAD);
 	BurningEffect.bRemoveWhenSourceDies = false;
 	Template.AddTargetEffect(BurningEffect);
 
@@ -1932,7 +1934,6 @@ static function X2AbilityTemplate OnARoll()
 {
 	local X2AbilityTemplate Template;
 	local XMBEffect_ConditionalBonus CritEffect;
-	local X2Condition_UnitValue UnitValueCondition;
 	local XMBValue_UnitValue Value;
 
 	// Create a value that uses a unit value - will be used to apply the bonus for each primary weapon kill

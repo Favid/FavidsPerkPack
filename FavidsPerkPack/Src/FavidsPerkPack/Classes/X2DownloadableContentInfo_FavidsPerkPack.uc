@@ -319,6 +319,12 @@ static function bool AbilityTagExpandHandler(string InString, out string OutStri
 		case 'IGNITE_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.IGNITE_COOLDOWN);
 			return true;
+		case 'IGNITE_BURN_DAMAGE_BASE':
+			OutString = string(class'X2Ability_Favid'.default.IGNITE_BURN_DAMAGE_BASE);
+			return true;
+		case 'IGNITE_BURN_DAMAGE_SPREAD':
+			OutString = string(class'X2Ability_Favid'.default.IGNITE_BURN_DAMAGE_SPREAD);
+			return true;
 		case 'MINDBLAST_COOLDOWN':
 			OutString = string(class'X2Ability_Favid'.default.MINDBLAST_COOLDOWN);
 			return true;
@@ -421,7 +427,7 @@ private static function string getOneMinusFloatValueString(float modifier)
 	local string returnString;
 
 	result = 1 - modifier;
-	returnString = string(result) $ "%";
+	returnString = string(int(result * 100)) $ "%";
 
 	return returnString;
 }
