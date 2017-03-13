@@ -143,6 +143,7 @@ var config int ONAROLL_CRIT_BONUS;
 var config int ONAROLL_CRIT_DAMAGE_BONUS;
 var config int ONAROLL_MAX_STACKS;
 var config bool ONAROLL_AWC;
+var config bool QUICKPATCH_AWC;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -194,12 +195,12 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(PierceTheVeil());
 	Templates.AddItem(Ignite());
 	Templates.AddItem(NaturalTwenty());
-	Templates.AddItem(PierceTheVeil());
 	Templates.AddItem(Regeneration());
 	Templates.AddItem(ThousandsToGo());
 	Templates.AddItem(Opportunist());
 	Templates.AddItem(LickYourWounds());
 	Templates.AddItem(OnARoll());
+	Templates.AddItem(QuickPatch());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1955,6 +1956,31 @@ static function X2AbilityTemplate OnARoll()
 	AddSecondaryAbility(Template, OnARollCounter());
 
 	return Template;
+}
+
+// Quick Patch
+// (AbilityName="F_QuickPatch", ApplyToWeaponSlot=eInvSlot_Unknown)
+// Using a Medikit does not cost an action. Passive.
+static function X2AbilityTemplate QuickPatch()
+{
+	local XMBEffect_AbilityCostRefund Effect;
+	local XMBCondition_AbilityName AbilityNameCondition;
+	
+	// Create an effect that will refund the cost of the action
+	Effect = new class'XMBEffect_AbilityCostRefund';
+	Effect.EffectName = 'F_QuickPatch';
+	Effect.TriggeredEvent = 'F_QuickPatch';
+
+	// The bonus only applies to medikit abilities
+	AbilityNameCondition = new class'XMBCondition_AbilityName';
+	AbilityNameCondition.IncludeAbilityNames.AddItem('MedikitHeal');
+	AbilityNameCondition.IncludeAbilityNames.AddItem('NanoMedikitHeal');
+	AbilityNameCondition.IncludeAbilityNames.AddItem('MedikitStabilize');
+	AbilityNameCondition.IncludeAbilityNames.AddItem('Sedate');
+	Effect.AbilityTargetConditions.AddItem(AbilityNameCondition);
+
+	// Create the template using a helper function
+	return Passive('F_QuickPatch', "img:///UILibrary_PerkIcons.UIPerk_command", default.QUICKPATCH_AWC, Effect);
 }
 
 static function X2AbilityTemplate OnARollCounter()
