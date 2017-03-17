@@ -144,6 +144,9 @@ var config int ONAROLL_CRIT_DAMAGE_BONUS;
 var config int ONAROLL_MAX_STACKS;
 var config bool ONAROLL_AWC;
 var config bool QUICKPATCH_AWC;
+var config int ESCALATION_CRIT_BONUS;
+var config int ESCALATION_MAX_STACKS;
+var config bool ESCALATION_AWC;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -201,6 +204,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(LickYourWounds());
 	Templates.AddItem(OnARoll());
 	Templates.AddItem(QuickPatch());
+	Templates.AddItem(Escalation());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1958,6 +1962,31 @@ static function X2AbilityTemplate OnARoll()
 	return Template;
 }
 
+static function X2AbilityTemplate OnARollCounter()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_IncrementUnitValue CountEffect;
+	
+	// Create an effect that will increment the unit value for the number of activations
+	// Note: Blame Firaxis for the terrible property names in X2Effect_IncrementUnitValue
+	CountEffect = new class'X2Effect_IncrementUnitValue';
+	CountEffect.UnitName = 'F_OnARollActivationCounter';
+	CountEffect.NewValueToSet = 1;
+	CountEffect.CleanupType = eCleanup_BeginTactical;
+	
+	// Create the template using a helper function
+	Template = SelfTargetTrigger('F_OnARollCounter', "img:///UILibrary_FavidsPerkPack.UIPerk_OnARoll", false, CountEffect, 'AbilityActivated');
+
+	// Only up the count on kills with the matching weapon
+	AddTriggerTargetCondition(Template, default.MatchingWeaponCondition);
+	AddTriggerTargetCondition(Template, default.DeadCondition);
+	
+	// On A Roll will have its perk icon showing, so hide this one
+	HidePerkIcon(Template);
+
+	return Template;
+}
+
 // Quick Patch
 // (AbilityName="F_QuickPatch", ApplyToWeaponSlot=eInvSlot_Unknown)
 // Using a Medikit does not cost an action. Passive.
@@ -1983,7 +2012,85 @@ static function X2AbilityTemplate QuickPatch()
 	return Passive('F_QuickPatch', "img:///UILibrary_PerkIcons.UIPerk_command", default.QUICKPATCH_AWC, Effect);
 }
 
-static function X2AbilityTemplate OnARollCounter()
+// Escalation
+// (AbilityName="F_Escalation", ApplyToWeaponSlot=eInvSlot_Unknown)
+// Every turn, gain +10 critical chance that stacks with itself. Bonus resets when you get a critical hit. Also, you begin each mission with +100 critical chance. Passive.
+static function X2AbilityTemplate Escalation()
+{
+	local X2AbilityTemplate Template;
+	local XMBEffect_ConditionalBonus CritEffect;
+	local XMBValue_UnitValue Value;
+
+	// Create a value that uses a unit value - will be used to apply the bonus for each primary weapon kill
+	Value = new class'XMBValue_UnitValue';
+	Value.UnitValueName = 'F_EscalationCounter';
+
+	// Create a persistent stat change effect that grants a crit chance bonus with the matching weapon
+	CritEffect = new class'XMBEffect_ConditionalBonus';
+	CritEffect.AddToHitModifier(default.ESCALATION_CRIT_BONUS, eHit_Crit);
+	CritEffect.ScaleValue = Value;
+	CritEffect.ScaleMax = default.ESCALATION_MAX_STACKS;
+	
+	// Create a triggered ability that activates whenever the unit gets a kill
+	Template = Passive('F_Escalation', "img:///UILibrary_PerkIcons.UIPerk_command", default.ESCALATION_AWC, CritEffect);
+
+	// Include the secondary ability for counting primary weapon kills
+	AddSecondaryAbility(Template, EscalationResetter());
+	AddSecondaryAbility(Template, EscalationStarter());
+	AddSecondaryAbility(Template, EscalationIncrementer());
+
+	return Template;
+}
+
+// Resets the Escalation crit counter when you get a crit
+static function X2AbilityTemplate EscalationResetter()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_SetUnitValue CountEffect;
+	
+	// Create an effect that will increment the unit value for the number of activations
+	// Note: Blame Firaxis for the terrible property names in X2Effect_IncrementUnitValue
+	CountEffect = new class'X2Effect_SetUnitValue';
+	CountEffect.UnitName = 'F_EscalationCounter';
+	CountEffect.NewValueToSet = 0;
+	CountEffect.CleanupType = eCleanup_BeginTactical;
+	
+	// Create the template using a helper function
+	Template = SelfTargetTrigger('F_EscalationResetter', "img:///UILibrary_PerkIcons.UIPerk_command", false, CountEffect, 'AbilityActivated');
+
+	// Only reset the counter on crits
+	AddTriggerTargetCondition(Template, default.CritCondition);
+	
+	// Escalation will have its perk icon showing, so hide this one
+	HidePerkIcon(Template);
+
+	return Template;
+}
+
+// Sets the Escalation crit counter to max at the start of a mission
+static function X2AbilityTemplate EscalationStarter()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_SetUnitValue CountEffect;
+	
+	// Create an effect that will increment the unit value for the number of activations
+	// Note: Blame Firaxis for the terrible property names in X2Effect_IncrementUnitValue
+	CountEffect = new class'X2Effect_SetUnitValue';
+	CountEffect.UnitName = 'F_EscalationCounter';
+	CountEffect.NewValueToSet = default.ESCALATION_MAX_STACKS;
+	CountEffect.CleanupType = eCleanup_BeginTactical;
+	
+	// Create the template using a helper function
+	Template = SelfTargetTrigger('F_EscalationResetter', "img:///UILibrary_PerkIcons.UIPerk_command", false, CountEffect, 'OnUnitBeginPlay');
+
+	// Escalation will have its perk icon showing, so hide this one
+	HidePerkIcon(Template);
+
+	return Template;
+}
+
+// Increments the Escalation crit counter at the start of each turn
+static function X2AbilityTemplate EscalationIncrementer()
 {
 	local X2AbilityTemplate Template;
 	local X2Effect_IncrementUnitValue CountEffect;
@@ -1991,18 +2098,14 @@ static function X2AbilityTemplate OnARollCounter()
 	// Create an effect that will increment the unit value for the number of activations
 	// Note: Blame Firaxis for the terrible property names in X2Effect_IncrementUnitValue
 	CountEffect = new class'X2Effect_IncrementUnitValue';
-	CountEffect.UnitName = 'F_OnARollActivationCounter';
+	CountEffect.UnitName = 'F_EscalationCounter';
 	CountEffect.NewValueToSet = 1;
 	CountEffect.CleanupType = eCleanup_BeginTactical;
 	
 	// Create the template using a helper function
-	Template = SelfTargetTrigger('F_OnARollCounter', "img:///UILibrary_FavidsPerkPack.UIPerk_OnARoll", false, CountEffect, 'AbilityActivated');
+	Template = SelfTargetTrigger('F_EscalationIncrementer', "img:///UILibrary_PerkIcons.UIPerk_command", false, CountEffect, 'PlayerTurnBegun');
 
-	// Only up the count on kills with the matching weapon
-	AddTriggerTargetCondition(Template, default.MatchingWeaponCondition);
-	AddTriggerTargetCondition(Template, default.DeadCondition);
-	
-	// On A Roll will have its perk icon showing, so hide this one
+	// Escalation will have its perk icon showing, so hide this one
 	HidePerkIcon(Template);
 
 	return Template;
