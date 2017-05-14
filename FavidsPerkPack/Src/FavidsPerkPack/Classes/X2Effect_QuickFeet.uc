@@ -17,36 +17,69 @@ function RegisterForEvents(XComGameState_Effect EffectGameState)
 function bool PostAbilityCostPaid(XComGameState_Effect EffectState, XComGameStateContext_Ability AbilityContext, XComGameState_Ability kAbility, XComGameState_Unit SourceUnit, XComGameState_Item AffectWeapon, XComGameState NewGameState, const array<name> PreCostActionPoints, const array<name> PreCostReservePoints)
 {
 	local XComGameStateHistory History;
+	local XComGameState_Ability AbilityStateQuickFeet;
 	local X2EventManager EventMgr;
-	local XComGameState_Ability AbilityStateQuickFeet, AbilityStateInput;
-	local X2AbilityTemplate InputAbilityTemplate;
-	local int EventChainStartHistoryIndex;
-
+	
 	History = `XCOMHISTORY;
-	EventChainStartHistoryIndex = History.GetEventChainStartIndex();
+	AbilityStateQuickFeet = XComGameState_Ability(History.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
 
-	if(SourceUnit.WasConcealed(EventChainStartHistoryIndex))
+	if(isRevealingFromConcealment(EffectState, SourceUnit, AbilityContext, NewGameState, PreCostActionPoints, AbilityStateQuickFeet, History))
 	{
-		AbilityStateQuickFeet = XComGameState_Ability(History.GetGameStateForObjectID(EffectState.ApplyEffectParameters.AbilityStateObjectRef.ObjectID));
-		AbilityStateInput = XComGameState_Ability(NewGameState.GetGameStateForObjectID(AbilityContext.InputContext.AbilityRef.ObjectID));
-		InputAbilityTemplate = AbilityStateInput.GetMyTemplate();
+		SourceUnit.ActionPoints.AddItem(class'X2CharacterTemplateManager'.default.StandardActionPoint);
 
-		if(!SourceUnit.IsConcealed() || (InputAbilityTemplate != none && !AbilityStateInput.RetainConcealmentOnActivation(AbilityContext)) || AbilityContext.InputContext.MovementPaths.Length > 0)
-		{
-			if (SourceUnit.ActionPoints.Length != PreCostActionPoints.Length)
-			{
-				if (AbilityStateQuickFeet != none)
-				{
-					SourceUnit.ActionPoints.AddItem(class'X2CharacterTemplateManager'.default.StandardActionPoint);
+		EventMgr = `XEVENTMGR;
+		EventMgr.TriggerEvent('QuickFeet', AbilityStateQuickFeet, SourceUnit, NewGameState);
 
-					EventMgr = `XEVENTMGR;
-					EventMgr.TriggerEvent('QuickFeet', AbilityStateQuickFeet, SourceUnit, NewGameState);
-
-					return true;
-				}
-			}
-		}
+		return true;
 	}
 
 	return false;
+}
+
+private function bool isRevealingFromConcealment(XComGameState_Effect EffectState, XComGameState_Unit SourceUnit, XComGameStateContext_Ability AbilityContext, XComGameState NewGameState, const array<name> PreCostActionPoints, XComGameState_Ability AbilityStateQuickFeet, XComGameStateHistory History)
+{
+	local XComGameState_Ability AbilityStateInput;
+	local X2AbilityTemplate InputAbilityTemplate;
+	local int EventChainStartHistoryIndex;
+
+	if (AbilityStateQuickFeet == none)
+	{
+		`LOG("		X2Effect_QuickFeet: FAIL 1");
+		return false;
+	}
+
+	EventChainStartHistoryIndex = History.GetEventChainStartIndex();
+
+	if(!SourceUnit.WasConcealed(EventChainStartHistoryIndex))
+	{
+		`LOG("		X2Effect_QuickFeet: FAIL 2");
+		return false;
+	}
+
+	if (SourceUnit.ActionPoints.Length == PreCostActionPoints.Length)
+	{
+		`LOG("		X2Effect_QuickFeet: FAIL 3");
+		return false;
+	}
+
+	if(SourceUnit.IsConcealed())
+	{
+		AbilityStateInput = XComGameState_Ability(NewGameState.GetGameStateForObjectID(AbilityContext.InputContext.AbilityRef.ObjectID));
+		InputAbilityTemplate = AbilityStateInput.GetMyTemplate();
+
+		if(InputAbilityTemplate == none)
+		{
+			`LOG("		X2Effect_QuickFeet: FAIL 4");
+			return false;
+		}
+
+		if(AbilityStateInput.RetainConcealmentOnActivation(AbilityContext))
+		{
+			`LOG("		X2Effect_QuickFeet: FAIL 5");
+			return false;
+		}
+	}
+	
+	`LOG("		X2Effect_QuickFeet: SUCCESS");
+	return true;
 }
