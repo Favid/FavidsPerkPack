@@ -71,6 +71,9 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Condition_NotVisibleToEnemies.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Condition_UnitHasNoPistol.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Condition_WantsReload.uc">
       <SubType>Content</SubType>
     </Content>
@@ -138,6 +141,9 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_SlashAndDash.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_TemporaryItem.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_ThousandsToGo.uc">
       <SubType>Content</SubType>
     </Content>
@@ -154,6 +160,9 @@
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XComGameState_Effect_Momentum.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\XComGameState_Effect_TemporaryItem.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\XComGameState_Effect_TrenchWarfare.uc">

@@ -201,6 +201,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(LickYourWounds());
 	Templates.AddItem(OnARoll());
 	Templates.AddItem(QuickPatch());
+	Templates.AddItem(Pistoleer());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -2004,6 +2005,52 @@ static function X2AbilityTemplate OnARollCounter()
 	
 	// On A Roll will have its perk icon showing, so hide this one
 	HidePerkIcon(Template);
+
+	return Template;
+}
+
+// Pistoleer
+// (AbilityName="F_Pistoleer", ApplyToWeaponSlot=eInvSlot_Unknown)
+// Grants a free pistol utility item. Passive.
+static function X2AbilityTemplate Pistoleer()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_TemporaryItem ItemEffect;
+	local X2Condition_UnitHasNoPistol TargetWeaponCondition;
+	local ResearchConditional		LaserConditional;
+	local ResearchConditional		MagConditional;
+	local ResearchConditional		CoilConditional;
+	local ResearchConditional		BeamConditional;
+
+	// These ResearchConditionals will let this ability grant an upgraded pistol depending on tech researched
+	BeamConditional.ResearchProjectName = 'PlasmaRifle';
+	BeamConditional.ItemName = 'LWPistol_BM';
+
+	CoilConditional.ResearchProjectName = 'Coilguns';
+	CoilConditional.ItemName = 'LWPistol_CL';
+	
+	MagConditional.ResearchProjectName = 'MagnetizedWeapons';
+	MagConditional.ItemName = 'LWPistol_MG';
+
+	LaserConditional.ResearchProjectName = 'LaserWeapons';
+	LaserConditional.ItemName = 'LWPistol_LS';
+
+	// The effect that grants the pistol
+	ItemEffect = new class 'X2Effect_TemporaryItem';
+	ItemEffect.EffectName = 'F_Pistoleer';
+	ItemEffect.ItemName = 'LWPistol_CV';
+	ItemEffect.bIgnoreItemEquipRestrictions = true;
+	ItemEffect.ResearchOptionalItems.AddItem(BeamConditional);
+	ItemEffect.ResearchOptionalItems.AddItem(CoilConditional);
+	ItemEffect.ResearchOptionalItems.AddItem(MagConditional);
+	ItemEffect.ResearchOptionalItems.AddItem(LaserConditional);
+
+	// Will not do anything if the soldier was manually equipped with a pistol
+	TargetWeaponCondition = new class 'X2Condition_UnitHasNoPistol';
+	ItemEffect.TargetConditions.AddItem(TargetWeaponCondition);
+
+	// Create the template using a helper function
+	Template = Passive('F_Pistoleer', "img:///UILibrary_PerkIcons.UIPerk_command", false, ItemEffect);
 
 	return Template;
 }
