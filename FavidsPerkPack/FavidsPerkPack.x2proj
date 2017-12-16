@@ -135,6 +135,9 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_Resupply.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Effect_ReverseUtilityMobilityPenalites.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Effect_SaltInTheWound.uc">
       <SubType>Content</SubType>
     </Content>

@@ -139,7 +139,7 @@ simulated function XComGameState_Item AddNewItemToUnit(X2EquipmentTemplate Equip
 {
 	local XComGameStateHistory			History;
 	local XGUnit						Visualizer;
-	local XComGameState_Item			ItemState, TempItem;
+	local XComGameState_Item			ItemState;
 	local X2AbilityTemplateManager		AbilityManager;
 	local X2AbilityTemplate				AbilityTemplate;
 	local bool							bCachedIgnoredItemEquipRestrictions;
@@ -190,11 +190,6 @@ simulated function XComGameState_Item AddNewItemToUnit(X2EquipmentTemplate Equip
 			AbilityState = XComGameState_Ability(History.GetGameStateForObjectID(AbilityRef.ObjectID));
 			if(AbilityState.SourceWeapon.ObjectId > 0)
 			{
-				TempItem = XComGameState_Item(History.GetGameStateForObjectID(AbilityState.SourceWeapon.ObjectID));
-
-				//AddAbilityToUnit(AbilityName, UnitState, ItemState.GetReference(), NewGameState, ItemState.GetReference());	// try and use AddToAbility helper to add item as weapon/ammo for launch grenade
-				//AddAbilityToUnit(AbilityName, UnitState, AbilityState.SourceWeapon, NewGameState, ItemState.GetReference());  // try and use AddToAbility helper to add launcher/ammo ability mapping
-
 				AbilityTemplate = AbilityManager.FindAbilityTemplate(AbilityName);
 				`TACTICALRULES.InitAbilityForUnit(AbilityTemplate, UnitState, NewGameState, AbilityState.SourceWeapon, ItemState.GetReference());
 			}

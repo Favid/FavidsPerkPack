@@ -144,6 +144,8 @@ var config int ONAROLL_CRIT_DAMAGE_BONUS;
 var config int ONAROLL_MAX_STACKS;
 var config bool ONAROLL_AWC;
 var config bool QUICKPATCH_AWC;
+var config bool PISTOLEER_AWC;
+var config bool STRONGBACK_AWC;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -202,6 +204,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(OnARoll());
 	Templates.AddItem(QuickPatch());
 	Templates.AddItem(Pistoleer());
+	Templates.AddItem(StrongBack());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -1959,31 +1962,6 @@ static function X2AbilityTemplate OnARoll()
 	return Template;
 }
 
-// Quick Patch
-// (AbilityName="F_QuickPatch", ApplyToWeaponSlot=eInvSlot_Unknown)
-// Using a Medikit does not cost an action. Passive.
-static function X2AbilityTemplate QuickPatch()
-{
-	local XMBEffect_AbilityCostRefund Effect;
-	local XMBCondition_AbilityName AbilityNameCondition;
-	
-	// Create an effect that will refund the cost of the action
-	Effect = new class'XMBEffect_AbilityCostRefund';
-	Effect.EffectName = 'F_QuickPatch';
-	Effect.TriggeredEvent = 'F_QuickPatch';
-
-	// The bonus only applies to medikit abilities
-	AbilityNameCondition = new class'XMBCondition_AbilityName';
-	AbilityNameCondition.IncludeAbilityNames.AddItem('MedikitHeal');
-	AbilityNameCondition.IncludeAbilityNames.AddItem('NanoMedikitHeal');
-	AbilityNameCondition.IncludeAbilityNames.AddItem('MedikitStabilize');
-	AbilityNameCondition.IncludeAbilityNames.AddItem('Sedate');
-	Effect.AbilityTargetConditions.AddItem(AbilityNameCondition);
-
-	// Create the template using a helper function
-	return Passive('F_QuickPatch', "img:///UILibrary_PerkIcons.UIPerk_command", default.QUICKPATCH_AWC, Effect);
-}
-
 static function X2AbilityTemplate OnARollCounter()
 {
 	local X2AbilityTemplate Template;
@@ -2007,6 +1985,31 @@ static function X2AbilityTemplate OnARollCounter()
 	HidePerkIcon(Template);
 
 	return Template;
+}
+
+// Quick Patch
+// (AbilityName="F_QuickPatch", ApplyToWeaponSlot=eInvSlot_Unknown)
+// Using a Medikit does not cost an action. Passive.
+static function X2AbilityTemplate QuickPatch()
+{
+	local XMBEffect_AbilityCostRefund Effect;
+	local XMBCondition_AbilityName AbilityNameCondition;
+	
+	// Create an effect that will refund the cost of the action
+	Effect = new class'XMBEffect_AbilityCostRefund';
+	Effect.EffectName = 'F_QuickPatch';
+	Effect.TriggeredEvent = 'F_QuickPatch';
+
+	// The bonus only applies to medikit abilities
+	AbilityNameCondition = new class'XMBCondition_AbilityName';
+	AbilityNameCondition.IncludeAbilityNames.AddItem('MedikitHeal');
+	AbilityNameCondition.IncludeAbilityNames.AddItem('NanoMedikitHeal');
+	AbilityNameCondition.IncludeAbilityNames.AddItem('MedikitStabilize');
+	AbilityNameCondition.IncludeAbilityNames.AddItem('Sedate');
+	Effect.AbilityTargetConditions.AddItem(AbilityNameCondition);
+
+	// Create the template using a helper function
+	return Passive('F_QuickPatch', "img:///UILibrary_PerkIcons.UIPerk_command", default.QUICKPATCH_AWC, Effect);
 }
 
 // Pistoleer
@@ -2050,9 +2053,27 @@ static function X2AbilityTemplate Pistoleer()
 	ItemEffect.TargetConditions.AddItem(TargetWeaponCondition);
 
 	// Create the template using a helper function
-	Template = Passive('F_Pistoleer', "img:///UILibrary_PerkIcons.UIPerk_command", false, ItemEffect);
+	Template = Passive('F_Pistoleer', "img:///UILibrary_PerkIcons.UIPerk_command", default.PISTOLEER_AWC, ItemEffect);
 
 	return Template;
+}
+
+// Strong Back
+// (AbilityName="F_StrongBack", ApplyToWeaponSlot=eInvSlot_Unknown)
+// This soldier will no longer be weighed down by equipped utility items. Passive.
+static function X2AbilityTemplate StrongBack()
+{
+	local X2Effect_ReverseUtilityMobilityPenalites Effect;
+	
+	// This effect will grant +1 Mobility for each equipped utility item that grants -1 Mobility
+	Effect = new class'X2Effect_ReverseUtilityMobilityPenalites';
+	Effect.EffectName = 'F_StrongBack';
+	Effect.SlotsToCheck.AddItem(eInvSlot_AmmoPocket);
+	Effect.SlotsToCheck.AddItem(eInvSlot_GrenadePocket);
+	Effect.SlotsToCheck.AddItem(eInvSlot_Utility);
+
+	// Create the template using a helper function
+	return Passive('F_StrongBack', "img:///UILibrary_PerkIcons.UIPerk_command", default.STRONGBACK_AWC, Effect);
 }
 
 static function X2AbilityTemplate ShootAnyone()
