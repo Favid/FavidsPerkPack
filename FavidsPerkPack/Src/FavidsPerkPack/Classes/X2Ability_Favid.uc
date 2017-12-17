@@ -149,6 +149,10 @@ var config bool STRONGBACK_AWC;
 var config bool CORPSMAN_AWC;
 var config int CORPSMAN_REVIVE_RANGE_IN_TILES;
 var config int CORPSMAN_REVIVE_COOLDOWN;
+var config int PRESERVATION_DEFENSE_BONUS;
+var config int PRESERVATION_DURATION;
+var config bool PRESERVATION_AWC;
+
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -210,6 +214,7 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(StrongBack());
 	Templates.AddItem(Corpsman());
 	Templates.AddItem(Revive());
+	Templates.AddItem(Preservation());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -2140,6 +2145,30 @@ static function X2AbilityTemplate Revive()
 
 	Template.bLimitTargetIcons = true;
 	Template.ActivationSpeech = 'StabilizingAlly';
+
+	return Template;
+}
+
+static function X2AbilityTemplate Preservation()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_PersistentStatChange DefenseEffect;
+
+	// Create a persistent stat change effect that grants a defense bonus
+	DefenseEffect = new class'X2Effect_PersistentStatChange';
+	DefenseEffect.EffectName = 'F_PreservationEffect';
+	DefenseEffect.AddPersistentStatChange(eStat_Defense, default.PRESERVATION_DEFENSE_BONUS);
+	
+	// Prevent the effect from applying to a unit more than once
+	DefenseEffect.DuplicateResponse = eDupe_Refresh;
+
+	// The effect lasts for a specified duration
+	DefenseEffect.BuildPersistentEffect(default.PRESERVATION_DURATION, false, true, false, eGameRule_PlayerTurnBegin);
+	
+	// Add a visualization that plays a flyover over the target unit
+	DefenseEffect.VisualizationFn = EffectFlyOver_Visualization;
+
+	Template = SelfTargetTrigger('F_Preservation', "img:///UILibrary_PerkIcons.UIPerk_command", default.PRESERVATION_AWC, DefenseEffect, 'UnitConcealmentBroken', eFilter_Unit);
 
 	return Template;
 }
