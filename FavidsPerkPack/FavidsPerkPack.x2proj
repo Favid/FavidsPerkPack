@@ -62,10 +62,16 @@
     <Content Include="Src\FavidsPerkPack\Classes\X2AbilityCost_Ammo_All.uc">
       <SubType>Content</SubType>
     </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2AbilityTarget_SingleInRange.uc">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Ability_Favid.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Condition_Concealed.uc">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="Src\FavidsPerkPack\Classes\X2Condition_MentalEffect.uc">
       <SubType>Content</SubType>
     </Content>
     <Content Include="Src\FavidsPerkPack\Classes\X2Condition_NotVisibleToEnemies.uc">

@@ -146,6 +146,9 @@ var config bool ONAROLL_AWC;
 var config bool QUICKPATCH_AWC;
 var config bool PISTOLEER_AWC;
 var config bool STRONGBACK_AWC;
+var config bool CORPSMAN_AWC;
+var config int CORPSMAN_REVIVE_RANGE_IN_TILES;
+var config int CORPSMAN_REVIVE_COOLDOWN;
 
 static function array<X2DataTemplate> CreateTemplates()
 {
@@ -205,6 +208,8 @@ static function array<X2DataTemplate> CreateTemplates()
 	Templates.AddItem(QuickPatch());
 	Templates.AddItem(Pistoleer());
 	Templates.AddItem(StrongBack());
+	Templates.AddItem(Corpsman());
+	Templates.AddItem(Revive());
 
 	Templates.AddItem(ShootAnyone());
 	
@@ -2076,6 +2081,69 @@ static function X2AbilityTemplate StrongBack()
 	return Passive('F_StrongBack', "img:///UILibrary_PerkIcons.UIPerk_command", default.STRONGBACK_AWC, Effect);
 }
 
+// Corpsman
+// (AbilityName="F_Corpsman", ApplyToWeaponSlot=eInvSlot_Unknown)
+// Grants a free medkit. Also grants the Revive ability, allowing the soldier to remove most mental effects from a nearby ally.
+static function X2AbilityTemplate Corpsman()
+{
+	local X2AbilityTemplate Template;
+	local X2Effect_TemporaryItem TemporaryItemEffect;
+	local ResearchConditional Conditional;
+	
+	// Effect granting a free medkit
+	TemporaryItemEffect = new class'X2Effect_TemporaryItem';
+	TemporaryItemEffect.EffectName = 'F_Corpsman';
+	TemporaryItemEffect.ItemName = 'Medikit';
+	TemporaryItemEffect.bIgnoreItemEquipRestrictions = true;
+
+	// Grants a nanomedkit if you have the necessary research
+	Conditional.ResearchProjectName = 'BattlefieldMedicine';
+	Conditional.ItemName = 'NanoMedikit';
+	TemporaryItemEffect.ResearchOptionalItems.AddItem(Conditional);
+
+	// Create the template using a helper function
+	Template = Passive('F_Corpsman', "img:///UILibrary_PerkIcons.UIPerk_command", default.CORPSMAN_AWC, TemporaryItemEffect);
+
+	// Also grants the Revive ability
+	Template.AdditionalAbilities.AddItem('F_Revive');
+
+	return Template;
+}
+
+static function X2AbilityTemplate Revive()
+{
+	local X2AbilityTemplate                 Template;
+	local X2AbilityTarget_SingleInRange     SingleTarget;
+	local X2Effect_RemoveEffects			RemoveEffects;
+
+	// Removes most mental effects
+	RemoveEffects = new class'X2Effect_RemoveEffects';
+	RemoveEffects.EffectNamesToRemove.AddItem(class'X2AbilityTemplateManager'.default.DisorientedName);
+	RemoveEffects.EffectNamesToRemove.AddItem(class'X2AbilityTemplateManager'.default.PanickedName);
+	RemoveEffects.EffectNamesToRemove.AddItem(class'X2AbilityTemplateManager'.default.StunnedName);
+	RemoveEffects.EffectNamesToRemove.AddItem(class'X2StatusEffects'.default.UnconsciousName);
+
+	// Create template using a helper function
+	Template = TargetedBuff('F_Revive', "img:///UILibrary_PerkIcons.UIPerk_command", false, RemoveEffects, class'UIUtilities_Tactical'.const.MEDIKIT_HEAL_PRIORITY + 1, eCost_Single);
+
+	// Once per turn
+	AddCooldown(Template, default.CORPSMAN_REVIVE_COOLDOWN);
+
+	// Limited range
+	SingleTarget = new class'X2AbilityTarget_SingleInRange';
+	SingleTarget.RangeInTiles = default.CORPSMAN_REVIVE_RANGE_IN_TILES;
+	SingleTarget.bShowAOE = true;
+	Template.AbilityTargetStyle = SingleTarget;
+
+	// Template must be suffering from a mental impairment
+	Template.AbilityTargetConditions.AddItem(new class'X2Condition_MentalEffect');
+
+	Template.bLimitTargetIcons = true;
+	Template.ActivationSpeech = 'StabilizingAlly';
+
+	return Template;
+}
+
 static function X2AbilityTemplate ShootAnyone()
 {
 	local X2AbilityTemplate Template;
@@ -2091,6 +2159,8 @@ static function X2AbilityTemplate ShootAnyone()
 	Template.AbilityTargetConditions.Length = 0;
 	Template.AbilityTargetConditions.AddItem(VisibilityCondition);
 	Template.AbilityTargetConditions.AddItem(default.LivingTargetOnlyProperty);
+
+	Template.AddTargetEffect(class'X2StatusEffects'.static.CreateDisorientedStatusEffect());
 
 	return Template;
 }
